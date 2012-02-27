@@ -1,0 +1,34 @@
+﻿{% extends "main/_base.html" %}
+
+{% block content %}
+
+	<input type=text" id="term" class="disable-in-request" style="width: 300px;" />
+	
+	
+	<div id="result-search"></div>
+	
+	<script type="text/javascript">
+		$(function(){
+
+			var search = function()
+			{
+				$.ajax({
+					url: "/vagas/busca/resultado/2000-01-01/2013-01-01/" + $("#term").val(),
+					type: "get",
+					success: function(result)
+					{
+						$("#result-search").html(result);
+					}
+				});
+			};
+			
+			$('#term').keydown(function (e){
+				if(e.keyCode == 13)
+				{
+					search();
+				}
+			});
+		});
+	</script>
+
+{% endblock %}

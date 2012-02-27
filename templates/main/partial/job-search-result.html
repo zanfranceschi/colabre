@@ -1,0 +1,10 @@
+﻿{% if list %}
+	{% for job in list %}
+		<div style="border: 1px solid; margin: 10px; padding: 10px;">
+			<h3>({{ job.published_at|date:"d/m/Y H:i" }}) {{ job.title }} | {{ job.field }}</h3>
+			{{ job.description|linebreaks }}
+		</div>
+	{% empty %}
+		Sua busca não retornou resultados.
+	{% endfor %}
+{% endif %}

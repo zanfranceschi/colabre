@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-BR" lang="pt-BR">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Colabre {% block title %}{% endblock %}</title>
+	<link href="/static/css/global.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+		
+			var ajaxRequest;
+			
+			$("html").ajaxSend(function(event, jqXHR, ajaxOptions){
+				ajaxRequest = jqXHR;
+			});
+			
+			$("html").ajaxError(function(event, jqXHR, ajaxOptions, exception){
+				$(".disable-in-request").removeAttr("disabled");
+				if(exception != "abort")
+				{
+					alert(exception);
+				}
+			});
+			
+			$("#ajax-request-cancel").click(function(){
+				if (ajaxRequest)
+					ajaxRequest.abort();
+					$(".disable-in-request").removeAttr("disabled");
+			});
+			
+			$("#ajax-request").bind("ajaxSend", function(){
+				$(this).show();
+				
+			}).bind("ajaxComplete", function(){
+				$(this).hide();
+				$(".disable-in-request").removeAttr("disabled");
+			});
+		});
+		
+	</script>
+</head>
+<body>
+<div id="header">
+	<img src="/static/img/logo.png" alt="colabre logo" />
+</div>
+	<h1>Bem-vindo ao Colabre</h1>
+	<div>
+		{% block menu %}{% endblock %}
+	</div>
+	<div id="content">
+		 {% block content %}{% endblock %}
+	</div>
+	
+	<div id="ajax-request">
+		<div>
+			<img src="/static/img/ajax-loader.gif" alt="" />
+			<img src="/static/img/ajax-request-cancel.png" id="ajax-request-cancel" alt="" title="cancelar requisição" />
+		</div>
+	</div>
+
+</body>
+</html>

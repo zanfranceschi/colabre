@@ -1,0 +1,11 @@
+﻿{% extends "main/_base.html" %}
+
+{% if obj %}
+    Empresa: {{ obj.name }}<br />
+	Segmento: {{ obj.field }}<br />
+	
+	<a href="/empresas/">ver empresas</a>
+	
+{% else %}
+    Não existe a empresa com o id {{ id }}
+{% endif %}

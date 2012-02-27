@@ -1,0 +1,19 @@
+﻿{% extends "main/_base.html" %}
+
+{% block content %}
+
+	<p>{{ perf }}</p>
+
+	{% if list %}
+		{% for job in list %}
+			<div>
+				<h4>{{ job.title }}<br />
+				{{ job.company.name }} ({{ job.company.field }})</h4>
+				<div>{{ job.description|linebreaks }}</div>
+			</div>
+		{% empty %}
+			sem vagas...
+		{% endfor %}
+	{% endif %}
+
+{% endblock %}
