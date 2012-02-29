@@ -1,2 +1,10 @@
-@import url("ajax-request.css");
+@import url('ajax-request.css');
+@import url('structure.css');
+
+body
+{
+	font-family: Arial, Sans-Serif;
+	font-size: 90%;
+	color: #222;
+}
 

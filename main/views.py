@@ -24,14 +24,11 @@ def empresas(request):
 	return HttpResponse(t.render(c))
 
 def empresa(request, _id):
-	try:
-		company = Company.objects.filter(id = _id)[0];
-	except InvalidId:
-		company = None
+	company = Company.objects.filter(id = _id)[0];
 	t = loader.get_template('main/company.html')
 	c = Context({
 		'obj': company,
-		'id' : _id
+		't' : 'ajdsh kasjhdkajshdk'
 	})
 	return HttpResponse(t.render(c))
 
@@ -53,14 +50,14 @@ def vagas(request):
 	
 def vagas_busca_resultado(request, _from, to, term):
 	list = Job.search(_from, to, term, 0, 100)
-	t = loader.get_template('main/partial/job-search-result.html')
+	t = loader.get_template('main/partial/jobs-search-result.html')
 	c = Context({
         'list': list
     })
 	return HttpResponse(t.render(c))
 	
 def vagas_busca(request):
-	return render_to_response('main/job-search.html')
+	return render_to_response('main/jobs-search.html')
 	
 def detail(request, job_id):
 	try:
