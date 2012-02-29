@@ -5,6 +5,8 @@ HOST = gethostname()
 
 # alwaysdata
 if HOST == 'http7' or HOST == 'ssh':
+	import site
+	site.addsitedir("/home/zanfranceschi/modules")
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django_mongodb_engine', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
