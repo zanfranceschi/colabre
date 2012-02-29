@@ -11,7 +11,7 @@ if HOST == 'http7' or HOST == 'ssh':
 			'NAME': 'zanfranceschi_colabre',                 	# Or path to database file if using sqlite3.
 			'USER': '',                      	# Not used with sqlite3.
 			'PASSWORD': '',                  	# Not used with sqlite3.
-			'HOST': '',                      	# Set to empty string for localhost. Not used with sqlite3.
+			'HOST': 'mongodb.alwaysdata.com',                      	# Set to empty string for localhost. Not used with sqlite3.
 			'PORT': 27017,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
