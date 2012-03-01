@@ -5,16 +5,14 @@ HOST = gethostname()
 
 # alwaysdata
 if HOST == 'http7' or HOST == 'ssh':
-	import site
-	site.addsitedir("/home/zanfranceschi/modules")
 	DATABASES = {
 		'default': {
-			'ENGINE': 'django_mongodb_engine', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'zanfranceschi_colabre',                 	# Or path to database file if using sqlite3.
-			'USER': '',                      	# Not used with sqlite3.
+			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+			'NAME': 'colabre',                 	# Or path to database file if using sqlite3.
+			'USER': 'zanfranceschi',                      	# Not used with sqlite3.
 			'PASSWORD': '',                  	# Not used with sqlite3.
-			'HOST': 'mongodb.alwaysdata.com',                      	# Set to empty string for localhost. Not used with sqlite3.
-			'PORT': 27017,                      # Set to empty string for default. Not used with sqlite3.
+			'HOST': '',                      	# Set to empty string for localhost. Not used with sqlite3.
+			'PORT': 3306,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
 	STATIC_ROOT = '/home/zanfranceschi/zanfranceschi/interface/static'
@@ -24,12 +22,12 @@ if HOST == 'http7' or HOST == 'ssh':
 else:
 	DATABASES = {
 		'default': {
-			'ENGINE': 'django_mongodb_engine', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 			'NAME': 'colabre',                 	# Or path to database file if using sqlite3.
-			'USER': '',                      	# Not used with sqlite3.
-			'PASSWORD': '',                  	# Not used with sqlite3.
-			'HOST': '',                      	# Set to empty string for localhost. Not used with sqlite3.
-			'PORT': 27017,                      # Set to empty string for default. Not used with sqlite3.
+			'USER': 'root',                      	# Not used with sqlite3.
+			'PASSWORD': 'root',                  	# Not used with sqlite3.
+			'HOST': 'localhost',                      	# Set to empty string for localhost. Not used with sqlite3.
+			'PORT': 3306,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
 	STATIC_ROOT = 'D:\Projects\Colabre\svn\trunk\interface\static'
@@ -88,9 +86,9 @@ INSTALLED_APPS = (
 	#'django.contrib.sites',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	'djangotoolbox',
+	#'djangotoolbox',
 	'main',
-	'tastypie',
+	#'tastypie',
 	'django.contrib.admin',
 	'django_mongodb_engine'
 )

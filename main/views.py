@@ -3,7 +3,7 @@ from django.template import Context, loader
 from main.models import *
 from django.http import *
 from django.shortcuts import render_to_response, get_object_or_404
-from pymongo.errors import InvalidId
+#from pymongo.errors import InvalidId
 from datetime import *
 
 def index(request):
@@ -49,7 +49,8 @@ def vagas(request):
 	return HttpResponse(t.render(c))
 	
 def vagas_busca_resultado(request, _from, to, term):
-	list = Job.search(_from, to, term, 0, 100)
+	#list = Job.search(_from, to, term, 0, 100)
+	list = Job.objects.all()
 	t = loader.get_template('main/partial/jobs-search-result.html')
 	c = Context({
         'list': list
