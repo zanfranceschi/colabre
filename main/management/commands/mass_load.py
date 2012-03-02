@@ -13515,35 +13515,12 @@ class Command(BaseCommand):
 		# drop collections
 		User.objects.all().delete()
 		Company.objects.all().delete()
-		'''
-		self.stdout.write("Resetting tables...\n")
-		
-		host = settings.DATABASES['default']['HOST']
-		user = settings.DATABASES['default']['USER']
-		passwd = settings.DATABASES['default']['PASSWORD']
-		db = settings.DATABASES['default']['NAME']
-		
-		conn = MySQLdb.Connection(host = host, user = user, passwd= passwd, db = db)
-		cursor = conn.cursor()
-		sql = """	
-				set foreign_key_checks = 0;
-				truncate table main_resume; 
-				truncate table main_job;
-				truncate table main_company; 
-				truncate table main_colabreuser; 
-				truncate table auth_user;
-				set foreign_key_checks = 1;
-			"""
-		cursor.execute(sql)
-		conn.close()
-		self.stdout.write("Tables resetted...\n")
-		'''
 
 		companies = []
 		jobs = []
 		
-		jobs_count = 3000
-		resumes_count = 3000
+		jobs_count = 800
+		resumes_count = 1000
 
 		# carga para currículos
 		self.stdout.write("Creating %i resumes...\n" % resumes_count)
