@@ -4,7 +4,6 @@ import random
 from datetime import *
 import time
 import calendar
-import MySQLdb
 import settings
 from decimal import *
 
