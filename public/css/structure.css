@@ -1,7 +1,7 @@
 body
 {
 	margin: 95px 0 0 0;
-	background: #eee;
+	background: #fff;
 }
 
 #logo
@@ -15,19 +15,18 @@ body
 {
 	position: fixed;
 	background: #fff;
-	background: #ebec95;
 	left: 0;
 	top: 0;
 	width: 100%;
-	opacity: 0.95;
-	filter: alpha(opacity=95);
+	opacity: .90;
+	filter: alpha(opacity=90);
 	z-index: 999;
 }
 
 #menu
 {
 	text-align: right;
-	border-bottom: 1px dotted #333;
+	border-bottom: 1px dotted #ccc;
 	overflow: auto;
 }
 
@@ -39,7 +38,6 @@ body
 	text-transform: lowercase;
 	display: block;
 	float: right;
-	border: 1px dotted transparent;
 	border-bottom: 0;
 	border-top: 0;
 }
@@ -47,25 +45,26 @@ body
 #menu a:hover
 {
 	color: #000;
-	background: #eee;
-	border-color: #ddd;
+	background: #fff;
 }
 
 #content
 {
-	margin: 0px 10% 10px 10%;
+	margin: 10px;
 }
 
 .search-form
 {
 	position: fixed;
 	top: 61px;
+	left: 0;
+	width: 100%;
 	z-index: 10;
-	background: #fff;
-	background: #ebec95;
-	border: 1px dotted #333;
-	border-top: 0;
 	padding: 10px;
+	background: #fff;
+	border-bottom: 1px dotted #ccc;
+	opacity: .90;
+	filter: alpha(opacity=90);
 }
 
 .search-form label
