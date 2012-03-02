@@ -45,7 +45,7 @@ def vagas(request):
 	return render(request, "main/jobs.html", data)
 	
 def vagas_busca_resultado(request, _from, to, term):
-	list = Job.objects.all()[0:10]
+	list = Job.objects.all()[0:100]
 	data = {
         'list': list
     }

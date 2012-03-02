@@ -75,13 +75,20 @@ body
 	margin-left: 0;
 }
 
-.job-search-resul
+.job-search-result-column
+{
+	float: left; 
+	overflow: auto; 
+	margin-right: 10px; 
+	width: 32%;
+}
+
+.job-search-result
 {
 	float: left;
 	padding: 10px;
 	border: 1px dotted #333;
 	margin: 10px 10px 10px 10px;
-	width: 30%;
 	font-size: 90%;
 	position: relative;
 	background: #f6f6f6;
