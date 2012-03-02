@@ -77,9 +77,12 @@ body
 
 .job-search-resul
 {
+	float: left;
 	padding: 10px;
 	border: 1px dotted #333;
-	margin-bottom: 20px;
+	margin: 10px 10px 10px 10px;
+	width: 30%;
+	font-size: 90%;
 	position: relative;
 	background: #f6f6f6;
 }
