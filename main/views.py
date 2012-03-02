@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from datetime import *
 
 def index(request):
-	list = Job.objects.all().order_by('-published')[:100]
+	list = Job.objects.all().order_by('-published_at')[:100]
 	t = loader.get_template('main/index.html')
 	c = Context({
         'list': list,

@@ -24,7 +24,7 @@ class Job(models.Model):
 	
 	title = models.CharField(max_length=75)
 	description = models.TextField()
-	pub_date = models.DateTimeField()
+	published_at = models.DateTimeField()
 
 	field = models.CharField(max_length=75)
 	country = models.CharField(max_length=75)
