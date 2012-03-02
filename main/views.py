@@ -9,11 +9,15 @@ from datetime import *
 def index(request):
 	list = Job.objects.all().order_by('-published_at')[:100]
 	t = loader.get_template('main/index.html')
-	c = Context({
+	data = {
         'list': list,
 		'test' : '1, 2, 3...'
-    })
-	return HttpResponse(t.render(c))
+    }
+	return render_to_response(
+		'main/index.html', 
+		data, 
+		context_instance=RequestContext(request)
+		)
 
 def empresas(request):
 	list = Company.objects.all()
