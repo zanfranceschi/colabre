@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.2437892"
-     inkscape:cx="-1170.7248"
-     inkscape:cy="1461.4999"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="-1255.1451"
+     inkscape:cy="1348.469"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -34,7 +34,7 @@
      inkscape:window-width="1280"
      inkscape:window-height="748"
      inkscape:window-x="-8"
-     inkscape:window-y="1016"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -251,5 +251,32 @@
            x="-994.63574"
            y="-349.48892">colabre</tspan></text>
     </g>
+    <rect
+       style="fill:#f6f6f6;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3008"
+       width="23.328209"
+       height="14.609585"
+       x="-1108.4434"
+       y="-446.53415"
+       rx="0"
+       ry="14.609585" />
+    <path
+       style="fill:#f6f6f6;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m -1282.9527,-335.98971 24.5,0 0,58.85965 -6.625,0 -6.625,2.14035 -6.625,-2.14035 -4.625,0 z"
+       id="rect3778"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc"
+       inkscape:export-filename="D:\Projects\Colabre\svn\trunk\public\img\menu-a-hover.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#f6f6f6;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3800"
+       width="43.840622"
+       height="61.518291"
+       x="-2672.1565"
+       y="-728.83984"
+       rx="0"
+       ry="0" />
   </g>
 </svg>
