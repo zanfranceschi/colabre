@@ -3,21 +3,10 @@
 {% block content %}
 
 	<div class="search-form">
-		<label for="term">busca:</label> 
-		<input type=text" id="term" class="disable-in-request" style="width: 500px;" />
-		
-		<label>estado:</label> 
-		<select>
-			<option>AM</option>
-			<option>SP</option>
-			<option>RJ</option>
-		</select>
-		
-		<label>cidade:</label> 
-		<select>
-			<option>São Paulo</option>
-			<option>Vargem Grande Paulista</option>
-		</select>
+		<input value="busca..." type="text" id="term" class="search-onclick disable-in-request" style="width: 500px;" />
+		<input value="localização..." type="text" id="location" class="search-onclick disable-in-request" />
+		<input value="publicadas até..." type="text" id="date_from" class="search-onclick disable-in-request" />
+		{% csrf_token %}
 	</div>
 	
 	<div id="result-search"><i>Faça sua busca no formulário acima.</i></div>
@@ -30,8 +19,15 @@
 				$("#result-search").fadeTo(1, .1);
 				
 				$.ajax({
-					url: "/vagas/busca/resultado/2000-01-01/2013-01-01/" + $("#term").val(),
-					type: "get",
+					url: '/vagas/busca/resultado/',
+					type: 'post',
+					contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+					data : {
+						term : $("#term").val(),
+						location : $("#location").val(),
+						date_from : $("#date_from").val(),
+						csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val()
+					},
 					success: function(result)
 					{
 						$("#result-search").html(result);
@@ -40,7 +36,7 @@
 				});
 			};
 			
-			$('#term').keydown(function (e){
+			$('.search-onclick').keydown(function (e){
 				if(e.keyCode == 13)
 				{
 					search();

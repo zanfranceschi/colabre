@@ -70,18 +70,31 @@ img
 .search-form
 {
 	position: fixed;
-	background: #ccc;
+	background: #dedede;
 	top: 38px;
 	left: 0;
 	width: 100%;
 	z-index: 10;
-	padding: 10px;
+	padding: 20px;
 	border-bottom: 1px dotted #ccc;
 }
 
 .search-form label
 {
 	margin-left: 20px;
+	font-weight: bold;
+}
+
+.search-form input[type=text]
+{
+	padding: 7px;
+	color: #333;
+	font-size: 120%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #999;
 }
 
 .search-form label:first-child

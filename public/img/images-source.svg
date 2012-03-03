@@ -279,17 +279,17 @@
        rx="0"
        ry="0" />
     <g
-       id="g3805"
-       transform="matrix(0.9446832,0,0,0.9446832,-98.311826,-45.551232)"
+       id="g3817"
        inkscape:export-filename="D:\Projects\Colabre\svn\trunk\public\img\logo-small.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
+       inkscape:export-xdpi="50.305676"
+       inkscape:export-ydpi="50.305676">
       <g
-         transform="translate(88.000008,-52.500001)"
-         id="g3013">
+         transform="matrix(0.95671605,0,0,0.95671605,-26.69142,-101.02082)"
+         id="g3013"
+         style="stroke:#1a1a1a;fill:#333333">
         <path
            sodipodi:type="arc"
-           style="fill:#555555;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           style="fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:#1a1a1a"
            id="path3015"
            sodipodi:cx="171.72594"
            sodipodi:cy="288.68686"
@@ -299,7 +299,7 @@
            transform="matrix(0.13031897,0,0,0.13031897,-1030.986,-396.4628)" />
         <path
            sodipodi:type="arc"
-           style="fill:#555555;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           style="fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:#1a1a1a"
            id="path3017"
            sodipodi:cx="385.87827"
            sodipodi:cy="137.16397"
@@ -309,7 +309,7 @@
            transform="matrix(0.08173052,0,0,0.08173052,-1027.8423,-382.45151)" />
         <path
            sodipodi:type="arc"
-           style="fill:#555555;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           style="fill:#333333;fill-opacity:1;fill-rule:nonzero;stroke:#1a1a1a"
            id="path3019"
            sodipodi:cx="72.73098"
            sodipodi:cy="86.656349"
@@ -319,14 +319,14 @@
            transform="matrix(0.16476287,0,0,0.16476287,-1033.8072,-392.39291)" />
       </g>
       <rect
-         ry="3.29632"
-         rx="3.29632"
-         y="-446.72491"
-         x="-948.79181"
-         height="50.25"
-         width="50.25"
+         ry="3.1536422"
+         rx="3.1536422"
+         y="-478.18213"
+         x="-1018.6068"
+         height="48.074982"
+         width="48.074982"
          id="rect3031"
-         style="fill:none;stroke:#555555;stroke-width:2.11711216;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         style="fill:none;stroke:#333333;stroke-width:2.00000048000000020;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
   </g>
 </svg>

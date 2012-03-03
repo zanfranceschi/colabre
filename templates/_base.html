@@ -20,11 +20,13 @@
 	
 	<div id="login">
 		{% if user.is_authenticated %}
-		Olá, {{ user.first_name }}. [<a href="/logout">sair</a>]
+			Olá, {{ user.first_name }}. <a href="/logout">sair</a>
 		{% else %}
-		<a href="{{ LOGIN_URL }}">login</a>
+			<a href="{{ LOGIN_URL }}">entrar</a>
 		{% endif %}
 	</div>
+	
+	
 	
 	
 	

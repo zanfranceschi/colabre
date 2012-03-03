@@ -8,6 +8,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic.date_based import object_detail
 from django.contrib.auth.decorators import login_required
 from datetime import *
+from django.db.models import Q
+from django.db import connection
+from django.utils.encoding import smart_unicode, smart_str
+from django.utils.http import urlquote
+
 
 def login_view(request):
 	return render(request, 'login.html')
@@ -71,17 +76,41 @@ def vagas(request):
 	}
 	return render(request, "jobs.html", data)
 
-@login_required	
-def vagas_busca_resultado(request, _from, to, term):
-	list = Job.objects.all()[0:100]
-	data = {
-        'list': list
-    }
-	return render(request, 'partial/jobs-search-result.html', data)
+#@login_required	
+def vagas_busca_resultado(request):
+	if not request.POST:
+		return HttpResponse("")
+	else:
+		term = smart_str(request.POST['term'])
+		location = smart_str(request.POST['location'])
+		date_from = datetime.strptime(request.POST['date_from'], '%Y/%m/%d')
+		list = Job.objects.filter(
+								  Q(title__icontains = term)
+								| Q(description__icontains = term),
+								#| Q(company__name__istartswith = term),
+								  #Q(published_at >= date_from),
+								  Q(city__icontains = location) | Q(state__icontains = location)
+								)
+		print "\n\n\n\n\n"
+		print(str(Job.objects.filter(
+								  Q(title__icontains = term)
+								| Q(description__icontains = term),
+								#| Q(company__name__istartswith = term),
+								  #Q(published_at >= date_from),
+								  Q(city__icontains = location) | Q(state__icontains = location)
+								).query))
+		data = {
+			'list': list
+		}
+		return render(request, 'partial/jobs-search-result.html', data)
 
-@login_required
 def vagas_busca(request):
-	return render(request, 'jobs-search.html')
+	if request.GET:
+		data = { 'data' : 'OK' }
+	else:
+		data = { 'data' : 'N.A.' }
+
+	return render(request, 'jobs-search.html', data)
 
 def detail(request, job_id):
 	try:
