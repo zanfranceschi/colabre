@@ -5,6 +5,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('main.views',
 	url(r'^$', 'index'),
+	url(r'^login/$', 'login_view'),
+	url(r'^logout/$', 'logout_view'),
+	url(r'^autenticar/$', 'autenticar'),
 	url(r'^empresas/$', 'empresas'),
 	url(r'^empresa/([\d\w]+)/$', 'empresa'),
 	url(r'^vagas/busca/resultado/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})/(.+)/$', 'vagas_busca_resultado'),

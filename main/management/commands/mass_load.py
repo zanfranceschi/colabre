@@ -13492,9 +13492,9 @@ class Command(BaseCommand):
 		name = random.choice(self.names)
 		self.names.remove(name)
 		
-		user.username = user.last_name = name 
-		user.set_password(user.username)
-		
+		user.last_name = name 
+		user.username = name.lower()
+		user.set_password('123')
 
 		user.is_active = True
 		user.email = user.first_name + random.choice(self.email_tokens) + user.last_name + "@" + random.choice(self.domains)
