@@ -1,0 +1,52 @@
+﻿{% extends "_base.html" %}
+
+{% block content %}
+
+	<div class="search-form">
+		<label for="term">busca:</label> 
+		<input type=text" id="term" class="disable-in-request" style="width: 500px;" />
+		
+		<label>estado:</label> 
+		<select>
+			<option>AM</option>
+			<option>SP</option>
+			<option>RJ</option>
+		</select>
+		
+		<label>cidade:</label> 
+		<select>
+			<option>São Paulo</option>
+			<option>Vargem Grande Paulista</option>
+		</select>
+	</div>
+	
+	<div id="result-search"><i>Faça sua busca no formulário acima.</i></div>
+	
+	<script type="text/javascript">
+		$(function(){
+
+			var search = function()
+			{
+				$("#result-search").fadeTo(1, .1);
+				
+				$.ajax({
+					url: "/vagas/busca/resultado/2000-01-01/2013-01-01/" + $("#term").val(),
+					type: "get",
+					success: function(result)
+					{
+						$("#result-search").html(result);
+						$("#result-search").fadeTo(200, 1);
+					}
+				});
+			};
+			
+			$('#term').keydown(function (e){
+				if(e.keyCode == 13)
+				{
+					search();
+				}
+			});
+		});
+	</script>
+
+{% endblock %}
