@@ -3,9 +3,9 @@
 {% block content %}
 
 	<div class="search-form">
-		<input value="busca..." type="text" id="term" class="search-onclick disable-in-request" style="width: 500px;" />
-		<input value="localização..." type="text" id="location" class="search-onclick disable-in-request" />
-		<input value="publicadas até..." type="text" id="date_from" class="search-onclick disable-in-request" />
+		<input label="palavras chave..." type="text" id="term" class="search-onclick disable-in-request" style="width: 500px;" />
+		<input label="localização..." type="text" id="location" class="search-onclick disable-in-request" />
+		<input label="publicadas até..." type="text" id="date_from" class="search-onclick disable-in-request" />
 		{% csrf_token %}
 	</div>
 	
@@ -13,7 +13,7 @@
 	
 	<script type="text/javascript">
 		$(function(){
-
+		
 			var search = function()
 			{
 				$("#result-search").fadeTo(1, .1);
@@ -35,13 +35,6 @@
 					}
 				});
 			};
-			
-			$('.search-onclick').keydown(function (e){
-				if(e.keyCode == 13)
-				{
-					search();
-				}
-			});
 		});
 	</script>
 

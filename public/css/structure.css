@@ -70,13 +70,13 @@ img
 .search-form
 {
 	position: fixed;
-	background: #dedede;
+	background: #f7f7f7;
 	top: 38px;
 	left: 0;
 	width: 100%;
 	z-index: 10;
 	padding: 20px;
-	border-bottom: 1px dotted #ccc;
+	border-bottom: 0px dotted #ccc;
 }
 
 .search-form label
