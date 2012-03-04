@@ -27,13 +27,6 @@ $(function(){
 		$(".disable-in-request").removeAttr("disabled");
 	});
 	
-	$('.search-onclick').keydown(function (e){
-		if(e.keyCode == 13)
-		{
-			search();
-		}
-	});
-	
 	$('input[label]').css({"color" : "#ccc"});
 	
 	$('input[label]').each(function(){
