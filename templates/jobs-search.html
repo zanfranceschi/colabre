@@ -42,6 +42,27 @@
 					search();
 				}
 			});
+			
+			$("#term").autocomplete({
+				source: function(request, response)
+				{
+					$.ajax({
+						url: '/vagas/titulos/sugestoes',
+						method: 'get',
+						data: {
+							termo: $("#term").val()
+						},
+						success: function(data){
+							response($.map(data, function(item) {
+								return {
+									label: item[0],
+									value: item[0]
+								};
+							}));
+						}
+					});
+				}
+			});
 		});
 	</script>
 
