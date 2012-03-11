@@ -3,9 +3,8 @@
 {% block content %}
 
 	<div class="search-form">
-		<input label="palavras chave..." type="text" id="term" class="search-onclick disable-in-request" style="width: 500px;" />
 		<input label="localização..." type="text" id="location" class="search-onclick disable-in-request" />
-		<input label="publicadas até..." type="text" id="date_from" class="search-onclick disable-in-request" />
+		<input label="palavras chave..." type="text" id="term" class="search-onclick disable-in-request" style="width: 500px;" />
 		{% csrf_token %}
 	</div>
 	
@@ -22,10 +21,9 @@
 					url: '/vagas/busca/resultado/',
 					type: 'post',
 					contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-					data : {
+					data: {
 						term : $("#term").val(),
 						location : $("#location").val(),
-						date_from : $("#date_from").val(),
 						csrfmiddlewaretoken : $("input[name=csrfmiddlewaretoken]").val()
 					},
 					success: function(result)
@@ -44,9 +42,15 @@
 			});
 			
 			$("#term").autocomplete({
+				select: function(event, ui)
+				{
+					search();
+				},
+				minLength: 3,
 				source: function(request, response)
 				{
 					$.ajax({
+						global: false,
 						url: '/vagas/titulos/sugestoes',
 						method: 'get',
 						data: {

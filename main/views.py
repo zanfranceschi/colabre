@@ -67,7 +67,7 @@ def vaga(request, id):
 	
 def vagas(request):
 	start = datetime.now()
-	list = Job.objects.all()[0:2000]
+	list = Job.objects.all()[0:50]
 	end = datetime.now()
 	delta = end - start
 	data = {
@@ -83,15 +83,12 @@ def vagas_busca_resultado(request):
 	else:
 		term = smart_str(request.POST['term'])
 		location = smart_str(request.POST['location'])
-		date_from = datetime.strptime(request.POST['date_from'], '%Y/%m/%d')
+		#date_from = datetime.strptime(request.POST['date_from'], '%Y/%m/%d')
 		list = Job.objects.filter(
-								  Q(title__icontains = term)
-								| Q(description__icontains = term),
-								#| Q(company__name__istartswith = term),
-								  #Q(published_at >= date_from),
+								  Q(title__icontains = term) | Q(description__icontains = term),
 								  Q(city__icontains = location) | Q(state__icontains = location)
-								)
-		print "\n\n\n\n\n"
+								).order_by("-published_at")[:1000]
+		'''print "\n\n\n\n\n"
 		print(str(Job.objects.filter(
 								  Q(title__icontains = term)
 								| Q(description__icontains = term),
@@ -99,6 +96,7 @@ def vagas_busca_resultado(request):
 								  #Q(published_at >= date_from),
 								  Q(city__icontains = location) | Q(state__icontains = location)
 								).query))
+		'''
 		data = {
 			'list': list
 		}

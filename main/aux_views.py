@@ -8,6 +8,6 @@ def job_titles_suggestion(request):
 		title = "%{0}%".format(request.GET['termo'])
 		cursor = connection.cursor()
 		cursor.execute("select title from main_job where title like %s group by title order by title asc", [title])
-		set = cursor.fetchall()
+		set = cursor.fetchall()[:10]
 		return JsonResponse(set)
 	return HttpResponse()
