@@ -3,7 +3,7 @@ body
 	font-family: Arial, Sans-Serif;
 	font-size: 90%;
 	color: #222;
-	background: #fff url('../img/body-bg.png') repeat-x top;
+	background: url('../img/body-bg.png');
 	margin: 0;
 	text-align: center;
 }

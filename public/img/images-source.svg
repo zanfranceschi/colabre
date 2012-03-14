@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="-922.69937"
-     inkscape:cy="1470.1551"
+     inkscape:zoom="97.875"
+     inkscape:cx="-3511.7902"
+     inkscape:cy="-1438.9103"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -328,5 +328,27 @@
          id="rect3031"
          style="fill:none;stroke:#333333;stroke-width:2.00000048000000020;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
+    <rect
+       style="fill:#f6f6f6;fill-opacity:1;fill-rule:nonzero;stroke:none;opacity:1"
+       id="rect3785"
+       width="4"
+       height="4"
+       x="-3512.7515"
+       y="2488.4834"
+       rx="0"
+       ry="0"
+       inkscape:export-filename="D:\Projects\Colabre\svn\trunk\public\img\body-bg.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="opacity:0.023;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect3821"
+       width="2"
+       height="2"
+       x="-3511.7515"
+       y="2489.4834"
+       inkscape:export-filename="D:\Projects\Colabre\svn\trunk\public\img\body-bg.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>
