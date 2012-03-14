@@ -1,40 +1,47 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<title>Colabre {% block title %}{% endblock %}</title>
 	<link href="{{ STATIC_URL }}css/global.css" rel="stylesheet" type="text/css" />
+	<link href="{{ STATIC_URL }}css/chosen.css" rel="stylesheet" type="text/css" />
 	<link href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>	
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
 </head>
 <body>
 	
-	<div id="menu">
-		<a href="/" title="início" class="menu-logo-link">
-			<img src="{{ STATIC_URL }}img/logo-small.png" alt="colabre logo" />
+	<div id="wrapper">
+	
+		<a href="/" title="início" id="logo">
+			<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
 		</a>
-		<a href="/vagas/busca">busca de vagas</a>
-		<a href="/profissionais/busca">busca de profissionais</a>
-	</div>
+			
+		<div id="menu">
+			{% block menu %}
+			<a href="/vagas/busca">vagas</a>
+			<a href="/profissionais/busca">profissionais</a>
+			{% endblock %}
+		</div>
+		
 	
-	<div id="login">
-		{% if user.is_authenticated %}
-			Olá, {{ user.first_name }}. <a href="/logout">sair</a>
-		{% else %}
-			<a href="{{ LOGIN_URL }}">entrar</a>
-		{% endif %}
-	</div>
-	
-	
-	
-	
+		
+		<div id="login">
+			{% if user.is_authenticated %}
+				Olá, {{ user.first_name }}. <a href="/logout">sair</a>
+			{% else %}
+				<a href="{{ LOGIN_URL }}">entrar</a>
+			{% endif %}
+		</div>
 	
 	
 	<div id="content">
-		 {% block content %}{% endblock %}
+		 {% block content %} {% endblock %}
 	</div>
 	
 	<div id="ajax-request">
@@ -43,6 +50,7 @@
 			<img src="{{ STATIC_URL }}img/ajax-request-cancel.png" id="ajax-request-cancel" alt="" title="cancelar requisição" />
 		</div>
 	</div>
-
+	
+	</div>
 </body>
 </html>

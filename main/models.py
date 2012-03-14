@@ -56,3 +56,12 @@ class Resume(models.Model):
 	
 	def __unicode__(self):
 		return self.publisher.user.username
+
+class State(models.Model):
+	name = models.CharField(max_length=75)
+	abbreviation = models.CharField(max_length=2)
+
+
+class City(models.Model):
+	state = models.ForeignKey(State)
+	name = models.CharField(max_length=100)

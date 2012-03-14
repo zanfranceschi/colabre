@@ -11,3 +11,27 @@ def job_titles_suggestion(request):
 		set = cursor.fetchall()[:10]
 		return JsonResponse(set)
 	return HttpResponse()
+	
+def cities_suggestion(request):
+	if request.GET.__contains__('term'):
+		q = "%{0}%".format(request.GET['term'])
+		cursor = connection.cursor()
+		cursor.execute("select name from main_city where name like %s group by name order by name asc", [q])
+		set = cursor.fetchall()[:10]
+		return JsonResponse(set)
+	return HttpResponse()
+
+def cities_by_state(request, state):
+	if request.GET.__contains__('term'):
+		city = "%{0}%".format(request.GET['term'])
+		cursor = connection.cursor()
+		cursor.execute("select city from main_location where state = %s and city like %s group by city order by city asc", [state, city])
+		set = cursor.fetchall()[:10]
+		return JsonResponse(set)
+	return HttpResponse()
+
+def states(request):
+	cursor = connection.cursor()
+	cursor.execute("select abbreviation from main_state order by abbreviation asc")
+	set = cursor.fetchall()
+	return JsonResponse(set)

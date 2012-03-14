@@ -88,26 +88,14 @@ def vagas_busca_resultado(request):
 								  Q(title__icontains = term) | Q(description__icontains = term),
 								  Q(city__icontains = location) | Q(state__icontains = location)
 								).order_by("-published_at")[:1000]
-		'''print "\n\n\n\n\n"
-		print(str(Job.objects.filter(
-								  Q(title__icontains = term)
-								| Q(description__icontains = term),
-								#| Q(company__name__istartswith = term),
-								  #Q(published_at >= date_from),
-								  Q(city__icontains = location) | Q(state__icontains = location)
-								).query))
-		'''
 		data = {
 			'list': list
 		}
 		return render(request, 'partial/jobs-search-result.html', data)
 
 def vagas_busca(request):
-	if request.GET:
-		data = { 'data' : 'OK' }
-	else:
-		data = { 'data' : 'N.A.' }
-
+	states = State.objects.all()
+	data = { 'states' : states }
 	return render(request, 'jobs-search.html', data)
 
 def detail(request, job_id):

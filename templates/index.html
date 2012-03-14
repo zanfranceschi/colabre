@@ -1,21 +1,20 @@
-﻿{% extends "_base.html" %}
-
-{% block title %}- listagem de vagas{% endblock %}
+{% extends "_base.html" %}
 
 {% block content %}
 
-<h2>{{ test }}</h2>
+<select multiple="multiple" style="width: 300px;">
+	<option>ajsd hajsdh jaskhd </option>
+	<option>ajsd hajsdh jaskhd </option>
+	<option>ajsd hajsdh jaskhd </option>
+	<option>ajsd hajsdh jaskhd </option>
+	<option>ajsd hajsdh jaskhd </option>
+	<option>ajsd hajsdh jaskhd </option>
+</select>
 
-{% if list %}
-    <ul>
-    {% for job in list %}
-        <li><a href="/jobs/{{ job.id }}/">{{ job.title }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Sem vagas...</p>
-{% endif %}
+<script type="text/javascript">
+	$(function(){
+		$("select").chosen();
+	});
+</script>
 
-
-
-{% endblock %}
+{% endblock content %}
