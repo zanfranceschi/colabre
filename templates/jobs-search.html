@@ -9,6 +9,9 @@
 				<option value="{{ state.abbreviation }}">{{ state.abbreviation }}</option>
 			{% endfor %}
 		</select>
+		
+		<br /><br />
+		
 		<select id="city" class="chosen" multiple="multiple" style="width: 300px; height: 40px;">
 			{% for state in states %}
 				<option value="{{ state.abbreviation }}">{{ state.abbreviation }}</option>
