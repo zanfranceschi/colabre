@@ -1,0 +1,57 @@
+﻿{% extends "_base.html" %}
+
+{% block content %}
+
+<h1>Cadastro de usuário</h1>
+
+<form action="/registrar/submeter/" method="post" class="form">
+	{% csrf_token %}
+<fieldset>
+	<legend>Acesso</legend>
+	
+	<div class="mandatory">
+		<label for="">Usuário desejado:</label>
+		<input type="text" name="username" />
+	</div>
+	<div class="mandatory">
+		<label for="">Senha:</label>
+		<input type="password" name="password" />
+	</div>
+	<div class="mandatory">
+		<label for="">Confirme a senha:</label>
+		<input type="password" name="re-password" />
+	</div>
+</fieldset>
+
+<fieldset>
+	<legend>Informações Pessoais</legend>
+	<div class="mandatory">
+		<label for="">Nome:</label>
+		<input type="text" name="firstname" />	
+	</div>
+	<div class="mandatory">
+		<label for="">Sobrenome:</label>
+		<input type="text" name="lastname" />
+	</div>
+	<div class="mandatory">
+		<label for="">Email:</label>
+		<input type="text" name="email" />	
+	</div>
+	<div class="mandatory">
+		<label for="">Confirme o email:</label>
+		<input type="text" name="re-email" />	
+	</div>
+</fieldset>
+	
+	<input type="submit" value="registrar" />
+</form>
+
+<p>
+	{% if submited %}
+		Acesse seu email para ativar todas as funcionalidades do Colabre.<br />
+		Se não receber seu email dentro de alguns minutos, use o código <input readonly="readonly" type="text" value="{{ uuid }}" style="padding: 3px; width: 300px; text-align: center; font-family: monospace; font-weight: bold; background: #eee; border: 1px solid #888;"> para tentar novamente ou alterar o email do cadastro. 
+		É importante guardar esse código até que receba o email de ativação do seu cadastro..
+	{% endif %}
+</p>
+
+{% endblock %}

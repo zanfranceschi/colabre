@@ -8,16 +8,21 @@ if HOST == 'http7' or HOST == 'ssh':
 	DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'colabre',                 	# Or path to database file if using sqlite3.
+			'NAME': 'zanfranceschi_colabre',                 	# Or path to database file if using sqlite3.
 			'USER': 'zanfranceschi',                      	# Not used with sqlite3.
-			'PASSWORD': '',                  	# Not used with sqlite3.
-			'HOST': '',                      	# Set to empty string for localhost. Not used with sqlite3.
+			'PASSWORD': 'frazan*963',                  	# Not used with sqlite3.
+			'HOST': 'mysql.alwaysdata.com',                      	# Set to empty string for localhost. Not used with sqlite3.
 			'PORT': 3306,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
-	STATIC_ROOT = '/home/zanfranceschi/zanfranceschi/interface/static'
-	STATICFILES_DIRS = ('/home/zanfranceschi/zanfranceschi/interface/static',)
-	TEMPLATE_DIRS = ('/home/zanfranceschi/zanfranceschi/interface/templates',)
+	STATIC_ROOT = '/home/zanfranceschi/www/colabre/public'
+	STATICFILES_DIRS = ('/home/zanfranceschi/www/colabre/public',)
+	TEMPLATE_DIRS = ('/home/zanfranceschi/www/colabre/templates',)
+	EMAIL_HOST = ''
+	EMAIL_HOST_USER = ''
+	EMAIL_HOST_PASSWORD = ''
+	#EMAIL_PORT = 587
+	#EMAIL_USE_TLS = True
 # localhost
 else:
 	DATABASES = {
@@ -30,14 +35,20 @@ else:
 			'PORT': 3306,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
-	STATIC_ROOT = 'D:\Projects\Colabre\svn\trunk\interface\static'
-	STATICFILES_DIRS = ('D:/Projects/Colabre/svn/trunk/interface/static',)
-	TEMPLATE_DIRS = ('D:/Projects/Colabre/svn/trunk/interface/templates',)
-
+	STATIC_ROOT = 'D:\Projects\Colabre\svn\trunk\public'
+	STATICFILES_DIRS = ('D:/Projects/Colabre/svn/trunk/public',)
+	TEMPLATE_DIRS = ('D:/Projects/Colabre/svn/trunk/templates',)
+	EMAIL_HOST = ''
+	EMAIL_HOST_USER = ''
+	EMAIL_HOST_PASSWORD = ''
+	EMAIL_PORT = 587
+	EMAIL_USE_TLS = True
 
 ADMINS = (
 		# ('Your Name', 'your_email@example.com'),
 )
+
+AUTH_PROFILE_MODULE = 'main.ColabreUser'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 MANAGERS = ADMINS
@@ -78,6 +89,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	'django.core.context_processors.static',
 	'django.contrib.auth.context_processors.auth',
 	'django.contrib.messages.context_processors.messages',
+	'constants.constants_processor'
 )
 INSTALLED_APPS = (
 	'django.contrib.auth',
@@ -90,7 +102,7 @@ INSTALLED_APPS = (
 	'main',
 	#'tastypie',
 	'django.contrib.admin',
-	'django_mongodb_engine'
+	#'django_mongodb_engine'
 )
 LOGGING = {
 	'version': 1,

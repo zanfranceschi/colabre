@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -16,11 +16,22 @@
 </head>
 <body>
 	
+	<div id="login">
+		{% if user.is_authenticated %}
+			Olá, {{ user.first_name }}. <a href="/logout">sair</a>
+		{% else %}
+			<a href="{{ LOGIN_URL }}">entrar</a> ou 
+			<a href="/registrar/">registrar</a>
+		{% endif %}
+	</div>
+	
 	<div id="wrapper">
 	
 		<a href="/" title="início" id="logo">
 			<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
 		</a>
+			
+		
 			
 		<div id="menu">
 			{% block menu %}
@@ -31,13 +42,7 @@
 		
 	
 		
-		<div id="login">
-			{% if user.is_authenticated %}
-				Olá, {{ user.first_name }}. <a href="/logout">sair</a>
-			{% else %}
-				<a href="{{ LOGIN_URL }}">entrar</a>
-			{% endif %}
-		</div>
+		
 	
 	
 	<div id="content">

@@ -12,7 +12,25 @@ from django.db.models import Q
 from django.db import connection
 from django.utils.encoding import smart_unicode, smart_str
 from django.utils.http import urlquote
+import uuid
+from django.core.mail import send_mail
 
+def register(request):
+	return render(request, 'register.html')
+	
+def register_submit(request):
+	if not request.POST:
+		return register(request)
+	else:
+		send_mail('Colabre | Cadastro', 'Parabéns!!!.', 'no-reply@colabre.org',
+		[request.POST['email']], fail_silently=False)
+		return render(
+			request, 
+			'register.html', 
+			{
+				'submited': True, 
+				'uuid' : uuid.uuid4()
+			})
 
 def login_view(request):
 	return render(request, 'login.html')

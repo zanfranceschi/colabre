@@ -1,8 +1,9 @@
+
 body
 {
 	font-family: Arial, Sans-Serif;
 	font-size: 90%;
-	color: #222;
+	color: #555;
 	background: url('../img/body-bg.png');
 	margin: 0;
 	text-align: center;
@@ -31,7 +32,10 @@ img
 
 #login
 {
-	
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	border: 0px solid red;
 }
 
 #menu
@@ -41,14 +45,14 @@ img
 	top: 25px;
 }
 
-#menu a
+#menu a, #login a
 {
 	color: #999;
 	text-decoration: none;
 	margin-left: 20px;
 }
 
-#menu a:hover
+#menu a:hover, #login a:hover
 {
 	color: #333;
 }
@@ -146,4 +150,46 @@ img
 #ajax-request-cancel
 {
 	cursor: pointer;
+}
+
+
+form.form fieldset
+{
+	border-bottom: 0;
+	border-left: 0;
+	border-right: 0;
+	margin-bottom: 20px;
+}
+form.form legend
+{
+	font-weight: bold;
+	font-size: 120%;
+	padding: 5px;
+}
+form.form div
+{
+	border: 0px solid red;
+	overflow: auto;
+	margin-bottom: 5px;
+}
+form.form div.mandatory label
+{
+	font-weight: normal;
+}
+form.form div label
+{
+	display: block;
+	float: left;
+	width: 150px;
+	text-align: right;
+	border: 0px solid red;
+	padding-right: 10px;
+	padding-top: 5px;
+}
+form.form div input
+{
+	display: block;
+	float: left;
+	width: 150px;
+	margin-right: 5px;
 }
