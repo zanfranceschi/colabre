@@ -14,6 +14,8 @@ from django.utils.encoding import smart_unicode, smart_str
 from django.utils.http import urlquote
 import uuid
 from django.core.mail import send_mail
+from socket import gethostname
+
 
 def register(request):
 	return render(request, 'register.html')
@@ -61,7 +63,8 @@ def index(request):
 	list = Job.objects.all().order_by('-published_at')[:100]
 	data = {
         'list': list,
-		'test' : '1, 2, 3...'
+		'test' : '1, 2, 3...',
+		'host' : gethostname()
     }
 	return render(request, 'index.html', data)
 
