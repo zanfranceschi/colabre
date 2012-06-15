@@ -26,5 +26,6 @@ urlpatterns += patterns('main.aux_views',
 	url(r'^cidades/(\w{2})/$', 'cities_by_state'),
 	url(r'^cidades/sugestoes/$', 'cities_suggestion'),
 	url(r'^estados/$', 'states'),
+	url(r'^usuario/$', 'search_username'),
 	
 )

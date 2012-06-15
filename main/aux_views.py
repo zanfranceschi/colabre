@@ -11,6 +11,13 @@ def job_titles_suggestion(request):
 		set = cursor.fetchall()[:10]
 		return JsonResponse(set)
 	return HttpResponse()
+
+def search_username(request):
+	if request.GET.__contains__('username'):
+		username = request.GET['username']
+		result = User.objects.filter(username=username)[:1]
+		return JsonResponse(result)
+	return HttpResponse()
 	
 def cities_suggestion(request):
 	if request.GET.__contains__('term'):

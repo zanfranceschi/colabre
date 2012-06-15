@@ -24,14 +24,38 @@ def register_submit(request):
 	if not request.POST:
 		return register(request)
 	else:
-		send_mail('Colabre | Cadastro', 'Parabéns!!!.', 'no-reply@colabre.org',
-		[request.POST['email']], fail_silently=False)
+		# register new user!
+		new_user = User()
+		
+		username = request.POST["username"]
+		email = request.POST["email"]
+		password = request.POST["password"]
+		
+		new_user.is_superuser = False
+		new_user.is_staff = False
+		new_user.is_active = True
+		new_user.username = new_user.first_name = username
+		new_user.email = email
+		new_user.set_password(password)
+		new_user.save()
+
+		new_colabre_user = ColabreUser()
+		new_colabre_user.user = new_user
+		new_colabre_user.save()
+		
+		user = authenticate(username=new_user.username, password=password)
+		
+		if user is not None:
+			login(request, user)
+		
+		#send_mail('Colabre | Registro', 'Parabéns!!!.', 'no-reply@colabre.org', [request.POST['email']], fail_silently=False)
 		return render(
 			request, 
 			'register.html', 
 			{
 				'submited': True, 
-				'uuid' : uuid.uuid4()
+				'uuid' : uuid.uuid4(),
+				'new_user' : new_user
 			})
 
 def login_view(request):

@@ -1,57 +1,130 @@
-﻿{% extends "_base.html" %}
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<title>Colabre </title>
+	<link href="{{ STATIC_URL }}css/global.css" rel="stylesheet" type="text/css" />
+	<link href="{{ STATIC_URL }}css/chosen.css" rel="stylesheet" type="text/css" />
+	<link href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
+</head>
+<body>
 
-{% block content %}
+<div id="wrapper">
 
-<h1>Cadastro de usuário</h1>
+<a href="/" title="início" id="logo">
+	<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
+</a>
 
-<form action="/registrar/submeter/" method="post" class="form">
+<div style="text-align: center;">
+<div style="text-align: left; width: 400px; margin: 50px auto;">
+
+<h2>Registre-se no Colabre!</h2>
+<p>
+	É muito rápido e você terá todos os benefícios do melhor lugar
+	para anunciar e procurar vagas de emprego.
+</p>
+
+<form action="/registrar/submeter/" method="post" class="form" id="form">
 	{% csrf_token %}
-<fieldset>
-	<legend>Acesso</legend>
-	
-	<div class="mandatory">
-		<label for="">Usuário desejado:</label>
-		<input type="text" name="username" />
-	</div>
-	<div class="mandatory">
-		<label for="">Senha:</label>
-		<input type="password" name="password" />
-	</div>
-	<div class="mandatory">
-		<label for="">Confirme a senha:</label>
-		<input type="password" name="re-password" />
-	</div>
-</fieldset>
 
-<fieldset>
-	<legend>Informações Pessoais</legend>
 	<div class="mandatory">
-		<label for="">Nome:</label>
-		<input type="text" name="firstname" />	
-	</div>
-	<div class="mandatory">
-		<label for="">Sobrenome:</label>
-		<input type="text" name="lastname" />
+		<label for="">Usuário:</label>
+		<input type="text" id="username" name="username" class="required" /><span id="u"></span>
 	</div>
 	<div class="mandatory">
 		<label for="">Email:</label>
-		<input type="text" name="email" />	
+		<input type="text" name="email" class="required" />	
 	</div>
 	<div class="mandatory">
-		<label for="">Confirme o email:</label>
-		<input type="text" name="re-email" />	
+		<label for="">Senha:</label>
+		<input type="password" name="password" class="required" />
 	</div>
-</fieldset>
-	
-	<input type="submit" value="registrar" />
+	<div class="mandatory">
+		<label for="">Confirme a senha:</label>
+		<input type="password" name="re_password" class="required" />
+	</div>
+	<div>
+		<label for=""></label>
+		<input type="submit" value="registrar" />
+	</div>
 </form>
-
+<script type="text/javascript">
+	$(function(){
+	
+		$("#username").keyup(function(){
+			$.ajax({
+				url : "/usuario/?username=" + $(this).val(),
+				method: 'get',
+				success: function(obj)
+				{
+					text = "disponível";
+					if (obj[0])
+					{
+						text = "indisponível";
+					}
+					$("#u").text(text);
+				}
+			});
+		});
+	
+		$("#form").validate({
+			rules: {
+				username: { 
+					required: true,
+					minlength: 2
+				},
+				email: {
+					required: true,
+					email: true
+				},
+				password: {
+					required: true,
+					minlength: 5
+				},
+				re_password: {
+					required: true,
+					minlength: 5,
+					equalTo: "#password"
+				}
+			},
+			messages: {
+				username: { 
+					required: "Informe o nome do usuário desejado",
+					minlength: "Entre com dois ou mais caracteres"
+				},
+				email: {
+					required: "Informe o seu email",
+					email: "Não parece ser um email válido"
+				},
+				password: "Entre com uma senha de no mínimo 5 dígitos",
+				re_password: {
+					required: "Entre com uma senha de no mínimo 5 dígitos",
+					minlength: "Entre com uma senha de no mínimo 5 dígitos",
+					equalTo: "As senhas não são iguais"
+				}
+			}
+		});
+	});
+</script>
+</div>
 <p>
 	{% if submited %}
+		Muito obrigado por ter se registrado conosco, <b>{{ new_user.first_name }}</b>!<br />
 		Acesse seu email para ativar todas as funcionalidades do Colabre.<br />
 		Se não receber seu email dentro de alguns minutos, use o código <input readonly="readonly" type="text" value="{{ uuid }}" style="padding: 3px; width: 300px; text-align: center; font-family: monospace; font-weight: bold; background: #eee; border: 1px solid #888;"> para tentar novamente ou alterar o email do cadastro. 
 		É importante guardar esse código até que receba o email de ativação do seu cadastro..
 	{% endif %}
 </p>
 
-{% endblock %}
+</div>
+</div>
+
+</body>
+</html>

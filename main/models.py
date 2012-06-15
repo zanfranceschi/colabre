@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class ColabreUser(models.Model):
 	user = models.ForeignKey(User, unique=True)
-	
+	email_verified = models.BooleanField(default=False)
 	def __unicode__(self):
 		return self.user.username
 
