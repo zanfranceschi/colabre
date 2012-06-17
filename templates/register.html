@@ -5,125 +5,157 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<title>Colabre </title>
 	<link href="{{ STATIC_URL }}css/global.css" rel="stylesheet" type="text/css" />
-	<link href="{{ STATIC_URL }}css/chosen.css" rel="stylesheet" type="text/css" />
-	<link href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
 </head>
 <body>
 
 <div id="wrapper">
 
-<a href="/" title="início" id="logo">
-	<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
-</a>
+	<a href="/" title="início" id="logo">
+		<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
+	</a>
 
-<div style="text-align: center;">
-<div style="text-align: left; width: 400px; margin: 50px auto;">
+	<div style="text-align: center;">
+		<div style="text-align: left; width: 350px; margin: 50px auto;">
+		
+			{% if not user.is_authenticated %}
+			
+			<h2>Registre-se no Colabre!</h2>
+			<p style="margin-bottom: 20px;">
+				É muito rápido e você terá todos os benefícios do melhor lugar
+				para anunciar e procurar vagas de emprego.
+			</p>
 
-<h2>Registre-se no Colabre!</h2>
-<p>
-	É muito rápido e você terá todos os benefícios do melhor lugar
-	para anunciar e procurar vagas de emprego.
-</p>
+			<form action="/registrar/submeter/" method="post" class="form" id="form">
+				{% csrf_token %}
 
-<form action="/registrar/submeter/" method="post" class="form" id="form">
-	{% csrf_token %}
-
-	<div class="mandatory">
-		<label for="">Usuário:</label>
-		<input type="text" id="username" name="username" class="required" /><span id="u"></span>
+				<div class="form-block" style="position: relative;">
+					<label for="username">Usuário</label>
+					<input type="text" id="username" name="username" />
+					<img id="username_info" style="position: absolute; right: 0; display: none;" />
+				</div>
+				<div class="form-block">
+					<label for="email">Email</label>
+					<input type="text" id="email" name="email" />	
+				</div>
+				<div class="form-block">
+					<label for="password">Senha</label>
+					<input type="password" id="password" name="password" />
+				</div>
+				<div class="form-block">
+					<label for="re_password">Confirme a senha</label>
+					<input type="password" name="re_password" id="re_password" />
+				</div>
+				<div class="form-block button-container">
+					<input type="submit" value="registrar" />
+				</div>
+			</form>
+			<script type="text/javascript">
+				$(function(){
+				
+					var username_info = $("#username_info");
+					
+					$.extend(username_info, {
+						showAvailable: function()
+						{
+							$(this).attr("src", "{{ STATIC_URL }}img/ok-icon.png");
+							//$(this).show();
+						},
+						showUnavailable: function()
+						{
+							$(this).attr("src", "{{ STATIC_URL }}img/error-icon.png");
+							//$(this).show();
+						}
+					});
+				
+					
+				
+					$("#username").blur(function(){
+					
+						_this = $("#username");
+						
+						if ($(this).val().length > 2)
+						{
+							$.ajax({
+								url : "/usuario/?username=" + $(this).val(),
+								method: 'get',
+								beforeSend: function()
+								{
+									
+								},
+								success: function(obj)
+								{
+									if (obj[0])
+									{
+										
+									}
+									else
+									{
+										
+									}
+								},
+								complete: function()
+								{
+									
+								}
+							});
+						}
+						else
+						{
+							username_info.hide();
+						}
+					});
+				
+					$("#form").validate({
+						success: function(label) {
+							label.css({"background" : "green"});
+						},
+						rules: {
+							username: { 
+								required: true,
+								minlength: 3
+							},
+							email: {
+								required: true,
+								email: true
+							},
+							password: {
+								required: true,
+								minlength: 5
+							},
+							re_password: {
+								equalTo: "#password"
+							}
+						},
+						messages: {
+							username: { 
+								required: "Informe o nome do usuário desejado",
+								minlength: "Entre com dois ou mais caracteres"
+							},
+							email: {
+								required: "Informe o seu email",
+								email: "Não parece ser um email válido"
+							},
+							password: "Entre com uma senha de no mínimo 5 dígitos",
+							re_password: {
+								equalTo: "As senhas não são iguais"
+							}
+						}
+					});
+				});
+			</script>
+			{% endif %}
+			
+			{% if signedup %}
+				Muito obrigado por ter se registrado conosco, <b>{{ new_user.first_name }}</b>!<br />
+				Acesse seu email para confirmar seu cadastro &dash; isto é necessário para poder
+				usufruir de todos os nossos serviços. De qualquer forma, você já está cadastrado e
+				pode navegar pelo site.
+			{% endif %}
+			
+		</div>
 	</div>
-	<div class="mandatory">
-		<label for="">Email:</label>
-		<input type="text" name="email" class="required" />	
-	</div>
-	<div class="mandatory">
-		<label for="">Senha:</label>
-		<input type="password" name="password" class="required" />
-	</div>
-	<div class="mandatory">
-		<label for="">Confirme a senha:</label>
-		<input type="password" name="re_password" class="required" />
-	</div>
-	<div>
-		<label for=""></label>
-		<input type="submit" value="registrar" />
-	</div>
-</form>
-<script type="text/javascript">
-	$(function(){
-	
-		$("#username").keyup(function(){
-			$.ajax({
-				url : "/usuario/?username=" + $(this).val(),
-				method: 'get',
-				success: function(obj)
-				{
-					text = "disponível";
-					if (obj[0])
-					{
-						text = "indisponível";
-					}
-					$("#u").text(text);
-				}
-			});
-		});
-	
-		$("#form").validate({
-			rules: {
-				username: { 
-					required: true,
-					minlength: 2
-				},
-				email: {
-					required: true,
-					email: true
-				},
-				password: {
-					required: true,
-					minlength: 5
-				},
-				re_password: {
-					required: true,
-					minlength: 5,
-					equalTo: "#password"
-				}
-			},
-			messages: {
-				username: { 
-					required: "Informe o nome do usuário desejado",
-					minlength: "Entre com dois ou mais caracteres"
-				},
-				email: {
-					required: "Informe o seu email",
-					email: "Não parece ser um email válido"
-				},
-				password: "Entre com uma senha de no mínimo 5 dígitos",
-				re_password: {
-					required: "Entre com uma senha de no mínimo 5 dígitos",
-					minlength: "Entre com uma senha de no mínimo 5 dígitos",
-					equalTo: "As senhas não são iguais"
-				}
-			}
-		});
-	});
-</script>
-</div>
-<p>
-	{% if submited %}
-		Muito obrigado por ter se registrado conosco, <b>{{ new_user.first_name }}</b>!<br />
-		Acesse seu email para ativar todas as funcionalidades do Colabre.<br />
-		Se não receber seu email dentro de alguns minutos, use o código <input readonly="readonly" type="text" value="{{ uuid }}" style="padding: 3px; width: 300px; text-align: center; font-family: monospace; font-weight: bold; background: #eee; border: 1px solid #888;"> para tentar novamente ou alterar o email do cadastro. 
-		É importante guardar esse código até que receba o email de ativação do seu cadastro..
-	{% endif %}
-</p>
-
-</div>
 </div>
 
 </body>

@@ -15,7 +15,25 @@ from django.utils.http import urlquote
 import uuid
 from django.core.mail import send_mail
 from socket import gethostname
+import time
 
+def verify_registration(request, uuid):
+	try:
+		verification = ColabreUserVerification.objects.filter(uuid = uuid)[0]
+		if verification is None:
+			return register(request)
+		
+		verification.setVerified(uuid)
+		
+		user = authenticate(username=verification.user.user.username, password=verification.user.user.password)
+		
+		if user is not None:
+			login(request, user)
+			return render(request, 'index.html')
+		
+		return render(request, 'register.html')
+	except BusinessException as be:
+		return HttpResponse("Ocorreu um erro: %s" % be.message)
 
 def register(request):
 	return render(request, 'register.html')
@@ -43,20 +61,34 @@ def register_submit(request):
 		new_colabre_user.user = new_user
 		new_colabre_user.save()
 		
+		verification = ColabreUserVerification()
+		verification.user = new_colabre_user
+		verification.save()
+		
 		user = authenticate(username=new_user.username, password=password)
 		
 		if user is not None:
 			login(request, user)
 		
-		#send_mail('Colabre | Registro', 'Parabéns!!!.', 'no-reply@colabre.org', [request.POST['email']], fail_silently=False)
-		return render(
-			request, 
-			'register.html', 
-			{
-				'submited': True, 
-				'uuid' : uuid.uuid4(),
-				'new_user' : new_user
-			})
+			send_mail(
+				'Colabre | Registro', 
+'''Parabéns, %(name)s e obrigado por ter se registrado no Colabre!
+
+Por favor, confirme seu registro acessando o link a seguir:
+http://127.0.0.1:8000/registrar/verificar/%(uuid)s
+
+Equipe Colabre.org''' % {"name": new_user.first_name, "uuid": verification.uuid},
+				'no-reply@colabre.org', 
+				[new_user.email], 
+				fail_silently=False)
+
+			return render(
+				request, 
+				'register.html', 
+				{
+					'signedup': True,
+					'new_user' : new_user
+				})
 
 def login_view(request):
 	return render(request, 'login.html')

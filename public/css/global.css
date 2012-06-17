@@ -152,44 +152,46 @@ img
 	cursor: pointer;
 }
 
+form.form
+{
+	position: relative;
+}
 
-form.form fieldset
+form.form label
 {
-	border-bottom: 0;
-	border-left: 0;
-	border-right: 0;
-	margin-bottom: 20px;
-}
-form.form legend
-{
+	display: block;
+	cursor: pointer;
 	font-weight: bold;
-	font-size: 120%;
+}
+form.form input
+{
+	display: block;
+	width: 100%;
+}
+form.form input
+{
 	padding: 5px;
+	font-size: 120%;
+	border: 1px solid #ccc;
 }
-form.form div
+form .form-block
 {
-	border: 0px solid red;
-	overflow: auto;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 }
-form.form div.mandatory label
+form .button-container
 {
-	font-weight: normal;
-}
-form.form div label
-{
-	display: block;
-	float: left;
-	width: 150px;
+	margin-top: 20px;
 	text-align: right;
-	border: 0px solid red;
-	padding-right: 10px;
-	padding-top: 5px;
 }
-form.form div input
+
+form .button-container input
 {
-	display: block;
-	float: left;
-	width: 150px;
-	margin-right: 5px;
+	width: 100px;
+	display: inline;
+	padding: 5px;
+	font-size: 100%;
+	cursor: pointer;
 }
+
+
+

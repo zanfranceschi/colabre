@@ -2,6 +2,7 @@ from main.models import *
 from main.JsonResponse import JsonResponse
 from django.db import connection
 from django.http import HttpResponse
+import time
 
 def job_titles_suggestion(request):
 	if request.GET.__contains__('termo'):
@@ -14,6 +15,7 @@ def job_titles_suggestion(request):
 
 def search_username(request):
 	if request.GET.__contains__('username'):
+		time.sleep(2)
 		username = request.GET['username']
 		result = User.objects.filter(username=username)[:1]
 		return JsonResponse(result)

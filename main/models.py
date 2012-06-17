@@ -2,13 +2,36 @@
 from datetime import *
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
+
+class BusinessException(Exception):
+	pass
+
 
 class ColabreUser(models.Model):
 	user = models.ForeignKey(User, unique=True)
-	email_verified = models.BooleanField(default=False)
+	is_verified = models.BooleanField(default=False)
 	def __unicode__(self):
 		return self.user.username
 
+
+class ColabreUserVerification(models.Model):
+	user = models.ForeignKey(ColabreUser, unique=True)
+	uuid = models.CharField(max_length=36, default=str(uuid.uuid4()), unique=True)
+	date_verified = models.DateTimeField(null=True)
+	
+	def setVerified(self, uuid):
+		if uuid == self.uuid:
+			if self.user.is_verified:
+				raise BusinessException("Usuário já verificado.")
+			self.date_verified = datetime.now()
+			self.user.is_verified = True
+			self.save()
+			self.user.save()
+			return True
+		else:
+			return False
+		
 
 class Company(models.Model):
 	name = models.CharField(max_length=75)

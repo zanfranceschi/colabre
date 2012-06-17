@@ -6,11 +6,14 @@ admin.autodiscover()
 urlpatterns = patterns('main.views',
 	url(r'^x/$', 'x'),
 	url(r'^$', 'index'),
+	
 	url(r'^login/$', 'login_view'),
 	url(r'^logout/$', 'logout_view'),
 	url(r'^autenticar/$', 'autenticar'),
 	url(r'^registrar/$', 'register'),
 	url(r'^registrar/submeter/$', 'register_submit'),
+	url(r'^registrar/verificar/([\d\w\-]+)/$', 'verify_registration'),
+	
 	url(r'^empresas/$', 'empresas'),
 	url(r'^empresa/([\d\w]+)/$', 'empresa'),
 	url(r'^vagas/busca/resultado/$', 'vagas_busca_resultado'),
@@ -27,5 +30,6 @@ urlpatterns += patterns('main.aux_views',
 	url(r'^cidades/sugestoes/$', 'cities_suggestion'),
 	url(r'^estados/$', 'states'),
 	url(r'^usuario/$', 'search_username'),
+	
 	
 )
