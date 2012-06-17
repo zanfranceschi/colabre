@@ -1,7 +1,8 @@
 ﻿from django.http import HttpResponse
 from django.template import Context, loader
 from django.shortcuts import render
-from main.models import *
+from main.models.domain import *
+from main.models.security import *
 from django.http import *
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import authenticate, login, logout

@@ -17,9 +17,9 @@ def search_username(request):
 	if request.GET.__contains__('username'):
 		time.sleep(2)
 		username = request.GET['username']
-		result = User.objects.filter(username=username)[:1]
-		return JsonResponse(result)
-	return HttpResponse()
+		result = User.objects.filter(username=username)[0:1]
+		return HttpResponse(str(len(result) == 0).lower())
+	return HttpResponse("false")
 	
 def cities_suggestion(request):
 	if request.GET.__contains__('term'):

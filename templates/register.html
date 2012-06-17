@@ -10,20 +10,20 @@
 </head>
 <body>
 
-<div id="wrapper">
-
-	<a href="/" title="início" id="logo">
-		<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
-	</a>
+<div id="wrapper" style="padding: 0; margin-top: 50px;">
 
 	<div style="text-align: center;">
-		<div style="text-align: left; width: 350px; margin: 50px auto;">
+		<div style="text-align: left; width: 320px; margin: 10px auto; background: #fff; padding: 20px">
+			
+			<a href="/" title="início">
+				<img src="{{ STATIC_URL }}img/logo.png" alt="colabre logo" />
+			</a>
 		
 			{% if not user.is_authenticated %}
 			
-			<h2>Registre-se no Colabre!</h2>
+			<h2>Registre-se</h2>
 			<p style="margin-bottom: 20px;">
-				É muito rápido e você terá todos os benefícios do melhor lugar
+				É gratuito, rápido e você terá todos os benefícios do melhor lugar do Brasil
 				para anunciar e procurar vagas de emprego.
 			</p>
 
@@ -33,7 +33,8 @@
 				<div class="form-block" style="position: relative;">
 					<label for="username">Usuário</label>
 					<input type="text" id="username" name="username" />
-					<img id="username_info" style="position: absolute; right: 0; display: none;" />
+					<input type="hidden" id="username_availability" value="false" />
+					<img id="username_info" src="{{ STATIC_URL }}img/form_field-loading.gif" style="position: absolute; right: -10px; top: 22px; display: none;" />
 				</div>
 				<div class="form-block">
 					<label for="email">Email</label>
@@ -47,6 +48,10 @@
 					<label for="re_password">Confirme a senha</label>
 					<input type="password" name="re_password" id="re_password" />
 				</div>
+				<div class="form-block" style="font-size: 80%;">
+					Ao clicar em "registrar", você declara que leu e entendeu a <a href="#">política de privacidade</a>
+					e <a href="#">termos de uso</a>.
+				</div>
 				<div class="form-block button-container">
 					<input type="submit" value="registrar" />
 				</div>
@@ -54,67 +59,35 @@
 			<script type="text/javascript">
 				$(function(){
 				
+					$("#username").focus();
+				
 					var username_info = $("#username_info");
 					
 					$.extend(username_info, {
-						showAvailable: function()
+						showLoading: function()
 						{
-							$(this).attr("src", "{{ STATIC_URL }}img/ok-icon.png");
-							//$(this).show();
+							$(this).show();
+							$("#username").css({"width" : "285px"});
 						},
-						showUnavailable: function()
+						hideLoading: function()
 						{
-							$(this).attr("src", "{{ STATIC_URL }}img/error-icon.png");
-							//$(this).show();
+							$(this).hide();
+							$("#username").css({"width" : "97%"});
 						}
 					});
 				
-					
-				
-					$("#username").blur(function(){
-					
-						_this = $("#username");
-						
-						if ($(this).val().length > 2)
-						{
-							$.ajax({
-								url : "/usuario/?username=" + $(this).val(),
-								method: 'get',
-								beforeSend: function()
-								{
-									
-								},
-								success: function(obj)
-								{
-									if (obj[0])
-									{
-										
-									}
-									else
-									{
-										
-									}
-								},
-								complete: function()
-								{
-									
-								}
-							});
-						}
-						else
-						{
-							username_info.hide();
-						}
+					$("body").bind("ajaxSend", function(){
+						username_info.showLoading();
+					}).bind("ajaxComplete", function(){
+						username_info.hideLoading();
 					});
 				
 					$("#form").validate({
-						success: function(label) {
-							label.css({"background" : "green"});
-						},
 						rules: {
 							username: { 
 								required: true,
-								minlength: 3
+								minlength: 3,
+								remote: "/usuario/"
 							},
 							email: {
 								required: true,
@@ -131,7 +104,8 @@
 						messages: {
 							username: { 
 								required: "Informe o nome do usuário desejado",
-								minlength: "Entre com dois ou mais caracteres"
+								minlength: "Entre com dois ou mais caracteres",
+								remote: "Usuário indisponível"
 							},
 							email: {
 								required: "Informe o seu email",

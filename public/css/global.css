@@ -154,7 +154,7 @@ img
 
 form.form
 {
-	position: relative;
+	
 }
 
 form.form label
@@ -166,7 +166,7 @@ form.form label
 form.form input
 {
 	display: block;
-	width: 100%;
+	width: 97%;
 }
 form.form input
 {

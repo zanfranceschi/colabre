@@ -3,7 +3,7 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('main.views',
+urlpatterns = patterns('main.views.views',
 	url(r'^x/$', 'x'),
 	url(r'^$', 'index'),
 	
@@ -24,7 +24,11 @@ urlpatterns = patterns('main.views',
 	url(r'^admin/', include(admin.site.urls)),
 )
 
-urlpatterns += patterns('main.aux_views',
+urlpatterns += patterns('main.views.security',
+	url(r'^test/$', 'test'),
+)
+
+urlpatterns += patterns('main.views.aux_views',
 	url(r'^vagas/titulos/sugestoes/$', 'job_titles_suggestion'),
 	url(r'^cidades/(\w{2})/$', 'cities_by_state'),
 	url(r'^cidades/sugestoes/$', 'cities_suggestion'),

@@ -7,41 +7,26 @@ import uuid
 class BusinessException(Exception):
 	pass
 
-
 class ColabreUser(models.Model):
+	class Meta:
+		app_label = 'main'
 	user = models.ForeignKey(User, unique=True)
 	is_verified = models.BooleanField(default=False)
 	def __unicode__(self):
 		return self.user.username
-
-
-class ColabreUserVerification(models.Model):
-	user = models.ForeignKey(ColabreUser, unique=True)
-	uuid = models.CharField(max_length=36, default=str(uuid.uuid4()), unique=True)
-	date_verified = models.DateTimeField(null=True)
-	
-	def setVerified(self, uuid):
-		if uuid == self.uuid:
-			if self.user.is_verified:
-				raise BusinessException("Usuário já verificado.")
-			self.date_verified = datetime.now()
-			self.user.is_verified = True
-			self.save()
-			self.user.save()
-			return True
-		else:
-			return False
 		
-
 class Company(models.Model):
+	class Meta:
+		app_label = 'main'
 	name = models.CharField(max_length=75)
 	field = models.CharField(max_length=75)
 
 	def __unicode__(self):
 		return self.name
 
-
 class Job(models.Model):
+	class Meta:
+		app_label = 'main'
 	company = models.ForeignKey(Company)
 	publisher = models.ForeignKey(ColabreUser, unique=True)
 	
@@ -72,6 +57,8 @@ class Job(models.Model):
 
 
 class Resume(models.Model):
+	class Meta:
+		app_label = 'main'
 	publisher = models.ForeignKey(ColabreUser, unique=True)
 	description = models.TextField()
 	file = models.FileField(upload_to="/")
@@ -81,10 +68,14 @@ class Resume(models.Model):
 		return self.publisher.user.username
 
 class State(models.Model):
+	class Meta:
+		app_label = 'main'
 	name = models.CharField(max_length=75)
 	abbreviation = models.CharField(max_length=2)
 
 
 class City(models.Model):
+	class Meta:
+		app_label = 'main'
 	state = models.ForeignKey(State)
 	name = models.CharField(max_length=100)

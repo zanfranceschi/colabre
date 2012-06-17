@@ -1,4 +1,4 @@
-﻿from main.models import *
+﻿from main.models.domain import *
 from django.contrib import admin
 
 admin.site.register(Company)
