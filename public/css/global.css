@@ -176,11 +176,12 @@ form.form input
 }
 form .form-block
 {
-	margin-bottom: 10px;
+	margin-bottom: 25px;
 }
 form .button-container
 {
-	margin-top: 20px;
+	margin-top: 0px;
+	margin-bottom: 0;
 	text-align: right;
 }
 
@@ -193,5 +194,11 @@ form .button-container input
 	cursor: pointer;
 }
 
-
+form.form label.error
+{
+	color: red;
+	font-size: 75%;
+	font-weight: normal;
+	position: absolute;
+}
 

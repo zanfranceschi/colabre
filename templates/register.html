@@ -5,8 +5,14 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<title>Colabre </title>
 	<link href="{{ STATIC_URL }}css/global.css" rel="stylesheet" type="text/css" />
+	
+	<!--
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
+	-->
+	
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tools.min.js"></script>
+	
 </head>
 <body>
 
@@ -32,24 +38,24 @@
 
 				<div class="form-block" style="position: relative;">
 					<label for="username">Usuário</label>
-					<input type="text" id="username" name="username" />
+					<input type="text" id="username" name="username" required="required" pattern="[a-zA-Z0-9_\-]{3,15}" />
 					<input type="hidden" id="username_availability" value="false" />
 					<img id="username_info" src="{{ STATIC_URL }}img/form_field-loading.gif" style="position: absolute; right: -10px; top: 22px; display: none;" />
 				</div>
 				<div class="form-block">
 					<label for="email">Email</label>
-					<input type="text" id="email" name="email" />	
+					<input type="email" id="email" name="email" required="required" />	
 				</div>
 				<div class="form-block">
 					<label for="password">Senha</label>
-					<input type="password" id="password" name="password" />
+					<input type="password" id="password" name="password" minlength="6" required="required" />
 				</div>
 				<div class="form-block">
 					<label for="re_password">Confirme a senha</label>
-					<input type="password" name="re_password" id="re_password" />
+					<input type="password" name="re_password" id="re_password" required="required" data-equals="password" />
 				</div>
 				<div class="form-block" style="font-size: 80%;">
-					Ao clicar em "registrar", você declara que leu e entendeu a <a href="#">política de privacidade</a>
+					Ao clicar em "registrar", você declara que leu e entendeu nossa <a href="#">política de privacidade</a>
 					e <a href="#">termos de uso</a>.
 				</div>
 				<div class="form-block button-container">
@@ -60,7 +66,25 @@
 				$(function(){
 				
 					$("#username").focus();
+					
+					$.tools.validator.fn("[data-equals]", "Value not equal with the $1 field", function(input) {
+						var name = input.attr("data-equals"),
+						field = this.getInputs().filter("[name=" + name + "]");
+						return input.val() == field.val() ? true : [name];
+					});
+					
+					$.tools.validator.fn("[minlength]", function(input, value) {
+						var min = input.attr("minlength");
+
+						return value.length >= min ? true : {
+							en: "Please provide at least " +min+ " character" + (min > 1 ? "s" : ""),
+							fi: "Kent&auml;n minimipituus on " +min+ " merkki&auml;"
+						};
+					});
 				
+					$("#myform").validator();
+				
+					/*
 					var username_info = $("#username_info");
 					
 					$.extend(username_info, {
@@ -117,6 +141,7 @@
 							}
 						}
 					});
+					*/
 				});
 			</script>
 			{% endif %}
