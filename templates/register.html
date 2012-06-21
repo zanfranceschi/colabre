@@ -5,14 +5,8 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 	<title>Colabre </title>
 	<link href="{{ STATIC_URL }}css/global.css" rel="stylesheet" type="text/css" />
-	
-	<!--
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.validate.min.js"></script>
-	-->
-	
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tools.min.js"></script>
-	
+	<!--script src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script-->
 </head>
 <body>
 
@@ -82,66 +76,19 @@
 						};
 					});
 				
-					$("#myform").validator();
-				
-					/*
-					var username_info = $("#username_info");
-					
-					$.extend(username_info, {
-						showLoading: function()
-						{
-							$(this).show();
-							$("#username").css({"width" : "285px"});
-						},
-						hideLoading: function()
-						{
-							$(this).hide();
-							$("#username").css({"width" : "97%"});
-						}
+					$.tools.validator.localize("pt-BR", {
+					'*'				: 'Por favor, corrija este valor',
+					':email'  		: 'Por favor, entre com um email válido',
+					':number' 		: 'Por favor, entre com um número válido',
+					':url'			: 'Por favor, entre com um endereço válido',
+					'[max]'	 		: 'Por favor, entre com um valor menor que $1',
+					'[min]'	 		: 'Por favor, entre com um valor maior que $1',
+					'[required]' 	: 'Por favor, entre com um valor para este campo'
 					});
 				
-					$("body").bind("ajaxSend", function(){
-						username_info.showLoading();
-					}).bind("ajaxComplete", function(){
-						username_info.hideLoading();
+					$("#form").validator({
+						lang: 'pt-BR'
 					});
-				
-					$("#form").validate({
-						rules: {
-							username: { 
-								required: true,
-								minlength: 3,
-								remote: "/usuario/"
-							},
-							email: {
-								required: true,
-								email: true
-							},
-							password: {
-								required: true,
-								minlength: 5
-							},
-							re_password: {
-								equalTo: "#password"
-							}
-						},
-						messages: {
-							username: { 
-								required: "Informe o nome do usuário desejado",
-								minlength: "Entre com dois ou mais caracteres",
-								remote: "Usuário indisponível"
-							},
-							email: {
-								required: "Informe o seu email",
-								email: "Não parece ser um email válido"
-							},
-							password: "Entre com uma senha de no mínimo 5 dígitos",
-							re_password: {
-								equalTo: "As senhas não são iguais"
-							}
-						}
-					});
-					*/
 				});
 			</script>
 			{% endif %}
