@@ -27,17 +27,17 @@ if HOST == 'http7' or HOST == 'ssh':
 else:
 	DATABASES = {
 		'default': {
-			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'colabre',                 	# Or path to database file if using sqlite3.
+			'ENGINE': 'django.db.backends.sqlite3', 	# Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+			'NAME': 'colabre.db',                 	# Or path to database file if using sqlite3.
 			'USER': 'root',                      	# Not used with sqlite3.
 			'PASSWORD': 'root',                  	# Not used with sqlite3.
 			'HOST': 'localhost',                      	# Set to empty string for localhost. Not used with sqlite3.
 			'PORT': 3306,                      # Set to empty string for default. Not used with sqlite3.
 		}
 	}
-	STATIC_ROOT = 'D:\Projects\Colabre\svn\trunk\public'
-	STATICFILES_DIRS = ('D:/Projects/Colabre/svn/trunk/public',)
-	TEMPLATE_DIRS = ('D:/Projects/Colabre/svn/trunk/templates',)
+	STATIC_ROOT = 'C:\Users\fzanfranceschi\Desktop\colabre\svn\trunk\public'
+	STATICFILES_DIRS = ('C:/Users/fzanfranceschi/Desktop/colabre/svn/trunk/public',)
+	TEMPLATE_DIRS = ('C:/Users/fzanfranceschi/Desktop/colabre/svn/trunk/templates',)
 	EMAIL_HOST = ''
 	EMAIL_HOST_USER = ''
 	EMAIL_HOST_PASSWORD = ''
