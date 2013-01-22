@@ -1,0 +1,33 @@
+﻿{% extends "_base.html" %}
+
+{% block title %}Test{% endblock %}
+
+{% block body %}
+
+	<h1>Test</h1>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#mytags").tagit({
+				allowSpaces: true,
+				availableTags: [
+					'Analista de Sistemas',
+					'Arquiteto de Soluções',
+					'Administrador de Redes'
+				]
+			});
+		});
+	</script>
+
+	<form action="/test/" method="post">
+		{% csrf_token %}
+		<input type="text" id="mytags" name="tags" id="tags" value="{{ tags }}" />
+		<input type="submit" value="ok" />
+	</form>
+	
+	<div>
+		{{ tags }}
+	</div>
+	
+
+{% endblock %}

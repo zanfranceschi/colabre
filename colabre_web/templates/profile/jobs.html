@@ -1,0 +1,239 @@
+{% extends "_base.html" %}
+{% block title %}Minhas vagas{% endblock %}
+{% block extra_head %}
+<style type="text/css">
+	.job, #jobs-loading
+	{
+		border: 1px solid #ddd;
+		margin-bottom: 10px;
+		background: #eee;
+		padding: 5px;
+		position: relative;
+	}
+	.job-toggle-activation
+	{
+		cursor: pointer;
+	}
+	.job
+	{
+		color: #888;
+		font-size: 95%
+	}
+	.job p
+	{
+		white-space: pre-line;
+		border: 1px solid #ccc;
+		border-left: none;
+		border-right: none;
+		padding: 10px;
+		font-size: 90%;
+	}
+	.job .job-edit
+	{
+		position: absolute;
+		right: 40px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.job .job-del
+	{
+		position: absolute;
+		right: 5px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.job h3
+	{
+		margin-top: 0;
+	}
+	.job-published
+	{
+		background-color: #e2ece2;
+		color: #333;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	<h1 style="position: relative; margin-bottom: 10px;">
+		Minhas vagas
+		<a href="/usuario/vaga/criar/">
+			<img style="position: absolute; right: 0px; bottom: 0" src="{{ STATIC_URL }}img/add-icon.png" 
+				alt="" 
+				title="criar nova vaga" />
+		</a>
+	</h1>
+	
+	<div style="margin-bottom: 20px; margin-top: 0;">
+		<input type="text" title="Pressione <b><i>Enter</i></b> para buscar" id="search-jobs" name="search-jobs" style="width: 590px;" />
+		<div id="search-criterion" style="font-size: 80%; margin-top: 10px; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 5px;"></div>
+	</div>
+	
+	<div class="partial-container" id="jobs">
+		<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
+		Buscando vagas...
+	</div>
+	<div id="jobs-loading" style="display: none; text-align: center;">
+		<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+	</div>
+
+	<script type="text/javascript">
+		$(function(){
+			
+			var q = '';
+			
+			// Texto abaixo do input de busca
+			// Função apenas informativa
+			// Está sendo usada nas funções de busca
+			var showSearchCriterion = function()
+			{
+				count = $(".job").length;
+				
+				text = 'Exibindo ' + count + ' vagas';
+				
+				if (q.length > 0)
+					text += ' para o termo <b>' + q + '</b>';
+					
+				text += '.'
+				
+				$("#search-criterion").text(text);
+				html = $("#search-criterion").html();
+				html = html.replace('&lt;b&gt;', '<b>');
+				html = html.replace('&lt;/b&gt;', '</b>')
+				$("#search-criterion").html(html);
+			};
+			
+			/* 
+				Recuperação do id da vaga mais antiga para que 
+				não haja requisições após a última vaga ser 
+				carregada na página.
+			*/
+			var firstId = -1;
+			var LoadFirstId = function()
+			{
+				$.ajax({
+					url: '/parcial/usuario/vagas/primeiro-id/' + q,
+					type: 'get',
+					success: function(id)
+					{
+						firstId = eval(id)
+					}
+				});
+			};
+			LoadFirstId();
+			
+			/*
+				Busca de vagas
+			*/
+			$("#search-jobs").keyup(function(e){
+				
+				val = $(this).val();
+			
+				c = e.which ? e.which : e.keyCode;
+			
+				if (c == 13)
+				{
+					q = val;
+					
+					$.ajax({
+						url: "/parcial/usuario/vagas/buscar/" + val,
+						type: "get",
+						success: function(result)
+						{
+							$("#jobs").html(result);
+							//LoadFirstId();
+							showSearchCriterion();
+						},
+						error: function(a, b, error)
+						{
+							console.log(error);
+						}
+					});
+				}
+				else
+				{
+					q = '';
+				}
+			});
+			
+			
+			
+			/*
+				alternação de ativalção
+			*/
+			$(".job-toggle-activation").live("click", function(){
+				jobId = $(this).attr("job-id");
+				$.ajax({
+					url: "/usuario/vaga/alternar-ativacao/" + jobId,
+					type: 'get',
+					success: function(data)
+					{
+						$("#jobs .job[job-id=" + jobId + "]").replaceWith(data)
+					},
+					error: function(a, b, error)
+					{
+						//alert('Ocorreu um erro: ' + error);
+					}
+				});
+			});
+			
+			/*
+				Carregamento das 10 primeiras vagas.
+			*/
+			$.ajax({
+				url: '/parcial/usuario/vagas/listar/',
+				type: 'get',
+				success: function(result)
+				{
+					$("#jobs").html(result);
+					showSearchCriterion();
+				}
+			});
+
+
+			
+
+			/*
+				Carregamento de vagas sob demanda 
+				(quando o usuário rola a página para baixo).
+			*/
+			$(window).scroll(function(){
+				if($(window).scrollTop() == $(document).height() - $(window).height())
+				{
+					lastLoadedId = $('.job:last').attr('job-id');
+					
+					search_url = '/parcial/usuario/vagas/buscar-antes-de/' + lastLoadedId;
+
+					if (q.length > 0)
+						search_url += '/' + q
+
+					if (lastLoadedId > firstId)
+					{
+						$.ajax({
+							url: search_url,
+							type: 'get',
+							beforeSend: function()
+							{
+								$("#jobs-loading").fadeIn(250);
+							},
+							complete: function()
+							{
+								$("#jobs-loading").fadeOut(250);
+							},
+							success: function(data)
+							{
+								if (data)
+								{
+									$('#jobs:last').append(data);
+									showSearchCriterion();
+								}
+							}
+						});
+					}
+				}
+			}); 
+
+		});
+	</script>
+	
+{% endblock %}

@@ -1,0 +1,28 @@
+﻿{% extends "_base.html" %}
+
+{% block title %}Cadastre-se{% endblock %}
+
+{% block body %}
+
+	<h1>Cadastre-se</h1>
+	
+	<p>
+		Cadastre-se no Colabre! É rápido, fácil e você terá todos 
+		os benefícios do melhor serviço de busca e divulgação de empregos do Brasil.
+	</p>
+
+	<form action="/cadastro/" method="post">
+
+		
+		{% csrf_token %}
+		{% include "_form.html" %}
+
+		<div class="alert alert-info small">
+			Ao clicar em "cadastre-se", você declara que leu e entendeu nossa
+			<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
+		</div>
+		
+		<input type="submit" value="cadastre-se" class="btn-info" />
+	</form>
+
+{% endblock body %}

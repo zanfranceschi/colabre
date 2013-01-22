@@ -1,0 +1,10 @@
+{% extends "_base.html" %}
+{% block title %}Verificação necessária{% endblock %}
+{% block body %}
+	<h1>Verificação de email necessária</h1>
+	<p>
+		A operaçao que está tentando realizar só é possível
+		após confirmarmos seu email. Você pode entrar em seu <a href="{% url my_profile_index %}">perfil</a> 
+		e solicitar o reenvio de email para confirmação.
+	</p>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "_base.html" %}
+{% load bbcode %}
+{% block title %}Profissionais{% endblock %}
+{% block extra_head %}
+<style type="text/css">
+	.resume, #resumes-loading
+	{
+		border: 1px solid #ddd;
+		margin-bottom: 10px;
+		background: #eee;
+		padding: 5px;
+		position: relative;
+	}
+	.resume-toggle-activation
+	{
+		cursor: pointer;
+	}
+	.resume
+	{
+		color: #888;
+		font-size: 95%
+	}
+	.resume p
+	{
+		white-space: pre-line;
+		border: 1px solid #ccc;
+		border-left: none;
+		border-right: none;
+		padding: 10px;
+		font-size: 90%;
+	}
+	.resume .resume-edit
+	{
+		position: absolute;
+		right: 40px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.resume .resume-del
+	{
+		position: absolute;
+		right: 5px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.resume h3
+	{
+		margin-top: 0;
+	}
+	.resume-published
+	{
+		background-color: #e2ece2;
+		color: #333;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	<h1 style="position: relative; margin-bottom: 10px;">Busca de profissionais</h1>
+	
+	<div style="margin-bottom: 20px; margin-top: 0;">
+		<input type="text" title="Pressione <b><i>Enter</i></b> para buscar" id="search-resumes" name="search-resumes" style="width: 590px;" />
+	</div>
+	
+	<div class="partial-container" id="resumes">
+		<img id="resumes-loading-img" src="{{ STATIC_URL }}img/ajax-loader-small.gif" style="display: none;" alt="requisitando..." align="absmiddle" />
+		<span>Faça uma busca no campo acima.</span>
+	</div>
+	
+	<div id="resumes-loading" style="display: none; text-align: center;">
+		<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+	</div>
+	
+	<script type="text/javascript">
+		$(function(){
+
+			var lastId = function()
+			{
+				return lastEntityLoadedId(".resume", "resume-id");
+			}
+			
+			var search_url = function(page, term)
+			{
+				return '/profissionais/parcial/buscar/' + page + '/' + term ;
+			};
+			
+			var display_result = function(result)
+			{
+				$("#resumes-loading-img").hide();
+				$("#resumes").html(result);
+			};
+			
+			var display_result_append = function(result)
+			{
+				$("#resumes-loading-img").hide();
+				$("#resumes").append(result);
+			};
+			
+			var q = $("#search-resumes").val();
+			
+			//search(search_url(0, q), display_result);
+			
+			$("#search-resumes").keyup(function(e){
+				code = e.which ? e.which : e.keyCode;
+				q = $(this).val();
+				if (code == 13)
+				{
+					$("#resumes-loading-img").show();
+					search(search_url(0, q), display_result);
+				}
+			});
+
+			$(window).scroll(function(){
+				if($(window).scrollTop() == $(document).height() - $(window).height())
+				{
+					if ($("#stop_request_on_scroll").size() > 0)
+						return;
+					
+					search(search_url(lastId(), q), display_result_append);
+				}
+			});
+			
+			$("#search-resumes").focus();
+		});
+	</script>
+	
+{% endblock %}

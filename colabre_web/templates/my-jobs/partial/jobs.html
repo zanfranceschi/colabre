@@ -1,0 +1,17 @@
+{% for job in jobs %}
+	{% include 'my-jobs/partial/job-item.html' %}
+{% empty %}
+	{% if not exists %}
+		<div id="search-noresult">
+			{% if q %}
+				Não há vagas com o critério de busca <b>{{ q }}</b>.
+			{% else %}
+				Não há vagas para exibir.
+			{% endif %}
+				 Clique <a href="{% url my_jobs_create %}">aqui</a> para publicar uma nova vaga.
+		</div>
+	{% else %}
+		<!-- signal to stop sending requests -->
+		<div id="stop_request_on_scroll" style="display: none;" />
+	{% endif %}
+{% endfor %}

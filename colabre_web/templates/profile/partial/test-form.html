@@ -1,0 +1,45 @@
+<div id="form-container">
+{% if not submited %}
+<form action="/test/" method="post">
+	{% csrf_token %}
+	<input type="text" id="username" name="username" /> <input type="submit" value="ok" />
+</form>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		
+		$("form").live("submit", function(){
+			
+			_this = $(this);
+			
+			$.ajax({
+				method: _this.attr('method'),
+				url: _this.attr('action'),
+				data: _this.serialize(),
+				beforeSend: function()
+				{
+					$("input[type=submit]").attr('disabled', true);
+					$("input[type=submit]").css({'background' : '#ccc', 'cursor' : 'default' });
+					$("input[type=submit]").fadeTo('fast', 0.5);
+					_this.submit(function(){ return false; });
+				},
+				success: function(data)
+				{
+					$("#form-container").html(data);
+					
+				},
+				error: function()
+				{
+				
+				}
+			});
+			return false;
+		});
+	});
+</script>
+{% else %}
+<p>
+	{{ msg }}
+</p>
+{% endif %}
+</div>

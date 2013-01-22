@@ -1,0 +1,23 @@
+{% extends "_base.html" %}
+
+{% block title %}Ajuda com Cadastro{% endblock %}
+
+{% block body %}
+
+	<h1>Ajuda com seu Cadastro</h1>
+	
+	<p>
+		<b>{{ user.first_name }}</b>, <a href="/cadastro/reenviar-email-logado/">clique aqui</a> se deseja receber um email em <b>{{ user.email }}</b> para sua confirmação de cadastro.
+		
+	</p>
+	<div style="text-align: center; font-size: 250%; font-weight: bold;">-- Ou --</div>
+	<p>
+		Atualize seu email abaixo.
+	</p>
+	<form action="/cadastro/reenviar-email-atualizado" method="post">
+		{% csrf_token %}
+		<input type="text" name="email" id="email" style="font-size: 150%; vertical-align: middle;" />
+		<input type="submit" value="atualize meu email" class="btn-info" />
+	</form>
+
+{% endblock body %}

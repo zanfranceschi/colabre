@@ -1,0 +1,16 @@
+<div class="job{% if job.published %} job-published{% endif %}" job-id="{{ job.id }}">
+	
+	<h3><a href="{% url jobs_detail job.id %}">{{ job.job_title.name }}</a></h3>
+	{% if job.company %}<h4>{{ job.company }}</h4>{% endif %}
+	
+	<div class="job-date">publicada em {{ job.creation_date }}</div>
+	
+	<p>{{ job.description|truncatewords:30|removetags:"script link a img input form input select button"|safe }}</p>
+	
+	{% if job.contact_email or job.contact_phone %}
+		<div>
+			{{ job.contact_email|urlize }}<br />
+			{{ job.contact_phone }}
+		</div>
+	{% endif %}
+</div>

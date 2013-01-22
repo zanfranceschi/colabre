@@ -1,0 +1,8 @@
+<div id="footer">
+	&copy; 2012 Colabre - Todos os direitos reservados. 
+	<a href="/legal/#politica">política de privacidade</a> | <a href="/legal/#termos">termos de uso</a>
+	{% if not user.is_authenticated %}
+	| <a href="{% url registration_index %}">cadastre-se</a>
+	| <a href="{% url login %}">login</a>
+	{% endif %}
+</div>

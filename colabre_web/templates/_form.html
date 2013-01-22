@@ -1,0 +1,22 @@
+{# Include the hidden fields #}
+{% for hidden in form.hidden_fields %}
+{{ hidden }}
+{% endfor %}
+{# Include the visible fields #}
+{% for field in form.visible_fields %}
+	<div class="form-row">
+		{{ field.label_tag }}
+		{{ field }}
+		
+		<div>
+			<small>
+			{% if field.errors %}
+				<span class="error">{{ field.errors|striptags }}</span>
+			{% else %}
+				{{ field.help_text }}
+			{% endif %}
+			</small>
+		</div>
+		
+	</div>
+{% endfor %}

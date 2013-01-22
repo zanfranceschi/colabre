@@ -1,0 +1,15 @@
+﻿{% extends "_base.html" %}
+
+{% block title %}Recuperar Acesso{% endblock %}
+
+{% block body %}
+
+	<h1>Recuperar Acesso</h1>
+
+	<form action="{% url my_profile_retrieve_access %}" method="post">
+		{% csrf_token %}
+		{% include '_form.html' %}
+		<input type="submit" value="recuperar" class="btn-info" /> 
+	</form>
+
+{% endblock %}

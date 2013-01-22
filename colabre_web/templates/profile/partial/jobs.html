@@ -1,0 +1,13 @@
+{% load bbcode %}
+{% for job in jobs %}
+	{% include 'profile/partial/job-container.html' %}
+{% empty %}
+	<div>
+	{% if q %}
+		Não há vagas com o critério de busca <b>{{ q }}</b>.
+	{% else %}
+		Você não possui vagas publicadas.
+	{% endif %}
+		 Clique <a href="/usuario/vaga/criar/">aqui</a> para publicar uma nova vaga.
+	</div>
+{% endfor %}

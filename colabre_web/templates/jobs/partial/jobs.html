@@ -1,0 +1,25 @@
+{% if page = "1" %}
+	<div id="jobs-search-info"
+		style="padding: 5px; margin-bottom: 10px; font-size: small; text-align: center;">
+		{% if q %}
+			<b>{{ total_jobs }}</b> vagas encontradas para o termo '<b>{{ q }}</b>'.
+		{% else %}
+			<b>{{ total_jobs }}</b> vagas encontradas.
+		{% endif %}
+	</div>
+{% endif %}
+
+{% for job in jobs %}
+	{% include 'jobs/partial/job-item.html' %}
+{% empty %}
+	{% if is_last_page %}
+		<!-- signal to stop sending requests -->
+		<div id="stop_request_on_scroll" style="display: none;" />
+	{% endif %}
+	{% if not page = "1" %}
+		<div id="jobs-search-info"
+			style="background: #eee; border: 1px solid #ddd; padding: 7px; margin-bottom: 10px; font-size: small; text-align: center;">
+				Não há mais vagas.
+		</div>
+	{% endif %}
+{% endfor %}

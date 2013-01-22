@@ -1,0 +1,16 @@
+{% for resume in resumes %}
+	{% include 'resumes/partial/resume-item.html' %}
+{% empty %}
+	{% if not exists %}
+		<div>
+			{% if q %}
+				Não há profissionais com o critério de busca <b>{{ q }}</b>.
+			{% else %}
+				Não há profissionais para exibir.
+			{% endif %}
+		</div>
+	{% else %}
+		<!-- signal to stop sending requests -->
+		<div id="stop_request_on_scroll" style="display: none;" />
+	{% endif %}
+{% endfor %}

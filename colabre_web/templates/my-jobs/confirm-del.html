@@ -1,0 +1,22 @@
+{% extends "_base.html" %}
+
+{% block title %}Exclusão de Vaga{% endblock %}
+
+
+{% block body %}
+
+	<h1>Exclusão de Vaga</h1>
+
+	<p>
+		Confirma a exclusão da vaga <b>{{ job.title }}</b> com criação em <b>{{ job.creation_date }}</b>?
+		Note que esta operação não poderá ser desfeita.
+	</p>
+
+	<div style="text-align: center;">
+		<a href="{% url my_jobs_delete job.id%}" class="btn btn-cancel">Confirmar</a>
+	</div>
+	<div style="text-align: right; margin-top: 15px;">
+		<a href="{% url my_jobs_index %}" class="btn btn-info">Voltar</a>
+	</div>
+	
+{% endblock %}

@@ -1,0 +1,29 @@
+<div class="job{% if job.published %} job-published{% endif %}" job-id="{{ job.id }}">
+
+	{% if job.is_editable %}
+	<a href="/minhas-vagas/editar/{{ job.id }}" class="job-edit">
+		<img src="{{ STATIC_URL }}img/page_white_edit.png" alt="edição" title="editar" />
+	</a>
+	{% endif %}
+	<a href="/minhas-vagas/confirmar-exclusao/{{ job.id }}" class="job-del">
+		<img src="{{ STATIC_URL }}img/delete.png" alt="exclusão" title="excluir" />
+	</a>
+	
+	<h3>{% if job.is_editable %}<a href="/minhas-vagas/editar/{{ job.id }}">{{ job.job_title.name }}</a>{% else %}{{ job.job_title.name }}{% endif %}</h3>
+	{% if job.company %}<h4>{{ job.company }}</h4>{% endif %}
+	
+	<b>Vaga criada em {{ job.creation_date }}</b>
+	
+	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
+	
+	<table>
+		<tr>
+			<td class="label">email para contato:</td>
+			<td>{{ job.contact_email|urlize }}</td>
+		<tr>
+		<tr>
+			<td class="label">telefone para contato:</td>
+			<td>{{ job.contact_phone }}</td>
+		<tr>
+	</table>
+</div>

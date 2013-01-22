@@ -1,0 +1,6 @@
+{% load bbcode %}
+<div class="resume" resume-id="{{ resume.id }}">
+	<p>{{ resume.short_description }}</p>
+	<div>{{ resume.full_description|bbcode|safe }}</div>
+	<p>{{ resume.profile.user.first_name }}</p>
+</div>

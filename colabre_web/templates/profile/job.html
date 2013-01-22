@@ -1,0 +1,68 @@
+{% extends "_base.html" %}
+
+{% block title %}
+	{% if job %}
+		{{ job.title }}
+	{% else %}
+		Cadastro de Vaga
+	{% endif %}
+{% endblock %}
+
+{% block extra_head%}
+<link href="{{ STATIC_URL }}css/dateinput.css" rel="stylesheet" />
+{% endblock extra_head%}
+
+{% block body %}
+	<h1>Cadastro de Vaga</h1>
+	
+	<form action="{{ action }}" method="post">
+		{% csrf_token %}
+		{% include '_form.html' %}
+		<input type="submit" id="btn" value="salvar" class="btn-info" /> 
+	</form>
+	<!--script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB0Ya90qiwLkZMbap_NXz6xFM_B0QbNGBo&sensor=false"></script-->
+	<script type="text/javascript">
+	$(function(){
+	
+		/**
+		var geocoder;
+		var map;
+		
+		function initialize() 
+		{
+			geocoder = new google.maps.Geocoder();
+			var latlng = new google.maps.LatLng(-14.235004, -51.92527999999999);
+			var mapOptions = {
+				zoom: 4,
+				center: latlng,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+		};
+
+		function codeAddress(address) 
+		{
+			alert(address);
+			geocoder.geocode({ 'address': address}, function(results, status) 
+				{
+					if (status == google.maps.GeocoderStatus.OK) 
+					{
+						map.setCenter(results[0].geometry.location);
+						alert(map.getCenter());
+						var marker = new google.maps.Marker({
+							map: map,
+							position: results[0].geometry.location
+						});
+					}
+					else 
+					{
+						alert('Geocode was not successful for the following reason: ' + status);
+					}
+			});
+		};
+	
+		initialize();
+		**/		
+	});
+	</script>
+{% endblock %}

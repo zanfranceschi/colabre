@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+	<meta charset="utf-8" />
+	<title>Colabre | Erro de Sistema</title>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
+	<link href="{{ STATIC_URL }}css/colabre.css" rel="stylesheet" />
+</head>
+<body>
+
+{% include "_menu.html" %}
+
+<div id="content">
+	<h1>Erro no Sistema</h1>
+	<p>Nos desculpe. Fizemos alguma coisa errada e ocorreu um erro no sistema. Se lhe interessar, pode ver o que ocorreu no quadro abaixo.</p>
+	<p style="background: #df4b28; border: 1px solid #555; padding: 5px;">
+		<b>Erro: </b>
+			{% if messages %}
+			{% for message in messages %}
+				{% if message %}
+					{{ message|safe }}<br />
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+	</p>
+	<div style="text-align: right; margin-top: 40px;">
+		<a href="javascript:history.go(-1);" class="btn btn-info">Voltar</a>
+	</div>
+</div>
+
+{% include "_footer.html" %}
+
+</body>
+</html>

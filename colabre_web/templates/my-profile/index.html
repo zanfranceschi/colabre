@@ -1,0 +1,98 @@
+﻿{% extends "_base.html" %}
+
+{% block title %}Perfil{% endblock %}
+
+{% block body %}
+	<h1>Perfil</h1>	
+	<form action="{% url my_profile_index %}" method="post">
+		{% csrf_token %}
+		
+		<!-- form -->
+		{% for field in form.visible_fields %}
+		{% if field.html_name != 'password' %}
+			<div class="form-row">
+				{{ field.label_tag }}
+				{{ field }}
+				{% if field.html_name == 'email' %}
+					{% if not user.get_profile.is_verified %}
+			<img src="{{ STATIC_URL }}img/exclamation-icon.png" title="email não verificado" alt="" align="absmiddle" />
+			<a href="javascript:;" class="ajax-link small" id="resend-verification-email">reenviar email para confirmação</a>
+			<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" id="resend-verification-email-loading" style="display: none;" alt="requisitando..." align="absmiddle" />
+			<span class="small" id="resend-verification-email-reply" style="display: none">Email de confirmação enviado!</span>
+					{% else %}
+			<img src="{{ STATIC_URL }}img/accept-icon.png" title="email verificado" alt="email verificado" align="absmiddle" />
+					{% endif %}
+				{% endif %}
+				<div>
+					<small>
+					{% if field.errors %}
+						<span class="error">{{ field.errors|striptags }}</span>
+					{% else %}
+						{{ field.help_text }}
+					{% endif %}
+					</small>
+				</div>
+		
+			</div>
+		{% elif field.html_name == 'password' %}
+			<div id="password-id" class="form-row">
+				{{ field.label_tag }}
+				{{ field }} <a style="margin-left: 5px" class="small" href="{% url my_profile_change_password %}">alterar senha</a>
+				<div>
+					<small>
+					{% if field.errors %}
+						<span class="error">{{ field.errors|striptags }}</span>
+					{% else %}
+						{{ field.help_text }}
+					{% endif %}
+					</small>
+				</div>
+		
+			</div>
+		{% endif%}
+		{% endfor %}
+		<!-- /form -->
+
+		<input type="submit" value="salvar" class="btn-info" />
+	</form>
+	<script type="text/javascript">
+		$(function(){
+			$("#resend-verification-email").click(function(){
+				
+				error_message = 'Nos desculpe! Fizemos alguma coisa errado. Tente novamente mais tarde, por favor.';
+				
+				$.ajax({
+					type: 'get',
+					url: '{% url my_profile_resend_verification_email %}',
+					beforeSend: function()
+					{
+						$("#resend-verification-email-loading").show();
+						$("#resend-verification-email").hide();
+					},
+					complete: function()
+					{
+						$("#resend-verification-email-loading").hide();
+					},
+					success: function(code)
+					{
+						if (code != '1')
+						{
+							$("#resend-verification-email-reply").show()
+							$("#resend-verification-email-reply").text(error_message);
+						}
+						else
+						{
+							$("#resend-verification-email-reply").show()
+						}
+					},
+					error: function()
+					{
+						$("#resend-verification-email-reply").show()
+						$("#resend-verification-email-reply").text(error_message);
+					}
+				});
+			});
+		});
+	</script>
+
+{% endblock body %}

@@ -1,0 +1,120 @@
+{% extends "_base.html" %}
+{% load bbcode %}
+{% block title %}Minhas vagas{% endblock %}
+{% block extra_head %}
+<style type="text/css">
+	.filter-toggler
+	{
+		cursor: pointer;
+		float: right;
+		margin-right: 5px;
+		display: block;
+		width: 20px;
+	}
+	.job, #jobs-loading
+	{
+		border: 1px solid #ddd;
+		margin-bottom: 10px;
+		background: #eee;
+		padding: 5px;
+		position: relative;
+	}
+	.job-toggle-activation
+	{
+		cursor: pointer;
+	}
+	.job
+	{
+		color: #888;
+		font-size: 95%
+	}
+	.job p
+	{
+		white-space: pre-line;
+		border: 1px solid #ccc;
+		border-left: none;
+		border-right: none;
+		padding: 10px;
+		font-size: 90%;
+	}
+	.job .job-edit
+	{
+		position: absolute;
+		right: 40px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.job .job-del
+	{
+		position: absolute;
+		right: 5px;
+		top: 5px;
+		font-size: 80%;
+	}
+	.job h3
+	{
+		margin-top: 0;
+	}
+	.job-published
+	{
+		background-color: #e2ece2;
+		color: #333;
+	}
+	#filter label
+	{
+		display: inline;
+		font-weight: normal;
+	}
+	
+	
+</style>
+{% endblock %}
+
+{% block body %}
+<h1 style="position: relative; margin-bottom: 10px;">Detalhes da vaga</h1>
+	
+<div class="job{% if job.published %} job-published{% endif %}" job-id="{{ job.id }}">
+	
+	<h3><a href="{% url jobs_detail job.id %}">{{ job.job_title.name }}</a></h3>
+	{% if job.company %}<h4>{{ job.company }}</h4>{% endif %}
+	
+	<b>Vaga criada em {{ job.creation_date }}</b>
+	
+	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
+	
+	<table>
+		<tr>
+			<td class="label">email para contato:</td>
+			<td>{{ job.contact_email|urlize }}</td>
+		<tr>
+		<tr>
+			<td class="label">telefone para contato:</td>
+			<td>{{ job.contact_phone }}</td>
+		<tr>
+	</table>
+</div>
+
+<div id="chartdiv" style="height: 300px; width: 100%; "></div>
+	
+	<script type="text/javascript">
+		$(function(){
+			//$.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+			$.jqplot('chartdiv',
+				[[10, 20, 30, 20, 10], [1, 3, 5, 10, 7, 8]],
+				{
+					title: 'Detalhes da vaga',
+					series : [
+						{
+							lineWidth:2, 
+							markerOptions: { style: 'dimaond' }
+						},
+						{
+							lineWidth:2, 
+							markerOptions: { style: 'circle' }
+						}
+					]
+				});
+		});
+	</script>
+	
+{% endblock %}

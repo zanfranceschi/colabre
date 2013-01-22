@@ -1,0 +1,299 @@
+{% extends "_base.html" %}
+{% load bbcode %}
+{% block title %}Minhas vagas{% endblock %}
+{% block extra_head %}
+<style type="text/css">
+	.job, #jobs-loading
+	{
+		border: 1px solid #ddd;
+		margin-bottom: 10px;
+		background: #eee;
+		padding: 5px;
+		position: relative;
+	}
+	.job-toggle-activation
+	{
+		cursor: pointer;
+	}
+	.job
+	{
+		font-size: 95%
+		background-color: #eee;
+		border-color: #ddd;
+	}
+	.job h3
+	{
+		margin-top: 5px;
+	}
+	.job p
+	{
+		white-space: pre-line;
+		border: 1px solid #ccc;
+		border-left: none;
+		border-right: none;
+		padding: 10px;
+		font-size: 90%;
+	}
+	.job .job-date
+	{
+		font-size: small;
+		position: absolute;
+		top: 5px;
+		right: 5px;
+	}
+	.filter-element
+	{
+		overflow: auto; 
+		border: 0px solid #ddd; 
+		background: #eee; 
+		padding: 0 0 7px 0;
+	}
+	#filters-wrapper
+	{
+		margin-top: 35px;
+	}
+	.filter-element h4
+	{
+		margin: 0;
+		padding: 7px; 
+		background: #4672c1; 
+		color: #fff;
+	}
+	.filter-element-content
+	{
+		padding: 7px; 
+	}
+	.content-header-aligner
+	{
+		height: 50px;
+		padding-top: 10px;
+		position: relative;
+	}
+	.content-header-aligner h2
+	{
+		margin: 10px 0 10px 10px;
+		text-align: right;
+	}
+	.filter-toggler
+	{
+		cursor: pointer;
+		float: right;
+		margin-right: 5px;
+		display: block;
+		width: 20px;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	<div style="overflow: auto; border: 0px solid red;">
+		
+		<!-- left column -->
+		<div id="content-left" style="width: 29%; float: left; border: 0px solid red">
+			
+			<div class="content-header-aligner">
+				<h2>Buscar vagas</h2>
+			</div>
+			
+			<!-- filters -->
+			<div id="filters-wrapper" style="overflow: auto;">
+				<!-- period -->
+				<div id="filter-period" class="filter-element">
+					<h4>Período</h4>
+					<div class="filter-element-content">
+						Publicadas até <select id="period-days" 
+											style="width: 50px;"
+											class="filter-control">
+										{% for day in days %}
+											<option value="{{day}}">{{day}}</option>	
+										{% endfor %}
+										</select> dias atrás.
+					</div>
+				</div>
+				
+				<!-- segments -->
+				<div id="filter-segments" class="filter-element">
+					<h4>Segmentos/Cargos</h4>
+					<div class="filter-element-content">
+						{% for segment in segments %}
+						<div style="clear: both; overflow: auto;">
+							<input id="segment-{{ segment.id }}" 
+								type="checkbox" 
+								value="{{ segment.id }}" 
+								class="filter-control segment-item"  />
+
+							<label for="segment-{{ segment.id }}"
+								style="font-weight: bold; margin-bottom: 10px;" >{{ segment.name }}</label>
+							<a target="titles-{{ segment.id }}" class="filter-toggler" >◄</a>
+							
+							<div style="clear: both; margin: 5px 0 10px 0; display: none;" id="titles-{{ segment.id }}">
+							{% for job_title in job_titles %}
+								{% if job_title.segment = segment %}
+									<div style="border: 0px solid red; overflow: auto; margin-bottom: 5px; margin-left: 20px;">
+										<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ job_title.segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
+										<label style="display: block; float: left; width: 90%;" for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
+									</div>
+								{% endif %}
+							{% endfor %}
+							</div>
+						</div>
+					{% endfor %}
+					</div>
+				</div>
+				
+				<!-- locations -->
+				<div id="filter-locations" class="filter-element">
+					<h4>Cidades</h4>
+					<div class="filter-element-content">
+					{% for location in locations %}
+						<input class="filter-control location-item" id="location-{{ location.id }}" type="checkbox" value="{{ location.id }}" />
+						<label for="location-{{ location.id }}">{{ location }}</label><br />
+					{% endfor %}
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+		<!-- right column -->
+		<div id="content-right" style="width: 70%; float: right; border: 0px solid red">
+			
+			<!-- search input -->
+			<div class="content-header-aligner">
+				<input style="line-height: 32px; height: 32px; width: 84%; margin-right: 0;" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" style="border: 0; width: 14%;" type="button" class="btn btn-info" value="buscar" />	
+			</div>
+			
+			<!-- search result -->
+			<div id="jobs-loading-img" 
+				style="display: none; margin: 10px; font-size: small; text-align: center;">
+				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif"
+					alt="requisitando..." align="absmiddle" />
+				buscando
+			</div>
+			<div class="partial-container" id="jobs"></div>
+			<div id="jobs-loading" style="display: none; text-align: center;">
+				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(function(){
+
+			$(".filter-toggler").click(function(){
+				
+				target = $("#" + $(this).attr("target"));
+				
+				if (target.is(":visible"))
+				{
+					$(this).text("◄");
+					target.hide();
+				}
+				else
+				{
+					$(this).text("▼");
+					target.show();
+				}
+			});
+		
+			$(".segment-item").change(function(){
+				checked = $(this).attr("checked") ? true : false;
+				$("[job-title-segmentid=" + $(this).val() + "]").attr("checked", checked);
+			});
+			
+			$(".jot-title-item").change(function(){
+				segmentId = $(this).attr("job-title-segmentid");
+				checked = $(".jot-title-item:checked[job-title-segmentid=" + segmentId + "]").size() > 0;
+				$("#segment-" + segmentId).attr("checked", checked);
+			});
+		
+			var search_url = function(page, term)
+			{
+				return '/vagas/parcial/buscar/' + page + '/' + term ;
+			};
+			
+			var page = 1;
+			
+			// avoid resending the same request twice when page is scrolled all the way down
+			var lock = false;
+			
+			var display_result = function(result)
+			{
+				$("#jobs-loading-img").hide();
+				$("#jobs-loading").hide();
+				$("#jobs-search-info").show();
+				$("#jobs").html(result);
+				page++;
+			};
+			
+			var display_result_append = function(result)
+			{
+				$("#jobs-loading-img").hide();
+				$("#jobs-loading").hide();
+				$("#jobs-search-info").show();
+				$("#jobs").append(result);
+				page++;
+				lock = false;
+			};
+			
+			var q = $("#search-jobs").val();
+			
+			//search(search_url(0, q), display_result);
+			
+			var send_search = function(callback)
+			{
+				job_titles = [];
+				_locations = [];
+				$(".jot-title-item:checked").each(function(){
+					job_titles.push($(this).val());
+				});
+				$(".location-item:checked").each(function(){
+					_locations.push($(this).val());
+				});
+				url = "/vagas/parcial/buscar/" + q + "/" + job_titles.join("-") + "/" + _locations.join("-") + "/" + $("#period-days").val() + "/" + page + "/";
+				$("#jobs-loading-img").show();
+				$("#jobs-search-info").hide();
+				search(url, callback);
+			};
+			
+			$(".filter-control").bind('change select', function() { 
+				page = 1; 
+				send_search(display_result); 
+			});
+			
+			$("#btn-search").click(function(){
+				q = $("#search-jobs").val();
+				page = 1;
+				send_search(display_result);
+			});
+
+			$("#search-jobs").keyup(function(e){
+				code = e.which ? e.which : e.keyCode;
+				q = $(this).val();
+				if (code == 13)
+				{
+					page = 1;
+					send_search(display_result);
+				}
+			});
+
+			$(window).scroll(function(){
+				if(!lock && $(window).scrollTop() == $(document).height() - $(window).height())
+				{
+					if ($("#stop_request_on_scroll").size() > 0)
+						return;
+						
+					lock = true;
+					$("#jobs-loading").show();
+					send_search(display_result_append);
+				}
+			});
+			
+			$("#search-jobs").focus();
+			
+			send_search(display_result); 
+		});
+	</script>
+	
+{% endblock %}

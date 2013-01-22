@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+{% load truncatesmart %}
+{% load bbcode %}
+{% block title %}Currículos{% endblock %}
+{% block extra_head %}
+<style type="text/css">
+	.resume
+	{
+		color: #888;
+		font-size: 95%;
+		border: 0px solid red;
+		padding: 10px;
+		margin-bottom: 10px;
+	}
+	.resume p
+	{
+		white-space: pre-line;
+		border: 1px solid #ccc;
+		border-left: none;
+		border-right: none;
+		padding: 10px;
+		font-size: 90%;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	<h1>Currículos</h1>
+	
+	<p>Resultado da sua busca por '<b>{{ q }}</b>'</p>
+	
+	<div id="resumes" style="overflow: auto;">
+		{% for resume in resumes %}
+			<div class="resume">
+				<h3>{{ resume.profile.user.first_name }}</h3>
+				<p>{{ resume.full_description|truncatesmart:50|bbcode|safe }}</p>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

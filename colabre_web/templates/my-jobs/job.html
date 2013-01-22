@@ -1,0 +1,104 @@
+{% extends "_base.html" %}
+
+{% block title %}
+	{% if job %}
+		{{ job.title }}
+	{% else %}
+		Cadastro de Vaga
+	{% endif %}
+{% endblock %}
+
+{% block extra_head%}
+<link href="{{ STATIC_URL }}css/dateinput.css" rel="stylesheet" />
+{% endblock extra_head%}
+
+{% block body %}
+	<h1>Cadastro de Vaga</h1>
+	
+	<form action="{{ action }}" method="post">
+		{% csrf_token %}
+		{% include '_form.html' %}
+		<input type="submit" id="btn" value="salvar" class="btn-info" />
+		
+	</form>
+	<script type="text/javascript">
+		$(function() {
+		
+			$("#id_job_title_name").autocomplete({
+				minLength: 2,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/minhas-vagas/parcial/buscar-cargo/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+		
+			$("#id_segment_name").autocomplete({
+				minLength: 2,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/minhas-vagas/parcial/buscar-segmento/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+		
+			$("#id_workplace_political_location_name").autocomplete({
+				minLength: 2,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/minhas-vagas/parcial/buscar-cidade/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.extras['name'];
+							}));
+						}
+					});
+				}
+			});
+			
+			$("#id_company_name").autocomplete({
+				minLength: 2,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/minhas-vagas/parcial/buscar-empresa/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+		});
+    </script>
+{% endblock %}
