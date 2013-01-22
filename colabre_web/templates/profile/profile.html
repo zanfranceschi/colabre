@@ -59,6 +59,11 @@
 	<script type="text/javascript">
 		$(function(){
 			
+			$("#id_birthday").datepicker({
+				changeMonth: true,
+				changeYear: true
+			});
+			
 			// $("#resend-conf-email").click()
 			$("#resend-conf-email").click(function(){
 				$.ajax({

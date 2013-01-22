@@ -25,6 +25,8 @@ class UserProfile(models.Model):
 	user = models.ForeignKey(User, unique=True)
 	is_verified = models.BooleanField(default=False)
 	profile_type = models.CharField(max_length=2, choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')))
+	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
+	birthday = models.DateField(null=True)
 	#must_change_password = models.BooleanField(default=False)
 
 	def set_password(self, password):
@@ -84,7 +86,7 @@ class UserProfile(models.Model):
 		return new_user
 	
 	@staticmethod
-	def update_profile(user, first_name, last_name, email, profile_type):
+	def update_profile(user, first_name, last_name, email, profile_type, gender, birthday):
 		profile = UserProfile.objects.get(user=user)
 		profile.user.first_name = first_name
 		profile.user.last_name = last_name
@@ -99,6 +101,8 @@ class UserProfile(models.Model):
 		profile.user.email = email
 	
 		profile.profile_type = profile_type
+		profile.gender = gender
+		profile.birthday = birthday
 		profile.save()
 
 

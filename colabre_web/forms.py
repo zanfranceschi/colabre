@@ -78,6 +78,8 @@ class UserProfileForm(BaseForm):
 				'profile_type' : profile.profile_type,
 				'first_name' : profile.user.first_name,
 				'last_name' : profile.user.last_name,
+				'birthday' :  profile.birthday,
+				'gender' :  profile.gender,
 			
 			}
 			if profile.resume:
@@ -102,6 +104,17 @@ class UserProfileForm(BaseForm):
 		widget=forms.Select()
 	
 	)
+	gender = forms.ChoiceField(
+		required=True,
+		label='Sexo',
+		choices=(('U', 'Indefinido'),('M', 'Masculino'), ('F', 'Feminino')),
+		widget=forms.Select()
+	)
+	birthday = forms.DateField(
+		required=True,
+		label='Data do seu nascimento',
+		help_text='Entre com a data do seu nascimento. Note que esse serviço só pode ser usado por maiores de 16 anos.'
+	)
 	password = forms.CharField(
 				widget=forms.PasswordInput,
 				help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
@@ -114,6 +127,18 @@ class UserProfileForm(BaseForm):
 	def clean(self):
 		super(forms.Form, self).clean()
 		if self.is_valid():
+			from dateutil.relativedelta import relativedelta
+			current_date = date.today()
+			user_birthday = self.cleaned_data['birthday']
+			
+			diff = relativedelta(current_date, user_birthday)
+			
+			print >> sys.stderr, diff
+			#print >> sys.stderr, 
+			
+			if diff.years < 16:
+				self._errors['birthday'] = u'Você tem menos de 16 anos. Com isso, você não poderá usar os serviços do Colabre.'
+		
 			password = self.cleaned_data['password']
 			username = self.user.username
 			email = self.cleaned_data['email']
@@ -134,7 +159,9 @@ class UserProfileForm(BaseForm):
 			self.cleaned_data['first_name'],
 			self.cleaned_data['last_name'],
 			self.cleaned_data['email'],
-			self.cleaned_data['profile_type']
+			self.cleaned_data['profile_type'],
+			self.cleaned_data['gender'],
+			self.cleaned_data['birthday']
 		)
 	
 class LoginForm(BaseForm):

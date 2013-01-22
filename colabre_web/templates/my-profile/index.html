@@ -57,6 +57,15 @@
 	</form>
 	<script type="text/javascript">
 		$(function(){
+
+			$("#id_birthday").datepicker({
+				changeMonth: true,
+				changeYear: true,
+				dateFormat: "dd/mm/yy",
+				yearRange: "-85:-15",
+				autoSize: true
+			});
+		
 			$("#resend-verification-email").click(function(){
 				
 				error_message = 'Nos desculpe! Fizemos alguma coisa errado. Tente novamente mais tarde, por favor.';
