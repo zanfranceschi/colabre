@@ -253,6 +253,14 @@ input.required, textarea.required
 	background-color: #ebec95; /* amarelo */
 }
 
+input.ui-autocomplete-input
+{
+	background-image: url('../img/list-icon.png');
+	/*background-image: url('../img/text-list-bullets-icon.png');*/
+	background-repeat: no-repeat;
+	background-position: right center;
+}
+
 a.btn
 {
 	text-decoration: none;

@@ -2,6 +2,26 @@
 
 {% block title %}Perfil{% endblock %}
 
+{% block extra_head %}
+<style type="text/css">
+
+ul
+{
+	list-style-type: none;
+	padding: 0 0 0 20px;
+	margin-top: 3px;
+}
+li label
+{
+	font-weight: normal;
+}
+
+
+</style>
+{% endblock %}
+
+
+
 {% block body %}
 	<h1>Perfil</h1>	
 	<form action="{% url my_profile_index %}" method="post">
@@ -58,6 +78,8 @@
 	<script type="text/javascript">
 		$(function(){
 
+			$("#id_birthday").datepicker( $.datepicker.regional[ "pt-BR" ] );
+		
 			$("#id_birthday").datepicker({
 				changeMonth: true,
 				changeYear: true,

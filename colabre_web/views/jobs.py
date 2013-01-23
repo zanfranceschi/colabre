@@ -22,6 +22,7 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
 	url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
 	url(r'^parcial/buscar/$', 'partial_html_search'),
+	url(r'^parcial/detalhar/(\d+)/$', 'partial_details', name='jobs_partial_details'),
 	
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
 )
@@ -29,6 +30,12 @@ urlpatterns = patterns('colabre_web.views.jobs',
 def get_template_path(template):
 	return 'jobs/%s' % template
 
+@handle_exception
+def partial_details(request, id):
+	job = Job.objects.get(id=id)
+	time.sleep(2)
+	return render(request, get_template_path("partial/details.html"), { 'job' : job })
+	
 @handle_exception
 def detail(request, id):
 	job = Job.objects.get(id=id)

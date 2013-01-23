@@ -99,21 +99,20 @@ class UserProfileForm(BaseForm):
 	profile_type = forms.ChoiceField(
 		required=False,
 		label='Tipo de Perfil',
-		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o conteúdo para você.', 
-		choices=(('', '--- Selecione ---'),('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')),
-		widget=forms.Select()
-	
+		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você.', 
+		choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')),
+		widget=forms.RadioSelect()
 	)
 	gender = forms.ChoiceField(
-		required=True,
+		required=False,
 		label='Sexo',
-		choices=(('U', 'Indefinido'),('M', 'Masculino'), ('F', 'Feminino')),
-		widget=forms.Select()
+		choices=(('F', 'Feminino'), ('M', 'Masculino')),
+		widget=forms.RadioSelect()
 	)
 	birthday = forms.DateField(
 		required=True,
-		label='Data do seu nascimento',
-		help_text='Entre com a data do seu nascimento. Note que esse serviço só pode ser usado por maiores de 16 anos.'
+		label='Data do seu nascimento (dd/mm/aaaa)',
+		help_text='Note que o Colabre é apenas para maiores de 16 anos.'
 	)
 	password = forms.CharField(
 				widget=forms.PasswordInput,
@@ -220,7 +219,7 @@ class JobForm(ModelForm):
 		self.fields['segment_name'].label = u'Segmento da Vaga'
 		self.fields['segment_name'].help_text = u'Segmento da vaga. Ex.: Finanças, Tecnologia da Informação, Medicina, etc..'
 		self.fields['workplace_political_location_name'].label = u'Cidade'
-		self.fields['workplace_political_location_name'].help_text = u'Cidade da vaga.'
+		self.fields['workplace_political_location_name'].help_text = u'Cidade / Estado / País da vaga.'
 		self.fields['description'].label = u'Descrição da Vaga'
 		self.fields['description'].help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
 		self.fields['description'].widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70})

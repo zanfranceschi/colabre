@@ -3,6 +3,10 @@
 {% block title %}Minhas vagas{% endblock %}
 {% block extra_head %}
 <style type="text/css">
+	.job-details
+	{
+		display: none;
+	}
 	.job, #jobs-loading
 	{
 		border: 1px solid #ddd;
@@ -11,15 +15,16 @@
 		padding: 5px;
 		position: relative;
 	}
-	.job-toggle-activation
-	{
-		cursor: pointer;
-	}
 	.job
 	{
 		font-size: 95%
 		background-color: #eee;
 		border-color: #ddd;
+		cursor: pointer;
+	}
+	.job:hover
+	{
+		background-color: #fff;
 	}
 	.job h3
 	{
@@ -28,7 +33,7 @@
 	.job p
 	{
 		white-space: pre-line;
-		border: 1px solid #ccc;
+		border-top: 1px solid #ccc;
 		border-left: none;
 		border-right: none;
 		padding: 10px;
@@ -181,6 +186,54 @@
 	<script type="text/javascript">
 		$(function(){
 
+			$(".job-wrapper-summary").live('click', function(){
+			
+				// colocar esse trecho dentro do sucesso do ajax...
+				$(this).removeClass("job-wrapper-summary")
+					.addClass("job-wrapper-details");
+				
+				jobId = $(this).attr("job-id");
+				
+				_this = $(this);
+				
+				loader = _this.children(".job-details-loader");
+				
+				loader.show();
+				
+				$.ajax({
+					url: '/vagas/parcial/detalhar/' + jobId,
+					type: 'get',
+					success: function(data)
+					{
+						summary = _this.children("div.job-summary");
+						summary.hide();
+						
+						details = _this.children("div.job-details");
+						details.html(data);
+						details.show();
+						loader.hide();
+					}
+				});				
+			});
+			
+			$(".job-wrapper-details").live('click', function() {
+				_this = $(this);
+				
+				details = _this.children("div.job-details");
+				summary = _this.children("div.job-summary");
+				
+				if (details.is(":visible"))
+				{
+					details.hide();
+					summary.show();
+				}
+				else
+				{
+					details.show();
+					summary.hide();
+				}
+			});
+		
 			$(".filter-toggler").click(function(){
 				
 				target = $("#" + $(this).attr("target"));
