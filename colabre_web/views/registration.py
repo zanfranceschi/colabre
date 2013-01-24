@@ -15,8 +15,8 @@ def index(request):
 	if request.method == 'POST': # If the form has been submitted...
 		form = RegisterForm(request.POST) # A form bound to the POST data
 		if form.is_valid(): # All validation rules pass
-			new_user = form.save()
-			user = authenticate(username=new_user.username, password=form.cleaned_data['password'])
+			new_profile = form.save()
+			user = authenticate(username=new_profile.user.username, password=form.cleaned_data['password'])
 			#print >> sys.stderr, user
 			if user is not None:
 				login(request, user)

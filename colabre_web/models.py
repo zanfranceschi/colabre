@@ -83,7 +83,7 @@ class UserProfile(models.Model):
 		profile.save()
 		verification = UserProfileVerification.create(profile)
 		
-		return new_user
+		return profile
 	
 	@staticmethod
 	def update_profile(user, first_name, last_name, email, profile_type, gender, birthday):
@@ -170,19 +170,19 @@ class Resume(models.Model):
 		return self.short_description
 
 class Segment(models.Model):
-	name = models.CharField(max_length=45)
+	name = models.CharField(max_length=50)
 	def __unicode__(self):
 		return self.name
 
 class JobTitle(models.Model):
-	name = models.CharField(max_length=45)
+	name = models.CharField(max_length=50)
 	segment = models.ForeignKey(Segment)
 	
 	def __unicode__(self):
 		return "%s (%s)" % (self.name, self.segment.name)
 		
 class Company(models.Model):
-	name = models.CharField(max_length=45)
+	name = models.CharField(max_length=50)
 	def __unicode__(self):
 		return self.name
 
@@ -216,7 +216,7 @@ class Job(models.Model):
 	profile = models.ForeignKey(UserProfile)
 	
 	job_title = models.ForeignKey(JobTitle, null=True)
-	job_title_name = models.CharField(max_length=45)
+	job_title_name = models.CharField(max_length=50)
 	
 	workplace_political_location = models.ForeignKey(PoliticalLocation, null=True)
 	workplace_political_location_name = models.CharField(max_length=120, null=True)
@@ -225,16 +225,16 @@ class Job(models.Model):
 	description = models.TextField(max_length=5000)
 	
 	segment = models.ForeignKey(Segment, null=True)
-	segment_name = models.CharField(max_length=45)
+	segment_name = models.CharField(max_length=50)
 	
 	company = models.ForeignKey(Company, null=True)
-	company_name = models.CharField(max_length=45, null=True)
+	company_name = models.CharField(max_length=50, null=True)
 
 	contact_email = models.EmailField(max_length=254, null=True)
 	contact_phone = models.CharField(max_length=25, null=True)
-	contact_name = models.CharField(max_length=35, null=True)
+	contact_name = models.CharField(max_length=61, null=True)
 	
-	creation_date = models.DateTimeField(auto_now_add=True)
+	creation_date = models.DateTimeField(default=datetime.now())
 	published = models.BooleanField(default=True)
 
 	@staticmethod
@@ -296,6 +296,7 @@ class Job(models.Model):
 			segment = Segment(name=self.segment_name)
 			segment.save()
 			self.segment = segment
+			self.segment_name = segment.name
 			
 		try:
 			self.job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment__name=self.segment_name)
@@ -304,6 +305,7 @@ class Job(models.Model):
 			job_title = JobTitle(name=self.job_title_name, segment=self.segment)
 			job_title.save()
 			self.job_title = job_title
+			self.job_title_name = job_title.name
 		
 		try:
 			# IMPORTANT! check PoliticalLocation.name for correct format...
@@ -314,7 +316,7 @@ class Job(models.Model):
 			self.workplace_political_location = PoliticalLocation.objects.get(city_name=city_name, region_code=region_code, country_code=country_code)
 		except:
 			self.workplace_political_location = None
-
+			
 		try:
 			self.company = Company.objects.get(name=self.company_name.strip())
 			self.company_name = self.company.name
@@ -322,6 +324,7 @@ class Job(models.Model):
 			company = Company(name=self.company_name)
 			company.save()
 			self.company = company
+			self.company_name = company.name
 
 		super(Job, self).save(*args, **kwargs)
 	
@@ -376,7 +379,6 @@ class UserProfileVerification(models.Model):
 		profile = UserProfile.objects.get(user=user)
 		verification = UserProfileVerification.objects.get(profile=profile)
 		UserNotification.notify(profile, verification.uuid)
-
 
 class UserNotification:
 	

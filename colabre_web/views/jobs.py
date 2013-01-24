@@ -65,11 +65,11 @@ def index(request):
 	)
 	locations = PoliticalLocation.objects.filter(
 		id__in=(job.workplace_political_location.id for job in jobs)
-	).order_by("country_code").order_by("region_code").order_by("city_name")
+	).order_by("country_code", "region_code", "city_name")
 	job_titles = JobTitle.objects.filter(
 		id__in=(job.job_title.id for job in jobs)
 	)
-	days = [3, 7, 15, 30, 60]
+	days = [5, 15, 30, 60, 90, 120]
 	return render(request, get_template_path('index.html'), { 'days' : days, 'segments' :  segments, 'job_titles' : job_titles, 'locations' : locations })
 
 @handle_exception

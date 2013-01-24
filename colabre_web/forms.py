@@ -97,14 +97,14 @@ class UserProfileForm(BaseForm):
 				label='Email')
 
 	profile_type = forms.ChoiceField(
-		required=False,
+		required=True,
 		label='Tipo de Perfil',
 		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você.', 
 		choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')),
 		widget=forms.RadioSelect()
 	)
 	gender = forms.ChoiceField(
-		required=False,
+		required=True,
 		label='Sexo',
 		choices=(('F', 'Feminino'), ('M', 'Masculino')),
 		widget=forms.RadioSelect()

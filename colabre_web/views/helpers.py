@@ -38,9 +38,6 @@ def handle_exception(method):
 				except KeyError, e:
 					pass
 			'''
-			print >> sys.stderr, request.user.get_profile().gender
-			print >> sys.stderr, datetime.now()
-			print >> sys.stderr, request.META['PATH_INFO']
 			return method(request, *args)
 		except Exception, e:
 			print >> sys.stderr, "-" * 60
