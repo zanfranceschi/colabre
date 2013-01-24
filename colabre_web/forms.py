@@ -190,7 +190,8 @@ class JobForm(ModelForm):
 		segment								segment_name
 		company								company_name
 		contact_email						contact_phone
-		creation_date						published
+		contact_name						creation_date						
+		published
 	'''
 
 	class Meta:
@@ -203,6 +204,7 @@ class JobForm(ModelForm):
 			'workplace_political_location_name',
 			'workplace_location', 
 			#'published',
+			'contact_name',
 			'company_name', 
 			'contact_email', 
 			'contact_phone')
@@ -226,9 +228,11 @@ class JobForm(ModelForm):
 		self.fields['company_name'].label = u'Empresa'
 		self.fields['company_name'].help_text = u'Empresa para a qual o contratado irá trabalhar ou ficar alocado.'
 		self.fields['company_name'].required = False
-		self.fields['contact_email'].label = u'Email para Contato'
-		self.fields['contact_email'].required = False
-		self.fields['contact_phone'].label = u'Telefone para Contato'
+		self.fields['contact_name'].label = u'Nome do contato'
+		self.fields['contact_name'].required = False
+		self.fields['contact_email'].label = u'Email para contato'
+		self.fields['contact_email'].required = True
+		self.fields['contact_phone'].label = u'Telefone para contato'
 		self.fields['contact_phone'].required = False
 		self.fields['workplace_location'].label = u'Endereço'
 		self.fields['workplace_location'].help_text = u'Coloque o endereço completo ou parcial, apenas bairro, região, ou outra informação relevante.'
@@ -244,6 +248,7 @@ class JobForm(ModelForm):
 			if len(last_posted_jobs) > 0:
 				last_posted_job = last_posted_jobs[0]
 				self.initial.update({
+					'contact_name' : last_posted_job.contact_name,
 					'company_name' : last_posted_job.company_name,
 					'segment_name' : last_posted_job.segment_name,
 					'workplace_political_location_name' : last_posted_job.workplace_political_location_name,

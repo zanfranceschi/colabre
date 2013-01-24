@@ -232,6 +232,7 @@ class Job(models.Model):
 
 	contact_email = models.EmailField(max_length=254, null=True)
 	contact_phone = models.CharField(max_length=25, null=True)
+	contact_name = models.CharField(max_length=35, null=True)
 	
 	creation_date = models.DateTimeField(auto_now_add=True)
 	published = models.BooleanField(default=True)
@@ -297,7 +298,7 @@ class Job(models.Model):
 			self.segment = segment
 			
 		try:
-			self.job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment=self.segment)
+			self.job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment__name=self.segment_name)
 			self.job_title_name = self.job_title.name
 		except:
 			job_title = JobTitle(name=self.job_title_name, segment=self.segment)

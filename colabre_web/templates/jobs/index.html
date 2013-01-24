@@ -7,24 +7,27 @@
 	{
 		display: none;
 	}
+	.job
+	{
+		font-size: 100%
+		
+	}
 	.job, #jobs-loading
 	{
-		border: 1px solid #ddd;
-		margin-bottom: 10px;
+		border-top: 1px solid #ddd;
 		background: #eee;
+		margin-bottom: 0;
 		padding: 5px;
 		position: relative;
 	}
-	.job
+	.job:last-child
 	{
-		font-size: 95%
-		background-color: #eee;
-		border-color: #ddd;
-		cursor: pointer;
+		border-bottom: 1px solid #ddd;
 	}
 	.job:hover
 	{
 		background-color: #fff;
+		cursor: pointer;
 	}
 	.job h3
 	{
@@ -33,9 +36,6 @@
 	.job p
 	{
 		white-space: pre-line;
-		border-top: 1px solid #ccc;
-		border-left: none;
-		border-right: none;
 		padding: 10px;
 		font-size: 90%;
 	}
@@ -87,6 +87,10 @@
 		display: block;
 		width: 20px;
 	}
+	.job-wrapper-details
+	{
+		
+	}
 </style>
 {% endblock %}
 
@@ -94,7 +98,7 @@
 	<div style="overflow: auto; border: 0px solid red;">
 		
 		<!-- left column -->
-		<div id="content-left" style="width: 29%; float: left; border: 0px solid red">
+		<div id="content-left" style="width: 28%; float: left; border: 0px solid red">
 			
 			<div class="content-header-aligner">
 				<h2>Buscar vagas</h2>
@@ -162,7 +166,7 @@
 		</div>
 		
 		<!-- right column -->
-		<div id="content-right" style="width: 70%; float: right; border: 0px solid red">
+		<div id="content-right" style="margin-left: 1%; width: 68%; float: left; border: 0px solid red">
 			
 			<!-- search input -->
 			<div class="content-header-aligner">
@@ -186,52 +190,46 @@
 	<script type="text/javascript">
 		$(function(){
 
+			// load content and toggle visiblity
 			$(".job-wrapper-summary").live('click', function(){
 			
-				// colocar esse trecho dentro do sucesso do ajax...
-				$(this).removeClass("job-wrapper-summary")
-					.addClass("job-wrapper-details");
-				
 				jobId = $(this).attr("job-id");
 				
-				_this = $(this);
-				
-				loader = _this.children(".job-details-loader");
-				
-				loader.show();
-				
-				$.ajax({
+				var req = $.ajax({
 					url: '/vagas/parcial/detalhar/' + jobId,
 					type: 'get',
+					complete: function()
+					{
+						
+					},
 					success: function(data)
 					{
-						summary = _this.children("div.job-summary");
-						summary.hide();
-						
+						respJobId = req.getResponseHeader('job-id')
+						_this = $("div.job-wrapper-summary[job-id=" + respJobId + "]");
+					
 						details = _this.children("div.job-details");
+						
+						_this.removeClass("job-wrapper-summary")
+							.addClass("job-wrapper-details");
+						
+						details.empty();
 						details.html(data);
-						details.show();
-						loader.hide();
+						
+						details.show('fast');
+					},
+					error: function(a, b, error)
+					{
+						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
 					}
 				});				
 			});
 			
+			// toggle visibility after content is loaded...
 			$(".job-wrapper-details").live('click', function() {
-				_this = $(this);
 				
-				details = _this.children("div.job-details");
-				summary = _this.children("div.job-summary");
+				details = $(this).children("div.job-details");
+				details.toggle('fast');
 				
-				if (details.is(":visible"))
-				{
-					details.hide();
-					summary.show();
-				}
-				else
-				{
-					details.show();
-					summary.hide();
-				}
 			});
 		
 			$(".filter-toggler").click(function(){

@@ -1,23 +1,22 @@
-<h3><a href="{% url jobs_detail job.id %}">{{ job.job_title.name }}</a></h3>
-{% if job.company %}<h4>{{ job.company }}</h4>{% endif %}
+﻿<div job-details-id="{{ job.id }}">
+<fieldset>
+	<legend>Descrição da vaga</legend>
+	{% if job.company %}<h4 style="margin: 3px;">{{ job.company }}</h4>{% endif %}
+	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
+	
+	{% if job.contact_email or job.contact_phone %}
+	<div>
+		{% if job.contact_name %}contato: <b>{{ job.contact_name }}</b> / {% endif %}
+		{{ job.contact_email|urlize }}
+		{% if job.contact_email and job.contact_phone %} / {% endif %}
+		{% if job.contact_phone %}<b>{{ job.contact_phone }}</b>{% endif %}
+		
+	</div>
+	{% endif %}
+</fieldset>
 
-<b>Vaga criada em {{ job.creation_date }}</b>
-
-<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
-
-<table>
-	<tr>
-		<td class="label">email para contato:</td>
-		<td>{{ job.contact_email|urlize }}</td>
-	<tr>
-	<tr>
-		<td class="label">telefone para contato:</td>
-		<td>{{ job.contact_phone }}</td>
-	<tr>
-</table>
-
-<div id="chartdiv" style="height: 300px; width: 100%; "></div>
-
+<div id="chartdiv" style="display: none; height: 300px; width: 100%; "></div>
+</div>
 <script type="text/javascript">
 	$(function(){
 		//$.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);

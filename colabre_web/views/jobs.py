@@ -33,8 +33,9 @@ def get_template_path(template):
 @handle_exception
 def partial_details(request, id):
 	job = Job.objects.get(id=id)
-	time.sleep(2)
-	return render(request, get_template_path("partial/details.html"), { 'job' : job })
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
+	response['job-id'] = id
+	return response
 	
 @handle_exception
 def detail(request, id):
@@ -50,7 +51,7 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	locations_ids = None
 	if locations:
 		locations_ids = [int(n) for n in locations.split("-")]
-	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 5)
+	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 50)
 	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	
 @handle_exception
@@ -64,7 +65,7 @@ def index(request):
 	)
 	locations = PoliticalLocation.objects.filter(
 		id__in=(job.workplace_political_location.id for job in jobs)
-	)
+	).order_by("country_code").order_by("region_code").order_by("city_name")
 	job_titles = JobTitle.objects.filter(
 		id__in=(job.job_title.id for job in jobs)
 	)
