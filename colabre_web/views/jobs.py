@@ -27,6 +27,24 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
 )
 
+class Country:
+	@property
+	def code(self):
+		return self._code
+
+	@code.setter
+	def code(self, value):
+		self._code = value
+		
+	@property
+	def name(self):
+		return self._name
+
+	@name.setter
+	def name(self, value):
+		self._name = value
+
+
 def get_template_path(template):
 	return 'jobs/%s' % template
 
@@ -60,17 +78,24 @@ def index(request):
 	now = datetime.now()
 	ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=60)
 	jobs = Job.objects.filter(published=True, creation_date__gte=ref_datetime)
-	segments = Segment.objects.filter(
-		id__in=(job.segment.id for job in jobs)
+	q = segments = Segment.objects.filter(
+		id__in=(','.join(job.segment.id for job in jobs))
 	)
+	
+	print str(q.query)
+	
 	locations = PoliticalLocation.objects.filter(
 		id__in=(job.workplace_political_location.id for job in jobs)
-	).order_by("country_code", "region_code", "city_name")
-	job_titles = JobTitle.objects.filter(
-		id__in=(job.job_title.id for job in jobs)
-	)
-	days = [5, 15, 30, 60, 90, 120]
-	return render(request, get_template_path('index.html'), { 'days' : days, 'segments' :  segments, 'job_titles' : job_titles, 'locations' : locations })
+	).order_by("country_code", "region_code", "city_name")[:10]
+	
+	
+	countries = PoliticalLocation.objects.values('country_id', 'country_code').distinct()[:10]
+	regions = PoliticalLocation.objects.values('region_id', 'region_code').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
+	cities = PoliticalLocation.objects.values('country_id', 'region_id', 'city_id', 'city_name').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
+	
+	job_titles = None #JobTitle.objects.filter(id__in=(job.job_title.id for job in jobs))
+	days = [7, 15, 30, 60, 90]
+	return render(request, get_template_path('index.html'), { 'countries' : countries, 'regions' : regions, 'cities' : cities, 'days' : days, 'segments' :  segments, 'job_titles' : job_titles, 'locations' : locations })
 
 @handle_exception
 def partial_html_search(request, before_id=0, q=None):

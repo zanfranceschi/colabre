@@ -95,6 +95,14 @@
 {% endblock %}
 
 {% block body %}
+	
+	<div style="border: 1px solid red;">
+		{% for country in countries %}
+			{{ country.country_code }}
+		{% endfor %}
+	</div>
+
+
 	<div style="overflow: auto; border: 0px solid red;">
 		
 		<!-- left column -->

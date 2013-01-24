@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 	'colabre_web',
     'django.contrib.admin',
+	'south',
 )
 
 SERIALIZATION_MODULES = {
