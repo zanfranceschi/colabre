@@ -95,13 +95,6 @@
 {% endblock %}
 
 {% block body %}
-	
-	<div style="border: 1px solid red;">
-		{% for country in countries %}
-			{{ country.country_code }}
-		{% endfor %}
-	</div>
-
 
 	<div style="overflow: auto; border: 0px solid red;">
 		
@@ -145,9 +138,9 @@
 							
 							<div style="clear: both; margin: 5px 0 10px 0; display: none;" id="titles-{{ segment.id }}">
 							{% for job_title in job_titles %}
-								{% if job_title.segment = segment %}
+								{% if job_title.segment_id = segment.id %}
 									<div style="border: 0px solid red; overflow: auto; margin-bottom: 5px; margin-left: 20px;">
-										<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ job_title.segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
+										<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
 										<label style="display: block; float: left; width: 90%;" for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
 									</div>
 								{% endif %}

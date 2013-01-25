@@ -74,26 +74,23 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	
 @handle_exception
 def index(request):
-	# filter elements to load at view
-	now = datetime.now()
-	ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=60)
-	jobs = Job.objects.filter(published=True, creation_date__gte=ref_datetime)
-	q = segments = Segment.objects.filter(
-		id__in=(','.join(job.segment.id for job in jobs))
+	# jobs to show initially
+	jobs = Job.objects.filter(active=True)
+
+	segments = Segment.objects.filter(active=True).order_by("name")
+	job_titles = JobTitle.objects.values('id', 'name', 'segment_id').order_by("segment", "name")
+	
+	locations = PoliticalLocation.objects.raw(
+		" select * from colabre_web_politicallocation where "
+		" id in (select workplace_political_location_id from colabre_web_job where active = 1) "
+		" order by country_code, region_code, city_name "
 	)
 	
-	print str(q.query)
-	
-	locations = PoliticalLocation.objects.filter(
-		id__in=(job.workplace_political_location.id for job in jobs)
-	).order_by("country_code", "region_code", "city_name")[:10]
+	countries = None #PoliticalLocation.objects.values('country_id', 'country_code').distinct()[:10]
+	regions = None #PoliticalLocation.objects.values('region_id', 'region_code').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
+	cities = None #PoliticalLocation.objects.values('country_id', 'region_id', 'city_id', 'city_name').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
 	
 	
-	countries = PoliticalLocation.objects.values('country_id', 'country_code').distinct()[:10]
-	regions = PoliticalLocation.objects.values('region_id', 'region_code').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
-	cities = PoliticalLocation.objects.values('country_id', 'region_id', 'city_id', 'city_name').filter(id__in=(job.workplace_political_location.id for job in jobs)).distinct()[:10]
-	
-	job_titles = None #JobTitle.objects.filter(id__in=(job.job_title.id for job in jobs))
 	days = [7, 15, 30, 60, 90]
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'regions' : regions, 'cities' : cities, 'days' : days, 'segments' :  segments, 'job_titles' : job_titles, 'locations' : locations })
 

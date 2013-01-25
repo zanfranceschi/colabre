@@ -28,7 +28,7 @@ class UserProfile(models.Model):
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
 	birthday = models.DateField(null=True)
 	#must_change_password = models.BooleanField(default=False)
-
+	active = models.BooleanField(default=True)
 	def set_password(self, password):
 		self.user.set_password(password)
 		self.user.save()
@@ -42,7 +42,7 @@ class UserProfile(models.Model):
 			new_password = um.make_random_password(6, user.username)
 			user.set_password(new_password)
 			user.save()
-			UserNotification.notify_password_change(user, new_password)
+			UserNotification.getNotification().notify_password_change(user, new_password)
 			return True
 		except User.DoesNotExist:
 			return False
@@ -96,7 +96,7 @@ class UserProfile(models.Model):
 			verification = UserProfileVerification.objects.get(profile=profile)
 			verification.uuid = str(uuid.uuid4())
 			verification.save()
-			UserNotification.notify(profile, verification.uuid)
+			UserNotification.getNotification().notify(profile, verification.uuid)
 			profile.is_verified = False
 		profile.user.email = email
 	
@@ -120,7 +120,7 @@ class Resume(models.Model):
 	short_description = models.TextField(max_length=255)
 	full_description = models.TextField()
 	visible = models.BooleanField(default=True)
-	
+	active = models.BooleanField(default=True)
 	@staticmethod
 	def view_search_public(after_id, q, limit):
 		query_id = Q(id__lt=after_id)
@@ -170,19 +170,21 @@ class Resume(models.Model):
 		return self.short_description
 
 class Segment(models.Model):
-	name = models.CharField(max_length=50)
+	name = models.CharField(max_length=50, unique=True)
+	active = models.BooleanField(default=True)
 	def __unicode__(self):
 		return self.name
 
 class JobTitle(models.Model):
 	name = models.CharField(max_length=50)
 	segment = models.ForeignKey(Segment)
-	
+	active = models.BooleanField(default=True)
 	def __unicode__(self):
 		return "%s (%s)" % (self.name, self.segment.name)
 		
 class Company(models.Model):
-	name = models.CharField(max_length=50)
+	name = models.CharField(max_length=50, unique=True)
+	active = models.BooleanField(default=True)
 	def __unicode__(self):
 		return self.name
 
@@ -197,7 +199,9 @@ class PoliticalLocation(models.Model):
 	
 	city_id = models.IntegerField(unique=True)
 	city_name = models.CharField(max_length=60)
-
+	
+	active = models.BooleanField(default=True)
+	
 	def name(self):
 		return self.__unicode__()
 	
@@ -215,6 +219,7 @@ class Job(models.Model):
 
 	profile = models.ForeignKey(UserProfile)
 	
+	segment_name = models.CharField(max_length=50)
 	job_title = models.ForeignKey(JobTitle, null=True)
 	job_title_name = models.CharField(max_length=50)
 	
@@ -223,9 +228,6 @@ class Job(models.Model):
 	workplace_location = models.CharField(max_length=120, null=True)
 	
 	description = models.TextField(max_length=5000)
-	
-	segment = models.ForeignKey(Segment, null=True)
-	segment_name = models.CharField(max_length=50)
 	
 	company = models.ForeignKey(Company, null=True)
 	company_name = models.CharField(max_length=50, null=True)
@@ -236,6 +238,8 @@ class Job(models.Model):
 	
 	creation_date = models.DateTimeField(default=datetime.now())
 	published = models.BooleanField(default=True)
+	
+	active = models.BooleanField(default=True)
 
 	@staticmethod
 	def view_search_my_jobs(profile, after_id, q, limit):
@@ -289,24 +293,28 @@ class Job(models.Model):
 		return jobs, is_last_page, total_jobs
 		
 	def save(self, *args, **kwargs):
-		try:
-			self.segment = Segment.objects.get(name=self.segment_name.strip())
-			self.segment_name = self.segment.name
-		except:
-			segment = Segment(name=self.segment_name)
-			segment.save()
-			self.segment = segment
-			self.segment_name = segment.name
-			
-		try:
-			self.job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment__name=self.segment_name)
-			self.job_title_name = self.job_title.name
-		except:
-			job_title = JobTitle(name=self.job_title_name, segment=self.segment)
-			job_title.save()
-			self.job_title = job_title
-			self.job_title_name = job_title.name
 		
+		job_title = None
+		try:
+			# segment and jobtitle exist, none created
+			job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment__name=self.segment_name.strip())
+		except:
+			try:
+				# only segment exists, job_title created
+				segment = Segment.objects.get(name=self.segment_name.strip())
+				job_title = JobTitle(name=self.job_title_name, segment=segment)
+				job_title.save()
+			except:
+				# none exists, both created
+				segment = Segment(name=self.segment_name)
+				segment.save()
+				job_title = JobTitle(name=self.job_title_name, segment=segment)
+				job_title.save()
+		self.job_title = job_title
+		self.job_title_name = job_title.name
+		self.segment_name = self.job_title.segment.name
+
+
 		try:
 			# IMPORTANT! check PoliticalLocation.name for correct format...
 			location = self.workplace_political_location_name.split('/')
@@ -361,11 +369,10 @@ class UserProfileVerification(models.Model):
 		verification.profile = profile
 		verification.save()
 		
-		UserNotification.notify(profile, verification.uuid)
+		UserNotification.getNotification().notify(profile, verification.uuid)
 		
 		return verification
 	
-
 	@staticmethod
 	def verify(uuid):
 		verification = UserProfileVerification.objects.filter(uuid = uuid)[0]
@@ -378,10 +385,10 @@ class UserProfileVerification(models.Model):
 	def resend_verification_email(user):
 		profile = UserProfile.objects.get(user=user)
 		verification = UserProfileVerification.objects.get(profile=profile)
-		UserNotification.notify(profile, verification.uuid)
+		UserNotification.getNotification().notify(profile, verification.uuid)
 
-class UserNotification:
-	
+class RealUserNotification:
+
 	@staticmethod
 	def notify_password_change(user, new_password):
 		tbody = get_template('my-profile/email/usernotification-notify_password_change-body.txt')
@@ -416,3 +423,19 @@ class UserNotification:
 				colabre.settings.EMAIL_FROM, 
 				[user_profile.user.email], 
 				fail_silently=False)
+
+class DummyUserNotification:
+
+	@staticmethod
+	def notify_password_change(user, new_password):
+		pass
+		
+	@staticmethod
+	def notify(user_profile, verification_uuid):
+		pass
+
+class UserNotification:
+	
+	@staticmethod
+	def getNotification():
+		return DummyUserNotification

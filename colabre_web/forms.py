@@ -184,19 +184,25 @@ class JobForm(ModelForm):
 	profile = None
 	
 	'''
-		profile								title
-		workplace_political_location		workplace_political_location_name
-		workplace_location					description
-		segment								segment_name
-		company								company_name
-		contact_email						contact_phone
-		contact_name						creation_date						
+		profile
+		title
+		workplace_political_location
+		workplace_political_location_name
+		workplace_location
+		description
+		segment_name
+		company
+		company_name
+		contact_email
+		contact_phone
+		contact_name
+		creation_date						
 		published
 	'''
 
 	class Meta:
 		model = Job
-		exclude = ('job_title', 'profile', 'segment', 'company', 'workplace_political_location', 'date_creation')
+		exclude = ('job_title', 'profile', 'company', 'workplace_political_location', 'date_creation')
 		fields = (
 			'job_title_name', 
 			'segment_name',

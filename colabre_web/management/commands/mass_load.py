@@ -13181,6 +13181,12 @@ class Command(BaseCommand):
 	)
 
 	job_titles = (
+		u"Analista de Sistemas",
+		u"Arquiteto de Sistemas",
+		u"Arquiteto de Soluções",
+		u"Desenvolvedor",
+		u"Testador",
+		u"Gerente de Projetos",
 		u"Coordenador de Serviços Administrativos",
 		u"Encarregado de Serviços Administrativos",
 		u"Motorista de Diretoria",
@@ -13291,32 +13297,17 @@ class Command(BaseCommand):
 		u"Assistente de Vendas",
 		u"Assistente de Administração de Vendas",
 		u"Auxiliar de Vendas",
-		u"Estagiário (Penúltimo Ano)",
-		u"Estagiário (Último Ano)",
+		u"Estagiário",
 	)
 	
 	field_names = (
-		u"Administração Comercial/Vendas",
-		u"Administração de Empresas",
-		u"Administração Pública",
+		u"Comercial/Vendas",
 		u"Advocacia/Jurídica",
 		u"Agronomia",
 		u"Arquitetura/Urbanismo",
-		u"Arquivologia",
-		u"Artes Cênicas",
 		u"Artes Gráficas",
-		u"Artes Plásticas",
-		u"Atend. a cliente - Bares e Restaurantes",
-		u"Atend. a cliente - Telefonistas/Recepcionistas",
-		u"Atend. a cliente - Telemarketing/Call Center",
-		u"Atend. a cliente",
-		u"Auditoria",
 		u"Bancos",
-		u"Biblioteconomia",
-		u"Biologia/Ciências Biológicas",
-		u"Biomedicina",
-		u"Ciências Sociais",
-		u"Cinema",
+		u"Medicina",
 		u"Comércio Exterior",
 		u"Compras",
 		u"Comunicação",
@@ -13330,19 +13321,7 @@ class Command(BaseCommand):
 		u"Ecologia/Meio Ambiente",
 		u"Economia",
 		u"Enfermagem",
-		u"Engenharia de Alimentos",
-		u"Engenharia Civil",
-		u"Engenharia Eletrônica",
-		u"Engenharia Eletrotécnica",
-		u"Engenharia Mecânica",
-		u"Engenharia Metalúrgica e de Materiais",
-		u"Engenharia de Minas",
-		u"Engenharia de Produção",
-		u"Engenharia Química",
-		u"Engenharia - Outras",
-		u"Ensino Superior e Pesquisa",
-		u"Ensino - Outros",
-		u"Entretenimento",
+		u"Engenharia",
 		u"Esportes",
 		u"Estética",
 		u"Farmácia",
@@ -13350,36 +13329,25 @@ class Command(BaseCommand):
 		u"Finanças",
 		u"Fiscal",
 		u"Física",
-		u"Fisioterapia",
-		u"Fonoaudiologia",
 		u"Geografia",
 		u"Geologia",
 		u"Gestão Empresarial",
-		u"História",
 		u"Hotelaria",
 		u"Informática/T.I.",
 		u"Internet",
 		u"Jornalismo",
 		u"Letras",
 		u"Logística",
-		u"Manutenção Industrial",
-		u"Manutenção Predial",
 		u"Marketing",
 		u"Matemática/Estatística",
-		u"Medicina/Hospitalar",
 		u"Meteorologia",
 		u"Mineração",
 		u"Moda",
-		u"Museologia",
 		u"Música",
 		u"Nutrição",
 		u"Oceanografia",
 		u"Odontologia",
-		u"Organização de Eventos/Produção Cultural",
-		u"Organização e Métodos",
-		u"Pesquisa de Mercado",
 		u"Petrolífera",
-		u"Produção/Fabricação",
 		u"Propaganda",
 		u"Psicologia",
 		u"Qualidade",
@@ -13392,34 +13360,8 @@ class Command(BaseCommand):
 		u"Segurança e Saúde no Trabalho",
 		u"Segurança Patrimonial",
 		u"Seguros",
-		u"Serviço Social",
-		u"Serviços Administrativos",
-		u"Serviços Domésticos",
-		u"Serviços Especializados - Açougue",
-		u"Serviços Especializados - Padaria/Confeitaria",
-		u"Serviços Especializados - Peixaria",
-		u"Serviços Gerais",
-		u"Serviços Técnicos - Elétricos",
-		u"Serviços Técnicos - Eletrônicos",
-		u"Serviços Técnicos - Mecânicos",
-		u"Serviços Técnicos - Outros",
-		u"Suprimentos",
-		u"Telecomunicações",
-		u"Terapia Ocupacional",
-		u"Terceiro Setor/Responsabilidade Social",
-		u"Tradução/Interpretação",
-		u"Transporte Aéreo",
-		u"Transporte Marítimo",
-		u"Transporte Terrestre",
-		u"Tributária",
-		u"Turismo",
-		u"Vendas",
-		u"Vendas - Varejo",
-		u"Vendas Técnicas",
-		u"Veterinária",
+		u"Transporte",
 		u"Web Design",
-		u"Zoologia",
-		u"Zootecnia",
 	)
 
 	bra_locations = PoliticalLocation.objects.filter(country_code='BRA')[:87]
@@ -13477,6 +13419,7 @@ class Command(BaseCommand):
 		start = datetime.now()
 
 		# drop collections
+		self.stdout.write("Dropping collections...\n")
 		classes = [
 			Job, 
 			Resume, 
@@ -13491,8 +13434,8 @@ class Command(BaseCommand):
 		for clazz in classes:
 			clazz.objects.all().delete()
 		
-		num_profiles = num_resumes = 500
-		num_jobs = 30000
+		num_profiles = num_resumes = 10
+		num_jobs = 1000
 		
 		generated_profiles = []
 		
@@ -13504,10 +13447,11 @@ class Command(BaseCommand):
 			full_description = self.generateRandomParagraphs(max_paragraphs = 6)
 			resume = Resume.save_(profile, short_description, full_description, True)
 			generated_profiles.append(profile)
+			self.stdout.write(str(i) + "\t")
 		
 		generated_jobs = []
 		# Jobs
-		self.stdout.write("Creating %i jobs...\n" % num_jobs)
+		self.stdout.write("\n\nCreating %i jobs...\n" % num_jobs)
 		for i in xrange(num_jobs):
 			profile = random.choice(generated_profiles)
 			job = Job(
@@ -13520,10 +13464,10 @@ class Command(BaseCommand):
 				contact_email = profile.user.email,
 				contact_name = profile.user.first_name + ' ' + profile.user.last_name,
 				contact_phone = "(%r) %r-%r" % (random.randint(11, 80), random.randint(1000, 9999), random.randint(1000, 9999)),
-				#creation_date = self.generateRandomDateTime()
+				creation_date = self.generateRandomDateTime()
 			)
 			job.save()
-			self.stdout.write(str(i) + "\n")
+			self.stdout.write(str(i) + "\t")
 		
 		end = datetime.now()
 		load_time = end - start
