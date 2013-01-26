@@ -60,13 +60,10 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	
 @handle_exception
 def index(request):
-	jobs = Job.objects.filter(active=True)
 	segments = Segment.getAllActive()
 	countries = PoliticalLocation.getAllActiveCountries()
-	locations = None
-	
-	days = [7, 15, 30, 60, 90, 120, 240, 480]
-	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments, 'locations' : locations })
+	days = [3, 7, 15, 30, 60, 90, 120, 150]
+	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })
 
 @handle_exception
 def partial_html_search(request, before_id=0, q=None):
