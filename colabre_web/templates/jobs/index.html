@@ -112,12 +112,53 @@
 					<h4>Período</h4>
 					<div class="filter-element-content">
 						Publicadas até <select id="period-days" 
-											style="width: 50px;"
+											style="width: 60px;"
 											class="filter-control">
 										{% for day in days %}
 											<option value="{{day}}">{{day}}</option>	
 										{% endfor %}
 										</select> dias atrás.
+					</div>
+				</div>
+				
+				<!-- locations -->
+				<div id="filter-locations" class="filter-element">
+					<h4>Localização</h4>
+					<div class="filter-element-content">
+					
+					<div class="countries" style="clear: both;">
+					{% for country in countries %}
+					<div style="clear: both">
+						<input type="checkbox" class="filter-control country country-{{ country.id }}" id="country-{{ country.id }}" />
+						<label for="country-{{ country.id }}" style="font-weight: bold;">{{ country.name }}</label>
+						<a target="country-regions-{{ country.id }}" class="filter-toggler" >◄</a>
+						
+						<div class="regions" id="country-regions-{{ country.id }}" style="display: none; padding-left: 10px; clear: both;">
+						{% for region in country.regions %}
+						<div style="clear: both">
+							<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
+							<label for="region-{{ region.id }}" style="font-weight: bold;">{{ region.name }}</label>
+							<a target="region-cities-{{ region.id }}" class="filter-toggler" style="margin-right: 20px;">◄</a>
+							
+							<div id="region-cities-{{ region.id }}" class="cities" style="display: none; padding-left: 10px; clear: both;">
+							{% for city in region.cities %}
+								<input class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" id="location-{{ city.id }}" type="checkbox" value="{{ city.id }}" />
+								<label for="location-{{ city.id }}">{{ city.name }}</label><br />
+							{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+						</div>
+					</div>
+					{% endfor %}
+					</div>
+					
+					{% comment %}
+					{% for location in locations %}
+						<input class="filter-control location-item" id="location-{{ location.id }}" type="checkbox" value="{{ location.id }}" />
+						<label for="location-{{ location.id }}">{{ location }}</label><br />
+					{% endfor %}
+					{% endcomment %}
 					</div>
 				</div>
 				
@@ -137,27 +178,14 @@
 							<a target="titles-{{ segment.id }}" class="filter-toggler" >◄</a>
 							
 							<div style="clear: both; margin: 5px 0 10px 0; display: none;" id="titles-{{ segment.id }}">
-							{% for job_title in job_titles %}
-								{% if job_title.segment_id = segment.id %}
-									<div style="border: 0px solid red; overflow: auto; margin-bottom: 5px; margin-left: 20px;">
-										<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
-										<label style="display: block; float: left; width: 90%;" for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
-									</div>
-								{% endif %}
+							{% for job_title in segment.job_titles %}
+								<div style="border: 0px solid red; overflow: auto; margin-bottom: 5px; margin-left: 20px;">
+									<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
+									<label style="display: block; float: left; width: 90%;" for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
+								</div>
 							{% endfor %}
 							</div>
 						</div>
-					{% endfor %}
-					</div>
-				</div>
-				
-				<!-- locations -->
-				<div id="filter-locations" class="filter-element">
-					<h4>Cidades</h4>
-					<div class="filter-element-content">
-					{% for location in locations %}
-						<input class="filter-control location-item" id="location-{{ location.id }}" type="checkbox" value="{{ location.id }}" />
-						<label for="location-{{ location.id }}">{{ location }}</label><br />
 					{% endfor %}
 					</div>
 				</div>
@@ -247,6 +275,12 @@
 					$(this).text("▼");
 					target.show();
 				}
+			});
+		
+			$(".country, .region").change(function(){
+				id = $(this).attr("id");
+				checked = $(this).attr("checked") ? true : false;
+				$("." + id).attr("checked", checked);
 			});
 		
 			$(".segment-item").change(function(){

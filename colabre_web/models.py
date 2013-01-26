@@ -1,4 +1,5 @@
 ﻿# -*- coding: UTF-8 -*-
+from aux_models import *
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -14,10 +15,6 @@ import time
 from django.core.mail import send_mail
 import colabre.settings
 import sys
-
-class BusinessException(Exception):
-	""" Business Exception raised to differenciate from System Exceptions """
-	pass
 
 class UserProfile(models.Model):
 	""" Binds Django user to resume and jobs """
@@ -172,6 +169,23 @@ class Resume(models.Model):
 class Segment(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	active = models.BooleanField(default=True)
+
+	@classmethod
+	def getAllActive(cls):
+		segments = Segment.objects.filter(active=True).order_by("name")
+		job_titles = JobTitle.objects.values('id', 'name', 'segment_id').order_by("segment", "name")
+		for segment in segments:
+			segment.job_titles = [
+				{
+					'id' : job_title['id'], 
+					'name' : job_title['name'],
+					'segment' : 
+					{ 
+						'id' : job_title['segment_id'] ,
+					},
+				} for job_title in job_titles if job_title['segment_id'] == segment.id]
+		return segments
+	
 	def __unicode__(self):
 		return self.name
 
@@ -201,6 +215,93 @@ class PoliticalLocation(models.Model):
 	city_name = models.CharField(max_length=60)
 	
 	active = models.BooleanField(default=True)
+	
+	@classmethod
+	def getAllActiveCountries(cls):
+	
+		locations = PoliticalLocation.objects.raw(
+			" select * from colabre_web_politicallocation where "
+			" id in (select workplace_political_location_id from colabre_web_job where active = 1) "
+			" order by country_code, region_code, city_name "
+		)
+		countries = []
+		[{
+			'id' : c.country_id,
+			'code' : c.country_code,
+			'name' : c.country_name,
+		} for c in locations
+			if 
+			{
+				'id' : c.country_id,
+				'code' : c.country_code, 
+				'name' : c.country_name,
+			} not in countries 
+			and countries.append(
+				{
+					'id' : c.country_id,
+					'code' : c.country_code,
+					'name' : c.country_name,
+				})]
+					
+		regions = []
+		[{
+			'id' : r.region_id,
+			'country_id' : r.country_id,
+			'code' : r.region_code,
+			'name' : r.region_name,
+		} for r in locations
+			if 
+			{
+				'id' : r.region_id,
+				'country_id' : r.country_id,
+				'code' : r.region_code, 
+				'name' : r.region_name,
+			} not in regions 
+			and regions.append(
+				{
+					'id' : r.region_id,
+					'country_id' : r.country_id,
+					'code' : r.region_code,
+					'name' : r.region_name,
+				})]
+				
+		cities = []
+		[{
+			'id' : c.id,
+			'country_id' : c.country_id,
+			'region_id' : c.region_id,
+			'country_code' : c.country_code,
+			'region_code' : c.region_code,
+			'name' : c.city_name,
+			'friendly_name' : str(c),
+		} for c in locations
+			if 
+			{
+				'id' : c.id,
+				'country_id' : c.country_id,
+				'region_id' : c.region_id,
+				'country_code' : c.country_code,
+				'region_code' : c.region_code,
+				'name' : c.city_name,
+				'friendly_name' : str(c),
+			} not in cities 
+			and cities.append(
+				{
+					'id' : c.id,
+					'country_id' : c.country_id,
+					'region_id' : c.region_id,
+					'country_code' : c.country_code,
+					'region_code' : c.region_code,
+					'name' : c.city_name,
+					'friendly_name' : str(c),
+				})]
+
+		for country in countries:
+			country['regions'] = [region for region in regions if country['id'] == region['country_id']]
+			for region in country['regions']:
+				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
+				
+		return countries
 	
 	def name(self):
 		return self.__unicode__()
@@ -386,56 +487,3 @@ class UserProfileVerification(models.Model):
 		profile = UserProfile.objects.get(user=user)
 		verification = UserProfileVerification.objects.get(profile=profile)
 		UserNotification.getNotification().notify(profile, verification.uuid)
-
-class RealUserNotification:
-
-	@staticmethod
-	def notify_password_change(user, new_password):
-		tbody = get_template('my-profile/email/usernotification-notify_password_change-body.txt')
-		
-		context = Context({
-			'name' : user.first_name,
-			'password' : new_password,
-			'url' : colabre.settings.HOST_ROOT_URL,
-		})
-	
-		send_mail(
-				u'Colabre | Alteração de Senha',
-				tbody.render(context),
-				colabre.settings.EMAIL_FROM, 
-				[user.email], 
-				fail_silently=False)	
-
-	@staticmethod
-	def notify(user_profile, verification_uuid):
-		tbody = get_template('my-profile/email/usernotification-notify-body.txt')
-		ttitle = get_template('my-profile/email/usernotification-notify-title.txt')
-		
-		context = Context({
-			'name' : user_profile.user.first_name,
-			'uuid' : verification_uuid,
-			'url' : colabre.settings.HOST_ROOT_URL,
-		})
-	
-		send_mail(
-				ttitle.render(Context({})),
-				tbody.render(context),
-				colabre.settings.EMAIL_FROM, 
-				[user_profile.user.email], 
-				fail_silently=False)
-
-class DummyUserNotification:
-
-	@staticmethod
-	def notify_password_change(user, new_password):
-		pass
-		
-	@staticmethod
-	def notify(user_profile, verification_uuid):
-		pass
-
-class UserNotification:
-	
-	@staticmethod
-	def getNotification():
-		return DummyUserNotification
