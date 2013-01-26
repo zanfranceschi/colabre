@@ -1,4 +1,5 @@
-﻿from django.http import HttpResponse
+﻿from django.views.decorators.cache import cache_page
+from django.http import HttpResponse
 from django.template import Context, loader
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
@@ -58,6 +59,7 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
 	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	
+@cache_page(60 * 60 * 24)
 @handle_exception
 def index(request):
 	segments = Segment.getAllActive()

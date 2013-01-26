@@ -143,8 +143,17 @@ INSTALLED_APPS = (
 	'south',
 )
 
+'''
 SERIALIZATION_MODULES = {
 	'json': 'wadofstuff.django.serializers.json'
+}
+'''
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'colabre_web_cache',
+    }
 }
 
 LOGGING = {

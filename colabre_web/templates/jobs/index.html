@@ -95,9 +95,7 @@
 {% endblock %}
 
 {% block body %}
-
-	<div style="overflow: auto; border: 0px solid red;">
-		
+	<div style="overflow: auto; border: 0px solid red; display: none;">
 		<!-- left column -->
 		<div id="content-left" style="width: 28%; float: left; border: 0px solid red">
 			
@@ -210,7 +208,7 @@
 	
 	<script type="text/javascript">
 		$(function(){
-
+			
 			// load content and toggle visiblity
 			$(".job-wrapper-summary").live('click', function(){
 			
