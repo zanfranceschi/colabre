@@ -62,6 +62,7 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 @cache_page(60 * 60 * 24)
 @handle_exception
 def index(request):
+	print >> sys.stderr, request.META['PATH_INFO']
 	segments = Segment.getAllActive()
 	countries = PoliticalLocation.getAllActiveCountries()
 	days = [3, 7, 15, 30, 60, 90, 120, 150]

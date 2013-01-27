@@ -5,12 +5,21 @@ import traceback
 from django.contrib import messages
 import time
 from datetime import datetime
+from django.core.signals import request_started
+from django.dispatch import receiver
+from gadjo.requestprovider.signals import get_request
 
 is_not_verified_url = '/meu-perfil/solicitar-verificacao/'
 
 def is_verified(user):
 	return user.get_profile().is_verified
 
+@receiver(request_started)
+def signal_callback(sender, **kwargs):
+	http_request = get_request()
+	print "\n\n", http_request.META['PATH_INFO']
+		
+	
 def handle_exception(method):
 	def wrapper(request, *args):
 		try:
