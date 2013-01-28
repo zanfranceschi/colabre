@@ -12,6 +12,7 @@ from datetime import *
 from colabre_web.models import *
 from colabre_web.aux_models import *
 from colabre_web.forms import *
+from colabre_web.statistics.models import *
 
 import time
 from helpers import *
@@ -26,7 +27,7 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
 	url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
 	url(r'^parcial/buscar/$', 'partial_html_search'),
-	url(r'^parcial/detalhar/(\d+)/$', 'partial_details', name='jobs_partial_details'),
+	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='jobs_partial_details'),
 	
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
 )
@@ -35,8 +36,9 @@ def get_template_path(template):
 	return 'jobs/%s' % template
 
 @handle_exception
-def partial_details(request, id):
+def partial_details(request, id, search_term = None):
 	job = Job.objects.get(id=id)
+	JobViewLogger.log(request, search_term, job)
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
 	response['job-id'] = id
 	return response
@@ -59,7 +61,7 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
 	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	
-@cache_page(60 * 60 * 24)
+#@cache_page(60 * 60 * 24)
 @handle_exception
 def index(request):
 	print >> sys.stderr, request.META['PATH_INFO']

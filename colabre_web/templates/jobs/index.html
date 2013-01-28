@@ -209,13 +209,15 @@
 	<script type="text/javascript">
 		$(function(){
 			
+			var q = $("#search-jobs").val();
+			
 			// load content and toggle visiblity
 			$(".job-wrapper-summary").live('click', function(){
 			
 				jobId = $(this).attr("job-id");
 				
 				var req = $.ajax({
-					url: '/vagas/parcial/detalhar/' + jobId,
+					url: '/vagas/parcial/detalhar/' + jobId + '/' + q + '/',
 					type: 'get',
 					complete: function()
 					{
@@ -313,7 +315,7 @@
 				lock = false;
 			};
 			
-			var q = $("#search-jobs").val();
+			
 			
 			//search(search_url(0, q), display_result);
 			

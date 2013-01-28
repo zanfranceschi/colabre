@@ -26,7 +26,7 @@ def signal_callback(sender, **kwargs):
 def handle_exception(method):
 	def wrapper(request, *args):
 		try:
-			AccessTracker.handle_access(request)
+			RequestLogger.log(request)
 			return method(request, *args)
 		except Exception, e:
 			print >> sys.stderr, "-" * 60
