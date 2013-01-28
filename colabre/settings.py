@@ -107,7 +107,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-	'gadjo.requestprovider.middleware.RequestProvider',
+	#'gadjo.requestprovider.middleware.RequestProvider',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -141,14 +141,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 	'colabre_web',
     'django.contrib.admin',
-	'south',
+	#'south',
 )
 
-'''
 SERIALIZATION_MODULES = {
 	'json': 'wadofstuff.django.serializers.json'
 }
-'''
 
 CACHES = {
     'default': {

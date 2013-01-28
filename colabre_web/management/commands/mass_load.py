@@ -12923,8 +12923,8 @@ class Command(BaseCommand):
 		for clazz in classes:
 			clazz.objects.all().delete()
 		
-		num_profiles = num_resumes = 273
-		num_jobs = 30000
+		num_profiles = num_resumes = 13
+		num_jobs = 247
 		
 		generated_profiles = []
 		

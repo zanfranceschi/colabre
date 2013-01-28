@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from django.core.signals import request_started
 from django.dispatch import receiver
-from gadjo.requestprovider.signals import get_request
+#from gadjo.requestprovider.signals import get_request
 from pymongo import MongoClient
 
 is_not_verified_url = '/meu-perfil/solicitar-verificacao/'

@@ -1,6 +1,7 @@
 ﻿from django.template.loader import get_template
 from django.core.mail import send_mail
 import colabre.settings
+from django.template import Context
 
 class BusinessException(Exception):
 	""" Business Exception raised to differenciate from System Exceptions """
@@ -62,4 +63,4 @@ class UserNotification:
 	
 	@staticmethod
 	def getNotification():
-		return DummyUserNotification
+		return RealUserNotification
