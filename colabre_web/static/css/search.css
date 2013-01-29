@@ -1,0 +1,150 @@
+/* public search */
+
+/* page structure */
+.search-wrapper
+{
+	overflow: auto; 
+}
+.content-left
+{
+	width: 28%; 
+	float: left; 
+}
+.content-right
+{
+	margin-left: 1%;
+	width: 68%;
+	float: left;
+}
+
+.content-header-aligner
+{
+	height: 50px;
+	padding-top: 10px;
+	position: relative;
+}
+/* page structure end */
+.content-header-aligner h2
+{
+	margin: 10px 0 10px 10px;
+	text-align: right;
+}
+
+.content-header-aligner .search-field
+{
+	line-height: 32px;
+	height: 32px;
+	width: 84%;
+	margin-right: 0;
+}
+.content-header-aligner .btn
+{
+	border: 0; width: 14%;
+}
+/* filters */
+.filter-element-content
+{
+	padding: 7px; 
+}
+.filter-element-content > div
+{
+	clear: both;
+	overflow: auto;
+}
+
+.filter-toggler
+{
+	cursor: pointer;
+	float: right;
+	margin-right: 5px;
+	display: block;
+	width: 20px;
+}
+
+.filters-wrapper
+{
+	margin-top: 35px;
+	overflow: auto;
+}
+.filter-element-wrapper
+{
+	overflow: auto; 
+	border: 0px solid #ddd; 
+	background: #eee; 
+	padding: 0 0 7px 0;
+}
+.filter-element-wrapper > div
+{
+	padding: 7px;
+}
+
+.filter-element-wrapper h4
+{
+	margin: 0;
+	padding: 7px; 
+	background: #4672c1; 
+	color: #fff;
+}
+.filter-element-content-level-wrapper > div
+{
+	clear: both;
+}
+.filter-element-content-level-wrapper > div > label
+{
+	font-weight: bold;
+}
+
+.filter-element-content-level-01
+{
+	
+}
+
+.filter-element-content-level-01 > div
+{
+	clear: both;
+}
+.filter-element-content-level-01 > div > label
+{
+	font-weight: bold;
+}
+.filter-element-content-level-02
+{
+	display: none; 
+	padding-left: 10px; 
+	clear: both;
+}
+
+.filter-element-content-level-02 .filter-toggler
+{
+	margin-right: 20px;
+}
+
+.filter-element-content-level-03
+{
+	
+}
+
+.filter-element-content-level-last
+{
+	font-weight: normal;
+	display: none; 
+	padding-left: 10px; 
+	clear: both;
+}
+/* filters end */
+
+
+.loading-search
+{
+	display: none; 
+	margin: 10px; 
+	font-size: small; 
+	text-align: center;
+}
+
+/* scroll loading more */
+.loading-more
+{
+	display: none;
+	text-align: center;
+}

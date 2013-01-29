@@ -2,115 +2,25 @@
 {% load bbcode %}
 {% block title %}Minhas vagas{% endblock %}
 {% block extra_head %}
-<style type="text/css">
-	.job-details
-	{
-		display: none;
-	}
-	.job
-	{
-		font-size: 100%
-		
-	}
-	.job, #jobs-loading
-	{
-		border-top: 1px solid #ddd;
-		background: #eee;
-		margin-bottom: 0;
-		padding: 5px;
-		position: relative;
-	}
-	.job:last-child
-	{
-		border-bottom: 1px solid #ddd;
-	}
-	.job:hover
-	{
-		background-color: #fff;
-		cursor: pointer;
-	}
-	.job h3
-	{
-		margin-top: 5px;
-	}
-	.job p
-	{
-		white-space: pre-line;
-		padding: 10px;
-		font-size: 90%;
-	}
-	.job .job-date
-	{
-		font-size: small;
-		position: absolute;
-		top: 5px;
-		right: 5px;
-	}
-	.filter-element
-	{
-		overflow: auto; 
-		border: 0px solid #ddd; 
-		background: #eee; 
-		padding: 0 0 7px 0;
-	}
-	#filters-wrapper
-	{
-		margin-top: 35px;
-	}
-	.filter-element h4
-	{
-		margin: 0;
-		padding: 7px; 
-		background: #4672c1; 
-		color: #fff;
-	}
-	.filter-element-content
-	{
-		padding: 7px; 
-	}
-	.content-header-aligner
-	{
-		height: 50px;
-		padding-top: 10px;
-		position: relative;
-	}
-	.content-header-aligner h2
-	{
-		margin: 10px 0 10px 10px;
-		text-align: right;
-	}
-	.filter-toggler
-	{
-		cursor: pointer;
-		float: right;
-		margin-right: 5px;
-		display: block;
-		width: 20px;
-	}
-	.job-wrapper-details
-	{
-		
-	}
-</style>
+	<link href="{{ STATIC_URL }}css/jobs.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
-	<div style="overflow: auto; border: 0px solid red;">
+	<div class="search-wrapper">
 		<!-- left column -->
-		<div id="content-left" style="width: 28%; float: left; border: 0px solid red">
-			
+		<div class="content-left">
+
 			<div class="content-header-aligner">
 				<h2>Buscar vagas</h2>
 			</div>
 			
 			<!-- filters -->
-			<div id="filters-wrapper" style="overflow: auto;">
+			<div class="filters-wrapper">
 				<!-- period -->
-				<div id="filter-period" class="filter-element">
+				<div id="filter-period" class="filter-element-wrapper">
 					<h4>Período</h4>
-					<div class="filter-element-content">
+					<div class="filter-element-content-level-01">
 						Publicadas até <select id="period-days" 
-											style="width: 60px;"
 											class="filter-control">
 										{% for day in days %}
 											<option value="{{day}}">{{day}}</option>	
@@ -120,58 +30,57 @@
 				</div>
 				
 				<!-- locations -->
-				<div id="filter-locations" class="filter-element">
+				<div id="filter-locations" class="filter-element-wrapper">
 					<h4>Localização</h4>
-					<div class="filter-element-content">
-						<div class="countries" style="clear: both;">
-						{% for country in countries %}
-						<div style="clear: both">
+					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
+					{% for country in countries %}
+						<div>
 							<input type="checkbox" class="filter-control country country-{{ country.id }}" id="country-{{ country.id }}" />
-							<label for="country-{{ country.id }}" style="font-weight: bold;">{{ country.name }}</label>
-							<a target="country-regions-{{ country.id }}" class="filter-toggler" >◄</a>
+							<label for="country-{{ country.id }}">{{ country.name }}</label>
+							<a target="country-regions-{{ country.id }}" class="filter-toggler">◄</a>
 							
-							<div class="regions" id="country-regions-{{ country.id }}" style="display: none; padding-left: 10px; clear: both;">
+							<div class="filter-element-content-level-02 filter-element-content-level-wrapper" id="country-regions-{{ country.id }}">
 							{% for region in country.regions %}
-							<div style="clear: both">
-								<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
-								<label for="region-{{ region.id }}" style="font-weight: bold;">{{ region.name }}</label>
-								<a target="region-cities-{{ region.id }}" class="filter-toggler" style="margin-right: 20px;">◄</a>
-								
-								<div id="region-cities-{{ region.id }}" class="cities" style="display: none; padding-left: 10px; clear: both;">
-								{% for city in region.cities %}
-									<input class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" id="location-{{ city.id }}" type="checkbox" value="{{ city.id }}" />
-									<label for="location-{{ city.id }}">{{ city.name }}</label><br />
-								{% endfor %}
+								<div>
+									<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
+									<label for="region-{{ region.id }}">{{ region.name }}</label>
+									<a target="region-cities-{{ region.id }}" class="filter-toggler">◄</a>
+									
+									<div id="region-cities-{{ region.id }}" class="filter-element-content-level-last">
+									{% for city in region.cities %}
+										<div>
+											<input id="location-{{ city.id }}" class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" type="checkbox" value="{{ city.id }}" />
+											<label for="location-{{ city.id }}">{{ city.name }}</label>
+										</div>
+									{% endfor %}
+									</div>
 								</div>
-							</div>
 							{% endfor %}
 							</div>
 						</div>
-						{% endfor %}
-						</div>
+					{% endfor %}
 					</div>
 				</div>
 				
 				<!-- segments -->
-				<div id="filter-segments" class="filter-element">
+				<div id="filter-segments" class="filter-element-wrapper">
 					<h4>Segmentos/Cargos</h4>
-					<div class="filter-element-content">
+					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
 						{% for segment in segments %}
-						<div style="clear: both; overflow: auto;">
+						<div class="segment-wrapper">
 							<input id="segment-{{ segment.id }}" 
 								type="checkbox" 
 								value="{{ segment.id }}" 
 								class="filter-control segment-item"  />
 
-							<label for="segment-{{ segment.id }}"
-								style="font-weight: bold; margin-bottom: 10px;" >{{ segment.name }}</label>
+							<label for="segment-{{ segment.id }}">{{ segment.name }}</label>
 							<a target="titles-{{ segment.id }}" class="filter-toggler" >◄</a>
 							
-							<div style="clear: both; margin: 5px 0 10px 0; display: none;" id="titles-{{ segment.id }}">
+							<div class="filter-element-content-level-last" id="titles-{{ segment.id }}">
 							{% for job_title in segment.job_titles %}
-								<div style="border: 0px solid red; overflow: auto; margin-bottom: 5px; margin-left: 20px;">
-									<input style="display: block; float: left; margin-right: 7px;" class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
-									<label style="display: block; float: left; width: 90%;" for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
+								<div>
+									<input class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
+									<label for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
 								</div>
 							{% endfor %}
 							</div>
@@ -185,22 +94,20 @@
 		</div>
 		
 		<!-- right column -->
-		<div id="content-right" style="margin-left: 1%; width: 68%; float: left; border: 0px solid red">
+		<div class="content-right">
 			
 			<!-- search input -->
 			<div class="content-header-aligner">
-				<input style="line-height: 32px; height: 32px; width: 84%; margin-right: 0;" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" style="border: 0; width: 14%;" type="button" class="btn btn-info" value="buscar" />	
+				<input class="search-field" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />	
 			</div>
 			
 			<!-- search result -->
-			<div id="jobs-loading-img" 
-				style="display: none; margin: 10px; font-size: small; text-align: center;">
-				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif"
-					alt="requisitando..." align="absmiddle" />
+			<div class="loading-search" id="jobs-loading-img">
+				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
 				buscando
 			</div>
 			<div class="partial-container" id="jobs"></div>
-			<div id="jobs-loading" style="display: none; text-align: center;">
+			<div class="loading-more" id="jobs-loading">
 				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
 			</div>
 		</div>

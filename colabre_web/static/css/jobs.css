@@ -1,0 +1,47 @@
+#period-days
+{
+	width: 60px;
+}
+.job-details
+{
+	display: none;
+}
+.job
+{
+	border-top: 1px solid #ddd;
+	background: #eee;
+	margin-bottom: 0;
+	padding: 5px;
+	position: relative;
+	font-size: 100%
+}
+.job:last-child
+{
+	border-bottom: 1px solid #ddd;
+}
+.job:hover
+{
+	background-color: #fff;
+	cursor: pointer;
+}
+.job h3
+{
+	margin-top: 5px;
+}
+.job p
+{
+	white-space: pre-line;
+	padding: 10px;
+	font-size: 90%;
+}
+.job .job-date
+{
+	font-size: small;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+}
+.job-wrapper-details
+{
+	
+}
