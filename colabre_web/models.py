@@ -185,6 +185,25 @@ class Segment(models.Model):
 					},
 				} for job_title in job_titles if job_title['segment_id'] == segment.id]
 		return segments
+		
+	@classmethod
+	def getAllActiveByProfile(cls, profile):
+		job_title_ids = [job.job_title.id for job in Job.objects.filter(profile=profile).order_by("-creation_date")]
+		job_titles = JobTitle.objects.values('id', 'name', 'segment_id').filter(id__in=(job_title_ids)).order_by("segment", "name")
+		segment_ids = [job_title['segment_id'] for job_title in job_titles]
+		segments = Segment.objects.filter(active=True, id__in=(segment_ids)).order_by("name")
+		
+		for segment in segments:
+			segment.job_titles = [
+				{
+					'id' : job_title['id'], 
+					'name' : job_title['name'],
+					'segment' : 
+					{ 
+						'id' : job_title['segment_id'] ,
+					},
+				} for job_title in job_titles if job_title['segment_id'] == segment.id]
+		return segments
 	
 	def __unicode__(self):
 		return self.name
@@ -223,6 +242,93 @@ class PoliticalLocation(models.Model):
 			" select * from colabre_web_politicallocation where "
 			" id in (select workplace_political_location_id from colabre_web_job where active = 1) "
 			" order by country_code, region_code, city_name "
+		)
+		countries = []
+		[{
+			'id' : c.country_id,
+			'code' : c.country_code,
+			'name' : c.country_name,
+		} for c in locations
+			if 
+			{
+				'id' : c.country_id,
+				'code' : c.country_code, 
+				'name' : c.country_name,
+			} not in countries 
+			and countries.append(
+				{
+					'id' : c.country_id,
+					'code' : c.country_code,
+					'name' : c.country_name,
+				})]
+					
+		regions = []
+		[{
+			'id' : r.region_id,
+			'country_id' : r.country_id,
+			'code' : r.region_code,
+			'name' : r.region_name,
+		} for r in locations
+			if 
+			{
+				'id' : r.region_id,
+				'country_id' : r.country_id,
+				'code' : r.region_code, 
+				'name' : r.region_name,
+			} not in regions 
+			and regions.append(
+				{
+					'id' : r.region_id,
+					'country_id' : r.country_id,
+					'code' : r.region_code,
+					'name' : r.region_name,
+				})]
+				
+		cities = []
+		[{
+			'id' : c.id,
+			'country_id' : c.country_id,
+			'region_id' : c.region_id,
+			'country_code' : c.country_code,
+			'region_code' : c.region_code,
+			'name' : c.city_name,
+			'friendly_name' : str(c),
+		} for c in locations
+			if 
+			{
+				'id' : c.id,
+				'country_id' : c.country_id,
+				'region_id' : c.region_id,
+				'country_code' : c.country_code,
+				'region_code' : c.region_code,
+				'name' : c.city_name,
+				'friendly_name' : str(c),
+			} not in cities 
+			and cities.append(
+				{
+					'id' : c.id,
+					'country_id' : c.country_id,
+					'region_id' : c.region_id,
+					'country_code' : c.country_code,
+					'region_code' : c.region_code,
+					'name' : c.city_name,
+					'friendly_name' : str(c),
+				})]
+
+		for country in countries:
+			country['regions'] = [region for region in regions if country['id'] == region['country_id']]
+			for region in country['regions']:
+				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
+				
+		return countries
+		
+	@classmethod
+	def getAllActiveCountriesByProfile(cls, profile):
+	
+		locations = PoliticalLocation.objects.raw(
+			" select * from colabre_web_politicallocation where "
+			" id in (select workplace_political_location_id from colabre_web_job where active = 1 and profile_id = {0}) "
+			" order by country_code, region_code, city_name ".format(profile.id)
 		)
 		countries = []
 		[{

@@ -50,7 +50,6 @@ def detail(request, id):
 	
 @handle_exception
 def search(request, term, job_titles, locations, days = 3, page = 1):
-	time.sleep(2)
 	job_titles_ids = None
 	if job_titles:
 		job_titles_ids = [int(n) for n in job_titles.split("-")]

@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 {% load cache %}
-{% block title %}Minhas vagas{% endblock %}
+{% block title %}Busca de vagas{% endblock %}
 {% block extra_head %}
 	<link href="{{ STATIC_URL }}css/jobs.css" rel="stylesheet" />
 {% endblock %}
@@ -15,7 +15,7 @@
 			</div>
 			
 			<!-- filters -->
-			{% cache 3600 jobs_search_filters %}
+			<!--{ cache 3600 jobs_search_filters }-->
 			<div class="filters-wrapper">
 				<!-- period -->
 				<div id="filter-period" class="filter-element-wrapper">
@@ -91,7 +91,7 @@
 				</div>
 				
 			</div>
-			{% endcache %}
+			<!--{ endcache }-->
 		</div>
 		
 		<!-- right column -->
