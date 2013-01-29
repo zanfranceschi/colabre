@@ -50,6 +50,7 @@ def detail(request, id):
 	
 @handle_exception
 def search(request, term, job_titles, locations, days = 3, page = 1):
+	time.sleep(2)
 	job_titles_ids = None
 	if job_titles:
 		job_titles_ids = [int(n) for n in job_titles.split("-")]
@@ -61,7 +62,6 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
 	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	
-#@cache_page(60 * 60 * 24)
 @handle_exception
 def index(request):
 	print >> sys.stderr, request.META['PATH_INFO']

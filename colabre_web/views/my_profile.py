@@ -6,6 +6,7 @@ from colabre_web.models import *
 from colabre_web.forms import *
 from helpers import *
 from django.conf.urls import patterns, url
+from django.core.cache import cache
 
 urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^$', 'index', name='my_profile_index'),
@@ -34,7 +35,7 @@ def index(request):
 		form = UserProfileForm(request.POST, user=request.user)
 		if form.is_valid():
 			form.save()
-			messages.success(request, 'Perfil atualizado.')
+			messages.success(request, 'Perfil atualizado. Note que o seu nome no menu pode levar até 5 minutos para ser atualizado caso tenha sido alterado.')
 		else:
 			messages.error(request, 'Verifique o preenchimento do perfil.')
 	else:

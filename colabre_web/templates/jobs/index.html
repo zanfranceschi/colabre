@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% load bbcode %}
+{% load cache %}
 {% block title %}Minhas vagas{% endblock %}
 {% block extra_head %}
 	<link href="{{ STATIC_URL }}css/jobs.css" rel="stylesheet" />
@@ -15,6 +15,7 @@
 			</div>
 			
 			<!-- filters -->
+			{% cache 3600 jobs_search_filters %}
 			<div class="filters-wrapper">
 				<!-- period -->
 				<div id="filter-period" class="filter-element-wrapper">
@@ -90,7 +91,7 @@
 				</div>
 				
 			</div>
-			
+			{% endcache %}
 		</div>
 		
 		<!-- right column -->

@@ -250,7 +250,7 @@ class JobForm(ModelForm):
 			self.initial = {
 				'contact_email' : self.profile.user.email or None
 			}
-			last_posted_jobs = Job.objects.all().order_by("-id")[:1]
+			last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
 			if len(last_posted_jobs) > 0:
 				last_posted_job = last_posted_jobs[0]
 				self.initial.update({
