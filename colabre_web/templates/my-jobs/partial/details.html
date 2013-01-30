@@ -1,0 +1,39 @@
+﻿<div job-details-id="{{ job.id }}">
+<fieldset>
+	<legend>Descrição da vaga</legend>
+	{% if job.company_name %}<h4 style="margin: 3px;">{{ job.company_name }}</h4>{% endif %}
+	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
+	
+	{% if job.contact_email or job.contact_phone %}
+	<div>
+		{% if job.contact_name %}contato: <b>{{ job.contact_name }}</b> / {% endif %}
+		{{ job.contact_email|urlize }}
+		{% if job.contact_email and job.contact_phone %} / {% endif %}
+		{% if job.contact_phone %}<b>{{ job.contact_phone }}</b>{% endif %}
+		
+	</div>
+	{% endif %}
+</fieldset>
+
+<div id="chartdiv" style="display: none; height: 300px; width: 100%; "></div>
+</div>
+<script type="text/javascript">
+	$(function(){
+		//$.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
+		$.jqplot('chartdiv',
+			[[10, 20, 30, 20, 10], [1, 3, 5, 10, 7, 8]],
+			{
+				title: 'Detalhes da vaga',
+				series : [
+					{
+						lineWidth:2, 
+						markerOptions: { style: 'dimaond' }
+					},
+					{
+						lineWidth:2, 
+						markerOptions: { style: 'circle' }
+					}
+				]
+			});
+	});
+</script>

@@ -1,4 +1,5 @@
-﻿from django.shortcuts import render, redirect
+﻿# -*- coding: utf-8 -*-
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -23,7 +24,7 @@ def index(request):
 		form = ResumeForm(request.POST, profile=request.user.get_profile())
 		if form.is_valid():
 			form.save()
-			messages.success(request, 'Currículo atualizado.')
+			messages.success(request, u'Currículo atualizado.')
 	else:
 		form = ResumeForm(profile=request.user.get_profile())
 	return render(request, get_template_path('index.html'), {'form' : form })

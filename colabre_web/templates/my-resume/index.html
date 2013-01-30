@@ -1,4 +1,4 @@
-{% extends "_base.html" %}
+﻿{% extends "_base.html" %}
 {% load bbcode %}
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
@@ -9,8 +9,6 @@
 		{% include '_form.html' %}
 		<input type="submit" value="salvar" class="btn-info" /> 
 	</form>
-	
-<!--div style="white-space: pre;">{{ user.get_profile.resume.full_description|bbcode|removetags:"script img link"|safe }}</div-->
 	
 	<script type="text/javascript">
 	$(document).ready(function() {
