@@ -21,12 +21,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^$', 'index', name='jobs_index'),
-	
-	url(r'^parcial/buscar/(.*)/([\d\-]*)/([\d\-]*)/([\d]*)/([\d]*)/$', 'search'),
-	
-	url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
-	url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
-	url(r'^parcial/buscar/$', 'partial_html_search'),
+	url(r'^parcial/buscar/(.*)/([\d\-]*)/([\d\-]*)/([\d]*)/([\d]*)/$', 'partial_html_search'),
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='jobs_partial_details'),
 	
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
@@ -49,7 +44,7 @@ def detail(request, id):
 	return render(request, get_template_path("detail.html"), { 'job' : job })
 	
 @handle_exception
-def search(request, term, job_titles, locations, days = 3, page = 1):
+def partial_html_search(request, term, job_titles, locations, days = 3, page = 1):
 	job_titles_ids = None
 	if job_titles:
 		job_titles_ids = [int(n) for n in job_titles.split("-")]
@@ -63,14 +58,7 @@ def search(request, term, job_titles, locations, days = 3, page = 1):
 	
 @handle_exception
 def index(request):
-	print >> sys.stderr, request.META['PATH_INFO']
 	segments = Segment.getAllActive()
 	countries = PoliticalLocation.getAllActiveCountries()
 	days = [3, 7, 15, 30, 60, 90, 120, 150]
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })
-
-@handle_exception
-def partial_html_search(request, before_id=0, q=None):
-	pass
-	#jobs, exists = Job.view_search_public(before_id, q, 100)
-	#return render(request, get_template_path("partial/jobs.html"), {'jobs' : jobs, 'exists': exists, 'q' : q})

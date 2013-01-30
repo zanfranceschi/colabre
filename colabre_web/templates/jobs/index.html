@@ -15,7 +15,7 @@
 			</div>
 			
 			<!-- filters -->
-			<!--{ cache 3600 jobs_search_filters }-->
+			{% cache 600 jobs_search_filters %}
 			<div class="filters-wrapper">
 				<!-- period -->
 				<div id="filter-period" class="filter-element-wrapper">
@@ -91,7 +91,7 @@
 				</div>
 				
 			</div>
-			<!--{ endcache }-->
+			{% endcache %}
 		</div>
 		
 		<!-- right column -->

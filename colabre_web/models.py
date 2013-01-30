@@ -1,6 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 from aux_models import *
-from django.db import models
+from django.db import models, connection
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.core.exceptions import *
@@ -15,6 +15,14 @@ import time
 from django.core.mail import send_mail
 import colabre.settings
 import sys
+
+def dictfetchall(cursor):
+	"Returns all rows from a cursor as a dict"
+	desc = cursor.description
+	return [
+		dict(zip([col[0] for col in desc], row))
+		for row in cursor.fetchall()
+	]
 
 class UserProfile(models.Model):
 	""" Binds Django user to resume and jobs """
@@ -172,37 +180,127 @@ class Segment(models.Model):
 
 	@classmethod
 	def getAllActive(cls):
-		segments = Segment.objects.filter(active=True).order_by("name")
-		job_titles = JobTitle.objects.values('id', 'name', 'segment_id').order_by("segment", "name")
+		cursor = connection.cursor()
+		cursor.execute(
+			" select  "
+			"	jt.id							, "
+			" 	jt.id 		as job_title_id		, "
+			" 	jt.name		as job_title_name	, "
+			" 	se.id 		as segment_id 		, "
+			"	se.name		as segment_name		"
+			" from colabre_web_jobtitle jt "
+			" 	inner join colabre_web_segment se	on jt.segment_id = se.id "
+			" 	inner join colabre_web_job jo		on jo.job_title_id = jt.id "
+			" where jt.active = 1 "
+			" 	and jo.active = 1 "
+			" 	and se.active = 1 "
+			" group by  "
+			" 	jt.id		, "
+			" 	jt.name		, "
+			" 	se.id 	 	, "
+			"	se.name		"
+			" order by "
+			" 	se.name	, "
+			" 	jt.name	; "
+		)
+		all = dictfetchall(cursor)
+		segments = []
+		[{
+			'id' : s['segment_id'],
+			'name' : s['segment_name'],
+		} for s in all
+			if 
+			{
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			} not in segments 
+			and segments.append({
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			})]
+		job_titles = []
+		[{
+			'id' : j['job_title_id'],
+			'name' : j['job_title_name'],
+			'segment_id' : j['segment_id']
+		} for j in all
+			if 
+			{
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			} not in job_titles
+			and job_titles.append({
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			})]
 		for segment in segments:
-			segment.job_titles = [
-				{
-					'id' : job_title['id'], 
-					'name' : job_title['name'],
-					'segment' : 
-					{ 
-						'id' : job_title['segment_id'] ,
-					},
-				} for job_title in job_titles if job_title['segment_id'] == segment.id]
+			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
+
 		return segments
 		
 	@classmethod
 	def getAllActiveByProfile(cls, profile):
-		job_title_ids = [job.job_title.id for job in Job.objects.filter(profile=profile).order_by("-creation_date")]
-		job_titles = JobTitle.objects.values('id', 'name', 'segment_id').filter(id__in=(job_title_ids)).order_by("segment", "name")
-		segment_ids = [job_title['segment_id'] for job_title in job_titles]
-		segments = Segment.objects.filter(active=True, id__in=(segment_ids)).order_by("name")
-		
+		cursor = connection.cursor()
+		cursor.execute(
+			" select  "
+			"	jt.id							, "
+			" 	jt.id 		as job_title_id		, "
+			" 	jt.name		as job_title_name	, "
+			" 	se.id 		as segment_id 		, "
+			"	se.name		as segment_name		"
+			" from colabre_web_jobtitle jt "
+			" 	inner join colabre_web_segment se	on jt.segment_id = se.id "
+			" 	inner join colabre_web_job jo		on jo.job_title_id = jt.id "
+			" where jt.active = 1 "
+			" 	and jo.active = 1 "
+			" 	and se.active = 1 "
+			" 	and jo.profile_id = {0} "
+			" group by  "
+			" 	jt.id		, "
+			" 	jt.name		, "
+			" 	se.id 	 	, "
+			"	se.name		"
+			" order by "
+			" 	se.name	, "
+			" 	jt.name	; ".format(profile.id)
+		)
+		all = dictfetchall(cursor)
+		segments = []
+		[{
+			'id' : s['segment_id'],
+			'name' : s['segment_name'],
+		} for s in all
+			if 
+			{
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			} not in segments 
+			and segments.append({
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			})]
+		job_titles = []
+		[{
+			'id' : j['job_title_id'],
+			'name' : j['job_title_name'],
+			'segment_id' : j['segment_id']
+		} for j in all
+			if 
+			{
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			} not in job_titles
+			and job_titles.append({
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			})]
 		for segment in segments:
-			segment.job_titles = [
-				{
-					'id' : job_title['id'], 
-					'name' : job_title['name'],
-					'segment' : 
-					{ 
-						'id' : job_title['segment_id'] ,
-					},
-				} for job_title in job_titles if job_title['segment_id'] == segment.id]
+			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
+
 		return segments
 	
 	def __unicode__(self):
@@ -237,82 +335,80 @@ class PoliticalLocation(models.Model):
 	
 	@classmethod
 	def getAllActiveCountries(cls):
-	
-		locations = PoliticalLocation.objects.raw(
+		cursor = connection.cursor()
+		cursor.execute(
 			" select * from colabre_web_politicallocation where "
-			" id in (select workplace_political_location_id from colabre_web_job where active = 1) "
+			" active = 1 and id in (select workplace_political_location_id from colabre_web_job where active = 1) "
 			" order by country_code, region_code, city_name "
 		)
+		locations = dictfetchall(cursor)
 		countries = []
 		[{
-			'id' : c.country_id,
-			'code' : c.country_code,
-			'name' : c.country_name,
+			'id' : c['country_id'],
+			'code' : c['country_code'],
+			'name' : c['country_name'],
 		} for c in locations
 			if 
 			{
-				'id' : c.country_id,
-				'code' : c.country_code, 
-				'name' : c.country_name,
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
 			} not in countries 
-			and countries.append(
-				{
-					'id' : c.country_id,
-					'code' : c.country_code,
-					'name' : c.country_name,
+			and countries.append({
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
 				})]
 					
 		regions = []
 		[{
-			'id' : r.region_id,
-			'country_id' : r.country_id,
-			'code' : r.region_code,
-			'name' : r.region_name,
+			'id' : r['region_id'],
+			'country_id' : r['country_id'],
+			'code' : r['region_code'],
+			'name' : r['region_name'],
 		} for r in locations
 			if 
 			{
-				'id' : r.region_id,
-				'country_id' : r.country_id,
-				'code' : r.region_code, 
-				'name' : r.region_name,
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
 			} not in regions 
-			and regions.append(
-				{
-					'id' : r.region_id,
-					'country_id' : r.country_id,
-					'code' : r.region_code,
-					'name' : r.region_name,
+			and regions.append({
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
 				})]
 				
 		cities = []
 		[{
-			'id' : c.id,
-			'country_id' : c.country_id,
-			'region_id' : c.region_id,
-			'country_code' : c.country_code,
-			'region_code' : c.region_code,
-			'name' : c.city_name,
+			'id' : c['id'],
+			'country_id' : c['country_id'],
+			'region_id' : c['region_id'],
+			'country_code' : c['country_code'],
+			'region_code' : c['region_code'],
+			'name' : c['city_name'],
 			'friendly_name' : str(c),
 		} for c in locations
 			if 
 			{
-				'id' : c.id,
-				'country_id' : c.country_id,
-				'region_id' : c.region_id,
-				'country_code' : c.country_code,
-				'region_code' : c.region_code,
-				'name' : c.city_name,
+				'id' : c['id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
 				'friendly_name' : str(c),
 			} not in cities 
-			and cities.append(
-				{
-					'id' : c.id,
-					'country_id' : c.country_id,
-					'region_id' : c.region_id,
-					'country_code' : c.country_code,
-					'region_code' : c.region_code,
-					'name' : c.city_name,
-					'friendly_name' : str(c),
+			and cities.append({
+				'id' : c['id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
+				'friendly_name' : str(c),
 				})]
 
 		for country in countries:
@@ -324,82 +420,80 @@ class PoliticalLocation(models.Model):
 		
 	@classmethod
 	def getAllActiveCountriesByProfile(cls, profile):
-	
-		locations = PoliticalLocation.objects.raw(
+		cursor = connection.cursor()
+		cursor.execute(
 			" select * from colabre_web_politicallocation where "
-			" id in (select workplace_political_location_id from colabre_web_job where active = 1 and profile_id = {0}) "
+			" active = 1 and id in (select workplace_political_location_id from colabre_web_job where active = 1 and profile_id = {0}) "
 			" order by country_code, region_code, city_name ".format(profile.id)
 		)
+		locations = dictfetchall(cursor)
 		countries = []
 		[{
-			'id' : c.country_id,
-			'code' : c.country_code,
-			'name' : c.country_name,
+			'id' : c['country_id'],
+			'code' : c['country_code'],
+			'name' : c['country_name'],
 		} for c in locations
 			if 
 			{
-				'id' : c.country_id,
-				'code' : c.country_code, 
-				'name' : c.country_name,
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
 			} not in countries 
-			and countries.append(
-				{
-					'id' : c.country_id,
-					'code' : c.country_code,
-					'name' : c.country_name,
+			and countries.append({
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
 				})]
 					
 		regions = []
 		[{
-			'id' : r.region_id,
-			'country_id' : r.country_id,
-			'code' : r.region_code,
-			'name' : r.region_name,
+			'id' : r['region_id'],
+			'country_id' : r['country_id'],
+			'code' : r['region_code'],
+			'name' : r['region_name'],
 		} for r in locations
 			if 
 			{
-				'id' : r.region_id,
-				'country_id' : r.country_id,
-				'code' : r.region_code, 
-				'name' : r.region_name,
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
 			} not in regions 
-			and regions.append(
-				{
-					'id' : r.region_id,
-					'country_id' : r.country_id,
-					'code' : r.region_code,
-					'name' : r.region_name,
+			and regions.append({
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
 				})]
 				
 		cities = []
 		[{
-			'id' : c.id,
-			'country_id' : c.country_id,
-			'region_id' : c.region_id,
-			'country_code' : c.country_code,
-			'region_code' : c.region_code,
-			'name' : c.city_name,
+			'id' : c['id'],
+			'country_id' : c['country_id'],
+			'region_id' : c['region_id'],
+			'country_code' : c['country_code'],
+			'region_code' : c['region_code'],
+			'name' : c['city_name'],
 			'friendly_name' : str(c),
 		} for c in locations
 			if 
 			{
-				'id' : c.id,
-				'country_id' : c.country_id,
-				'region_id' : c.region_id,
-				'country_code' : c.country_code,
-				'region_code' : c.region_code,
-				'name' : c.city_name,
+				'id' : c['id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
 				'friendly_name' : str(c),
 			} not in cities 
-			and cities.append(
-				{
-					'id' : c.id,
-					'country_id' : c.country_id,
-					'region_id' : c.region_id,
-					'country_code' : c.country_code,
-					'region_code' : c.region_code,
-					'name' : c.city_name,
-					'friendly_name' : str(c),
+			and cities.append({
+				'id' : c['id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
+				'friendly_name' : str(c),
 				})]
 
 		for country in countries:
@@ -448,8 +542,9 @@ class Job(models.Model):
 	
 	active = models.BooleanField(default=True)
 
+	# to remove
 	@staticmethod
-	def view_search_my_jobs(profile, after_id, q, limit):
+	def _view_search_my_jobs(profile, after_id, q, limit):
 		query_id = Q(id__lt=after_id)
 		if after_id == '0' or after_id == 0:
 			query_id = Q()
@@ -467,6 +562,40 @@ class Job(models.Model):
 		exists = Job.objects.filter(Q(profile=profile), query_name).exists()
 		return jobs, exists
 
+	@staticmethod
+	def view_search_my_jobs(profile, term, job_titles_ids, locations_ids, days, page, limit):
+		
+		query = Q(published=True) & Q(profile=profile)
+		
+		if days > 0:
+			now = datetime.now()
+			ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
+			query = query & Q(creation_date__gte=ref_datetime)
+		
+		if job_titles_ids:
+			query = query & Q(job_title__in=(job_titles_ids))
+			
+		if locations_ids:
+			query = query & Q(workplace_political_location__in=(locations_ids))
+		
+		list = Job.objects.filter(
+			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
+			query
+		).order_by("-creation_date")
+
+		jobs = None
+		
+		try:
+			paginator = Paginator(list, limit)
+			jobs = paginator.page(page)
+		except EmptyPage:
+			pass
+		
+		is_last_page = page >= paginator.num_pages
+		total_jobs = paginator.count
+
+		return jobs, is_last_page, total_jobs
+		
 	@staticmethod
 	def view_search_public(term, job_titles_ids, locations_ids, days, page, limit):
 		now = datetime.now()

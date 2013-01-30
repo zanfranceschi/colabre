@@ -1,132 +1,307 @@
 {% extends "_base.html" %}
-{% load bbcode %}
+{% load cache %}
 {% block title %}Minhas vagas{% endblock %}
 {% block extra_head %}
-<style type="text/css">
-	.job, #jobs-loading
-	{
-		border: 1px solid #ddd;
-		margin-bottom: 10px;
-		background: #eee;
-		padding: 5px;
-		position: relative;
-	}
-	.job-toggle-activation
-	{
-		cursor: pointer;
-	}
-	.job
-	{
-		color: #888;
-		font-size: 95%
-	}
-	.job p
-	{
-		white-space: pre-line;
-		border: 1px solid #ccc;
-		border-left: none;
-		border-right: none;
-		padding: 10px;
-		font-size: 90%;
-	}
-	.job .job-edit
-	{
-		position: absolute;
-		right: 40px;
-		top: 5px;
-		font-size: 80%;
-	}
-	.job .job-del
-	{
-		position: absolute;
-		right: 5px;
-		top: 5px;
-		font-size: 80%;
-	}
-	.job h3
-	{
-		margin-top: 0;
-	}
-	.job-published
-	{
-		background-color: #e2ece2;
-		color: #333;
-	}
-</style>
+	<link href="{{ STATIC_URL }}css/jobs.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
-	<h1 style="position: relative; margin-bottom: 10px;">
-		Minhas vagas
-		<a href="/minhas-vagas/criar/">
-			<img style="position: absolute; right: 0px; bottom: 0" src="{{ STATIC_URL }}img/add-icon.png" 
-				alt="" 
-				title="criar nova vaga" />
-		</a>
-	</h1>
-	
-	<div style="margin-bottom: 20px; margin-top: 0;">
-		<input type="text" id="search-jobs" name="search-jobs" style="line-height: 32px; height: 32px; width: 60%; margin-right: 0;" /><input id="btn-search" style="border: 0; width: 15%;" type="button" class="btn btn-info" value="buscar" />
-	</div>
-	
-	<div class="partial-container" id="jobs">
-		<img id="jobs-loading-img" src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />	
-	</div>
-	
-	<div id="jobs-loading" style="display: none; text-align: center;">
-		<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+	<div class="search-wrapper">
+		<!-- left column -->
+		<div class="content-left">
+
+			<div class="content-header-aligner">
+				<h2>Buscar minhas vagas</h2>
+			</div>
+			
+			<!-- filters -->
+			{% cache 300 jobs_search_filters user.username %}
+			<div class="filters-wrapper">
+				<!-- period -->
+				<div id="filter-period" class="filter-element-wrapper">
+					<h4>Período</h4>
+					<div class="filter-element-content-level-01">
+						
+						Publicadas até <select id="period-days"
+											class="filter-control">
+										{% for day in days %}
+											<option value="{{day}}">{{day}}</option>
+										{% endfor %}
+										</select> dias atrás.
+						<div style="margin-top: 5px; text-align: center;">
+							<input type="checkbox" class="filter-control" id="filter-period-all" />
+							<label for="filter-period-all">Todas</label>
+						</div>
+					</div>
+				</div>
+				
+				<!-- locations -->
+				<div id="filter-locations" class="filter-element-wrapper">
+					<h4>Localização</h4>
+					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
+					{% for country in countries %}
+						<div>
+							<input type="checkbox" class="filter-control country country-{{ country.id }}" id="country-{{ country.id }}" />
+							<label for="country-{{ country.id }}">{{ country.name }}</label>
+							<a target="country-regions-{{ country.id }}" class="filter-toggler">◄</a>
+							
+							<div class="filter-element-content-level-02 filter-element-content-level-wrapper" id="country-regions-{{ country.id }}">
+							{% for region in country.regions %}
+								<div>
+									<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
+									<label for="region-{{ region.id }}">{{ region.name }}</label>
+									<a target="region-cities-{{ region.id }}" class="filter-toggler">◄</a>
+									
+									<div id="region-cities-{{ region.id }}" class="filter-element-content-level-last">
+									{% for city in region.cities %}
+										<div>
+											<input id="location-{{ city.id }}" class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" type="checkbox" value="{{ city.id }}" />
+											<label for="location-{{ city.id }}">{{ city.name }}</label>
+										</div>
+									{% endfor %}
+									</div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					{% endfor %}
+					</div>
+				</div>
+				
+				<!-- segments -->
+				<div id="filter-segments" class="filter-element-wrapper">
+					<h4>Segmentos/Cargos</h4>
+					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
+						{% for segment in segments %}
+						<div class="segment-wrapper">
+							<input id="segment-{{ segment.id }}" 
+								type="checkbox" 
+								value="{{ segment.id }}" 
+								class="filter-control segment-item"  />
+
+							<label for="segment-{{ segment.id }}">{{ segment.name }}</label>
+							<a target="titles-{{ segment.id }}" class="filter-toggler" >◄</a>
+							
+							<div class="filter-element-content-level-last" id="titles-{{ segment.id }}">
+							{% for job_title in segment.job_titles %}
+								<div>
+									<input class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
+									<label for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					{% endfor %}
+					</div>
+				</div>
+				
+			</div>
+			{% endcache %}
+		</div>
+		
+		<!-- right column -->
+		<div class="content-right">
+			
+			<!-- search input -->
+			<div class="content-header-aligner">
+				<input class="search-field" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />	
+			</div>
+			
+			<!-- search result -->
+			<div class="loading-search" id="jobs-loading-img">
+				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
+				buscando
+			</div>
+			<div class="partial-container" id="jobs"></div>
+			<div class="loading-more" id="jobs-loading">
+				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+			</div>
+		</div>
 	</div>
 	
 	<script type="text/javascript">
 		$(function(){
-
-			var lastId = function()
-			{
-				return lastEntityLoadedId(".job", "job-id");
-			}
 			
+			var q = $("#search-jobs").val();
+			
+			$("#filter-period-all").change(function(){
+				checked = $(this).attr("checked");
+				if (checked)
+				{
+					$("#period-days").attr("disabled", "disabled");
+					period_days = -1;
+				}
+				else
+				{
+					$("#period-days").removeAttr("disabled");
+					period_days = $("#period-days").val();
+				}
+			});
+			
+			// load content and toggle visiblity
+			$(".job-wrapper-summary").live('click', function(){
+			
+				jobId = $(this).attr("job-id");
+				
+				var req = $.ajax({
+					url: '/minhas-vagas/parcial/detalhar/' + jobId + '/' + q + '/',
+					type: 'get',
+					complete: function()
+					{
+						
+					},
+					success: function(data)
+					{
+						respJobId = req.getResponseHeader('job-id')
+						_this = $("div.job-wrapper-summary[job-id=" + respJobId + "]");
+					
+						details = _this.children("div.job-details");
+						
+						_this.removeClass("job-wrapper-summary")
+							.addClass("job-wrapper-details");
+						
+						details.empty();
+						details.html(data);
+						
+						details.show('fast');
+					},
+					error: function(a, b, error)
+					{
+						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
+					}
+				});				
+			});
+			
+			// toggle visibility after content is loaded...
+			$(".job-wrapper-details").live('click', function() {
+				
+				details = $(this).children("div.job-details");
+				details.toggle('fast');
+				
+			});
+		
+			$(".filter-toggler").click(function(){
+				
+				target = $("#" + $(this).attr("target"));
+				
+				if (target.is(":visible"))
+				{
+					$(this).text("◄");
+					target.hide();
+				}
+				else
+				{
+					$(this).text("▼");
+					target.show();
+				}
+			});
+		
+			$(".country, .region").change(function(){
+				id = $(this).attr("id");
+				checked = $(this).attr("checked") ? true : false;
+				$("." + id).attr("checked", checked);
+			});
+		
+			$(".segment-item").change(function(){
+				checked = $(this).attr("checked") ? true : false;
+				$("[job-title-segmentid=" + $(this).val() + "]").attr("checked", checked);
+			});
+			
+			$(".jot-title-item").change(function(){
+				segmentId = $(this).attr("job-title-segmentid");
+				checked = $(".jot-title-item:checked[job-title-segmentid=" + segmentId + "]").size() > 0;
+				$("#segment-" + segmentId).attr("checked", checked);
+			});
+		
 			var search_url = function(page, term)
 			{
 				return '/minhas-vagas/parcial/buscar/' + page + '/' + term ;
 			};
 			
+			var page = 1;
+			
+			// avoid resending the same request twice when page is scrolled all the way down
+			var lock = false;
+			
 			var display_result = function(result)
 			{
 				$("#jobs-loading-img").hide();
+				$("#jobs-loading").hide();
+				$("#jobs-search-info").show();
 				$("#jobs").html(result);
+				page++;
 			};
 			
 			var display_result_append = function(result)
 			{
 				$("#jobs-loading-img").hide();
+				$("#jobs-loading").hide();
+				$("#jobs-search-info").show();
 				$("#jobs").append(result);
+				page++;
+				lock = false;
 			};
 			
-			var q = $("#search-jobs").val();
+			var period_days = $("#period-days").val();
 			
-			search(search_url(0, q), display_result);
+			$("#period-days").change(function(){
+				period_days = $(this).val();
+			});
 			
+			//search(search_url(0, q), display_result);
+			
+			var send_search = function(callback)
+			{
+				job_titles = [];
+				_locations = [];
+				$(".jot-title-item:checked").each(function(){
+					job_titles.push($(this).val());
+				});
+				$(".location-item:checked").each(function(){
+					_locations.push($(this).val());
+				});
+				url = "/minhas-vagas/parcial/buscar/" + q + "/" + job_titles.join("-") + "/" + _locations.join("-") + "/" + period_days + "/" + page + "/";
+				$("#jobs-loading-img").show();
+				$("#jobs-search-info").hide();
+				search(url, callback);
+			};
+			
+			$(".filter-control").bind('change select', function() { 
+				page = 1; 
+				send_search(display_result); 
+			});
+			
+			$("#btn-search").click(function(){
+				q = $("#search-jobs").val();
+				page = 1;
+				send_search(display_result);
+			});
+
 			$("#search-jobs").keyup(function(e){
 				code = e.which ? e.which : e.keyCode;
 				q = $(this).val();
 				if (code == 13)
 				{
-					$("#jobs-loading-img").show();
-					search(search_url(0, q), display_result);
+					page = 1;
+					send_search(display_result);
 				}
 			});
 
 			$(window).scroll(function(){
-				if($(window).scrollTop() == $(document).height() - $(window).height())
+				if(!lock && $(window).scrollTop() == $(document).height() - $(window).height())
 				{
 					if ($("#stop_request_on_scroll").size() > 0)
 						return;
-					
-					search(search_url(lastId(), q), display_result_append);
+						
+					lock = true;
+					$("#jobs-loading").show();
+					send_search(display_result_append);
 				}
 			});
 			
 			$("#search-jobs").focus();
+			
+			send_search(display_result); 
 		});
 	</script>
 	

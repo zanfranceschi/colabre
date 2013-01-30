@@ -10,9 +10,7 @@
 		<a href="{% url my_resume_index %}">meu currículo</a> | 
 		<a href="{% url my_jobs_index %}">minhas vagas</a> | 
 		<a href="{% url my_jobs_create %}">nova vaga</a> | 
-		{% cache 300 user.username %}
 		<a href="{% url my_profile_index %}">{{ user.first_name }}</a>{% if not user.get_profile.is_verified %} <img src="{{ STATIC_URL }}img/exclamation-icon-16.png" title-position="bottom center" title="email não verificado" alt="" align="absmiddle" /> {% endif %} | 
-		{% endcache %}
 		{% if user.is_superuser %} <a href="/admin/">admin</a> | {% endif %}
 		<a href="{% url logout %}" id="logout">sair</a>
 	{% else %}

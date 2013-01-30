@@ -23,9 +23,11 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 	url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='my_jobs_confirm_del'),
 	url(r'^excluir/([\d]+)/$', 'delete', name='my_jobs_delete'),
 	
-	url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
-	url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
-	url(r'^parcial/buscar/$', 'partial_html_search'),
+	url(r'^parcial/buscar/(.*)/([\d\-]*)/([\d\-]*)/([\d\-1]*)/([\d]*)/$', 'partial_html_search'),
+	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='my_jobs_partial_details'),
+	#url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
+	#url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
+	#url(r'^parcial/buscar/$', 'partial_html_search'),
 	#url(r'^parcial/alternar-ativacao/([\d]+)/$', 'partial_toggle_published'),
 	
 	url(r'^parcial/buscar-cargo/(.+)/$', 'partial_json_search_job_title', name= 'my_jobs_partial_json_search_job_title'),
@@ -37,18 +39,48 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 def get_template_path(template):
 	return 'my-jobs/%s' % template
 
+def _index_data(request):
+	profile = request.user.get_profile()
+	segments = Segment.getAllActiveByProfile(profile)
+	countries = PoliticalLocation.getAllActiveCountriesByProfile(profile)
+	days = [3, 7, 15, 30, 60, 90, 120, 150]
+	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
+	
 @login_required
 @handle_exception
 def index(request):
-	return render(request, get_template_path('index.html'))
-
+	context = _index_data(request)
+	return render(request, get_template_path('index.html'), context)
 
 @login_required
 @handle_exception
-def partial_html_search(request, before_id=0, q=None):
+def partial_details(request, id, search_term = None):
+	job = Job.objects.get(id=id)
+	JobViewLogger.log(request, search_term, job)
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
+	response['job-id'] = id
+	return response
+
+@login_required
+@handle_exception
+def _partial_html_search(request, before_id=0, q=None):
 	jobs, exists = Job.view_search_my_jobs(request.user.get_profile(), before_id, q, 100)
 	return render(request, get_template_path("partial/jobs.html"), {'jobs' : jobs, 'exists': exists, 'q' : q})
 
+@login_required
+@handle_exception
+def partial_html_search(request, term, job_titles, locations, days = 3, page = 1):
+	job_titles_ids = None
+	if job_titles:
+		job_titles_ids = [int(n) for n in job_titles.split("-")]
+	
+	locations_ids = None
+	if locations:
+		locations_ids = [int(n) for n in locations.split("-")]
+	
+	jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, locations_ids, int(days), page, 30)
+	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
+	
 @login_required
 @handle_exception
 def partial_json_search_job_title(request, q):
@@ -89,11 +121,13 @@ def partial_toggle_published(request, job_id):
 def create(request):	
 	template = None
 	profile = request.user.get_profile()
+	context = {}
 	if request.method == 'POST':
 		form = JobForm(request.POST, profile=profile)
 		if form.is_valid():
 			form.save()
 			template = get_template_path('index.html')
+			context = _index_data(request)
 			messages.success(request, 'Vaga criada.')
 		else:
 			messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
@@ -101,7 +135,8 @@ def create(request):
 	else:
 		template = get_template_path('create.html')
 		form = JobForm(profile=profile)
-	return render(request, template, {'form' : form, 'action' : '/minhas-vagas/criar/'})
+	context.update({'form' : form, 'action' : '/minhas-vagas/criar/'})
+	return render(request, template, context)
 
 
 @login_required
