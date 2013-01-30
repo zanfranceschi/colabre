@@ -1,6 +1,10 @@
 <div class="job job-wrapper-summary" job-id="{{ job.id }}">
+	{% if job.is_editable %}<a href="/minhas-vagas/editar/{{ job.id }}">[editar]</a>{% endif %}
 	<small><i><b>{{ job.segment_name }}</b></i> em {{ job.workplace_political_location_name }}</small>
 	<h3>{{ job.job_title_name }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>
+	<a href="/minhas-vagas/confirmar-exclusao/{{ job.id }}" class="job-del">
+		<img src="{{ STATIC_URL }}img/delete.png" alt="exclus&aatilde;o" title="excluir" />
+	</a>
 	<div class="job-details"></div>
 </div>

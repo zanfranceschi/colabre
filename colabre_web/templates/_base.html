@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
 	<meta charset="utf-8" />
@@ -41,16 +41,11 @@
 	{% block extra_head %}{% endblock %}
 </head>
 <body>
-
 {% include "_menu.html" %}
-
 <div id="content">
 	{% include "_message.html" %}
-	
 	{% block body %}{% endblock body %}
 </div>
-
 {% include "_footer.html" %}
-
 </body>
 </html>

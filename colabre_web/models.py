@@ -182,26 +182,27 @@ class Segment(models.Model):
 	def getAllActive(cls):
 		cursor = connection.cursor()
 		cursor.execute(
-			" select  "
-			"	jt.id							, "
-			" 	jt.id 		as job_title_id		, "
-			" 	jt.name		as job_title_name	, "
-			" 	se.id 		as segment_id 		, "
-			"	se.name		as segment_name		"
-			" from colabre_web_jobtitle jt "
-			" 	inner join colabre_web_segment se	on jt.segment_id = se.id "
-			" 	inner join colabre_web_job jo		on jo.job_title_id = jt.id "
-			" where jt.active = 1 "
-			" 	and jo.active = 1 "
-			" 	and se.active = 1 "
-			" group by  "
-			" 	jt.id		, "
-			" 	jt.name		, "
-			" 	se.id 	 	, "
-			"	se.name		"
-			" order by "
-			" 	se.name	, "
-			" 	jt.name	; "
+			"""			
+			select  
+				jt.id							, 
+			 	jt.id 		as job_title_id		, 
+			 	jt.name		as job_title_name	, 
+			 	se.id 		as segment_id 		, 
+				se.name		as segment_name		
+			 from colabre_web_jobtitle jt 
+			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
+			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
+			 where jt.active = 1 
+			 	and jo.active = 1 
+			 	and se.active = 1
+			 group by 
+			 	jt.id		,
+			 	jt.name		,
+			 	se.id 	 	,
+				se.name	
+			 order by
+			 	se.name	,
+			 	jt.name	; """
 		)
 		all = dictfetchall(cursor)
 		segments = []
@@ -244,27 +245,29 @@ class Segment(models.Model):
 	def getAllActiveByProfile(cls, profile):
 		cursor = connection.cursor()
 		cursor.execute(
-			" select  "
-			"	jt.id							, "
-			" 	jt.id 		as job_title_id		, "
-			" 	jt.name		as job_title_name	, "
-			" 	se.id 		as segment_id 		, "
-			"	se.name		as segment_name		"
-			" from colabre_web_jobtitle jt "
-			" 	inner join colabre_web_segment se	on jt.segment_id = se.id "
-			" 	inner join colabre_web_job jo		on jo.job_title_id = jt.id "
-			" where jt.active = 1 "
-			" 	and jo.active = 1 "
-			" 	and se.active = 1 "
-			" 	and jo.profile_id = {0} "
-			" group by  "
-			" 	jt.id		, "
-			" 	jt.name		, "
-			" 	se.id 	 	, "
-			"	se.name		"
-			" order by "
-			" 	se.name	, "
-			" 	jt.name	; ".format(profile.id)
+			"""			
+			select  
+				jt.id							, 
+			 	jt.id 		as job_title_id		, 
+			 	jt.name		as job_title_name	, 
+			 	se.id 		as segment_id 		, 
+				se.name		as segment_name		
+			 from colabre_web_jobtitle jt 
+			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
+			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
+			 where jt.active = 1 
+			 	and jo.active = 1 
+			 	and se.active = 1
+			 	and jo.profile_id = {0}
+			 group by 
+			 	jt.id		,
+			 	jt.name		,
+			 	se.id 	 	,
+				se.name	
+			 order by
+			 	se.name	,
+			 	jt.name	; 
+			""".format(profile.id)
 		)
 		all = dictfetchall(cursor)
 		segments = []
@@ -337,9 +340,16 @@ class PoliticalLocation(models.Model):
 	def getAllActiveCountries(cls):
 		cursor = connection.cursor()
 		cursor.execute(
-			" select * from colabre_web_politicallocation where "
-			" active = 1 and id in (select workplace_political_location_id from colabre_web_job where active = 1) "
-			" order by country_code, region_code, city_name "
+			"""
+			select l.* 
+			from colabre_web_politicallocation l 
+				inner join colabre_web_job j on j.workplace_political_location_id = l.id
+			where j.active = 1
+			order by 
+				l.country_code, 
+				l.region_code, 
+				l.city_name 
+			"""
 		)
 		locations = dictfetchall(cursor)
 		countries = []
@@ -422,9 +432,17 @@ class PoliticalLocation(models.Model):
 	def getAllActiveCountriesByProfile(cls, profile):
 		cursor = connection.cursor()
 		cursor.execute(
-			" select * from colabre_web_politicallocation where "
-			" active = 1 and id in (select workplace_political_location_id from colabre_web_job where active = 1 and profile_id = {0}) "
-			" order by country_code, region_code, city_name ".format(profile.id)
+			"""
+			select l.* 
+			from colabre_web_politicallocation l 
+				inner join colabre_web_job j on j.workplace_political_location_id = l.id
+			where j.active = 1
+				and j.profile_id = {0}
+			order by 
+				l.country_code, 
+				l.region_code, 
+				l.city_name 
+			""".format(profile.id)
 		)
 		locations = dictfetchall(cursor)
 		countries = []

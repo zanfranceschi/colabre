@@ -63,12 +63,6 @@ def partial_details(request, id, search_term = None):
 
 @login_required
 @handle_exception
-def _partial_html_search(request, before_id=0, q=None):
-	jobs, exists = Job.view_search_my_jobs(request.user.get_profile(), before_id, q, 100)
-	return render(request, get_template_path("partial/jobs.html"), {'jobs' : jobs, 'exists': exists, 'q' : q})
-
-@login_required
-@handle_exception
 def partial_html_search(request, term, job_titles, locations, days = 3, page = 1):
 	job_titles_ids = None
 	if job_titles:
@@ -84,7 +78,7 @@ def partial_html_search(request, term, job_titles, locations, days = 3, page = 1
 @login_required
 @handle_exception
 def partial_json_search_job_title(request, q):
-	list = serializers.serialize("json", JobTitle.objects.filter(name__icontains=q).order_by("name")[:10])
+	list = serializers.serialize("json", JobTitle.objects.filter(name__icontains=q).distinct().order_by("name")[:10])
 	return HttpResponse(list, mimetype="application/json")
 
 @login_required
@@ -145,13 +139,15 @@ def create(request):
 def edit(request, job_id):
 	template = None
 	profile=request.user.get_profile()
-	job = Job.objects.get(id=job_id)
+	job = Job.objects.get(id=job_id, profile=profile)
+	context = {}
 	if job.is_editable:
 		if request.method == 'POST':
 			form = JobForm(request.POST, instance=job, profile=profile)
 			if form.is_valid():
 				form.save()
 				template = get_template_path('index.html')
+				context = _index_data(request)
 				messages.success(request, 'Vaga atualizada.')
 			else:
 				template = get_template_path('edit.html')
@@ -159,7 +155,8 @@ def edit(request, job_id):
 		else:
 			template = get_template_path('edit.html')
 			form = JobForm(profile=profile, instance=job)
-		return render(request, template, {'form' : form, 'action' : '/minhas-vagas/editar/' + job_id + '/'})
+		context.update({'form' : form, 'action' : '/minhas-vagas/editar/' + job_id + '/'})
+		return render(request, template, context)
 	else:
 		messages.error(request, u'Esta vaga foi criada a mais de 24 horas atrás. As vagas só podem ser editadas até 24 após sua criação. Por favor, considere excluí-la e criar uma nova.')
 		return HttpResponseRedirect(reverse('colabre_web.views.my_jobs.index'))
@@ -180,10 +177,12 @@ def confirm_del(request, job_id):
 @user_passes_test(is_verified, login_url=is_not_verified_url)
 @handle_exception
 def delete(request, job_id):
+	context = {}
 	try:
 		job = Job.objects.get(id=job_id)
 		job.delete()
 		messages.success(request, u'Vaga excluída.')
-		return render(request, get_template_path('index.html'))
+		context = _index_data(request)
 	except Job.DoesNotExist:
-		return render(request, get_template_path('index.html'))
+		pass
+	return render(request, get_template_path('index.html'), context)
