@@ -1,10 +1,10 @@
-<div class="job job-wrapper-summary" job-id="{{ job.id }}">
-	{% if job.is_editable %}<a href="/minhas-vagas/editar/{{ job.id }}">[editar]</a>{% endif %}
+<div id="job-{{job.id}}" job-id="{{job.id}}" class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job-show-details my-job job job-wrapper-summary {% if job.is_editable %}job-editable{% endif %}">
 	<small><i><b>{{ job.segment_name }}</b></i> em {{ job.workplace_political_location_name }}</small>
 	<h3>{{ job.job_title_name }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>
-	<a href="/minhas-vagas/confirmar-exclusao/{{ job.id }}" class="job-del">
-		<img src="{{ STATIC_URL }}img/delete.png" alt="exclus&aatilde;o" title="excluir" />
+	{% if job.is_editable %}<a alt="edição" title="editar" class="job-edit" href="{% url my_jobs_edit job.id %}"><img src="{{ STATIC_URL }}img/page_white_edit.png" /></a>{% endif %}
+	<a href="{% url my_jobs_confirm_del job.id %}" class="job-del">
+		<img src="{{ STATIC_URL }}img/delete.png" alt="exclusão" title="excluir" />
 	</a>
-	<div class="job-details"></div>
+	<div class="job-details" id="job-details-{{job.id}}"></div>
 </div>

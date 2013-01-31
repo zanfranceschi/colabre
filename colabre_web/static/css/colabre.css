@@ -190,12 +190,12 @@ input[type=password], input[type=text], textarea, select, .tagit
 	font-size: 105%;
 	border: 1.5px solid #888;
 	background: #9db1da; /* azul */
-	/*
+	
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	*/
+	
 }
 .tagit
 {
@@ -239,12 +239,12 @@ input[type=submit]
 	padding: 10px;
 	border: 1px solid #ddd;
 	font-size: 105%;
-	/*
+	
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	*/
+	
 	font-weight: bold;
 }
 
@@ -268,12 +268,12 @@ a.btn
 	padding: 10px;
 	margin: 10px;
 	border: 1px solid #ddd;
-	/*
+	
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	*/
+	
 	font-weight: bold;
 }
 

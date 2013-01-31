@@ -139,7 +139,7 @@
 			});
 			
 			// load content and toggle visiblity
-			$(".job-wrapper-summary").live('click', function(){
+			$(".job-show-details").live('click', function(){
 			
 				jobId = $(this).attr("job-id");
 				
@@ -152,28 +152,21 @@
 					},
 					success: function(data)
 					{
-						respJobId = req.getResponseHeader('job-id')
-						_this = $("div.job-wrapper-summary[job-id=" + respJobId + "]");
-					
-						details = _this.children("div.job-details");
+						$("#job-details-" + jobId)
+							.html(data)
+							.show('fast');
 						
-						_this.removeClass("job-wrapper-summary")
-							.addClass("job-wrapper-details");
-						
-						details.empty();
-						details.html(data);
-						
-						details.show('fast');
+						$("#job-" + jobId)
+							.removeClass("job-show-details")
+							.addClass("job-toggle-details");
 					}
 				});				
 			});
 			
 			// toggle visibility after content is loaded...
-			$(".job-wrapper-details").live('click', function() {
-				
-				details = $(this).children("div.job-details");
-				details.toggle('fast');
-				
+			$(".job-toggle-details").live('click', function() {
+				id = $(this).attr("job-id");
+				$("#job-details-" + id).toggle('fast');
 			});
 		
 			$(".filter-toggler").click(function(){

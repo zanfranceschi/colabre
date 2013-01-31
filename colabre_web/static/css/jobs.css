@@ -9,6 +9,8 @@
 .job
 {
 	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
 	background: #eee;
 	margin-bottom: 0;
 	padding: 5px;
@@ -16,14 +18,58 @@
 	font-size: 100%;
 	position: relative;
 }
-.job:last-child
+.job-first-child
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+	
+
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	-moz-border-radius-bottomright: 0;
+	-moz-border-radius-bottomleft: 0;
+	-webkit-border-bottom-right-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+
+}
+.job-last-child
 {
 	border-bottom: 1px solid #ddd;
+	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+	
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+	-moz-border-radius-topright: 0;
+	-moz-border-radius-topleft: 0;
+	-webkit-border-top-right-radius: 0;
+	-webkit-border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
 }
+.job-single
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+	border-bottom: 1px solid #ddd;
+}
+
 .job:hover
 {
 	background-color: #fff;
 	cursor: pointer;
+}
+.my-job:hover
+{
 }
 .job h3
 {
@@ -46,9 +92,26 @@
 {
 	
 }
-.job-del
+.job-del, .job-edit
 {
 	position: absolute;
-	top: 30px;
-	right: 10px;	
+	bottom: 0px;
+	right: 2px;	
+	z-index: 10;
+}
+.job-del
+{
+	right: 5px;	
+}
+.job-edit
+{
+	right: 40px;	
+}
+.job-editable
+{
+	background-color: #eee;
+}
+.my-job
+{
+	padding-bottom: 35px;
 }
