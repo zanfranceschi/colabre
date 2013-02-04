@@ -11,18 +11,18 @@ class RequestLogger:
 		
 		access = {
 			'HTTP_REFERER' 				: http_access,
-			'PROCESSOR_IDENTIFIER' 		: request.META['PROCESSOR_IDENTIFIER'],
+			#'PROCESSOR_IDENTIFIER' 		: request.META['PROCESSOR_IDENTIFIER'],
 			'REQUEST_METHOD' 			: request.META['REQUEST_METHOD'],
 			'QUERY_STRING' 				: request.META['QUERY_STRING'],
 			'HTTP_USER_AGENT' 			: request.META['HTTP_USER_AGENT'],
-			'HTTP_COOKIE' 				: request.META['HTTP_COOKIE'],
+			#'HTTP_COOKIE' 				: request.META['HTTP_COOKIE'],
 			'REMOTE_ADDR' 				: request.META['REMOTE_ADDR'],
-			'PROCESSOR_ARCHITECTURE' 	: request.META['PROCESSOR_ARCHITECTURE'],
+			#'PROCESSOR_ARCHITECTURE' 	: request.META['PROCESSOR_ARCHITECTURE'],
 			'CSRF_COOKIE' 				: request.META['CSRF_COOKIE'],
 			'PATH_INFO' 				: request.META['PATH_INFO'],
 			'HTTP_ACCEPT_LANGUAGE' 		: request.META['HTTP_ACCEPT_LANGUAGE'],
-			'NUMBER_OF_PROCESSORS' 		: request.META['NUMBER_OF_PROCESSORS'],
-			'OS' 						: request.META['NUMBER_OF_PROCESSORS'],
+			#'NUMBER_OF_PROCESSORS' 		: request.META['NUMBER_OF_PROCESSORS'],
+			#'OS' 						: request.META['OS'],
 			'ACCESS_DATETIME' 			: datetime.now(),
 			}
 			
