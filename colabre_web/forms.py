@@ -75,13 +75,13 @@ class UserProfileForm(BaseForm):
 
 			data = {
 				'email' : profile.user.email,
-				'profile_type' : profile.profile_type,
+				'profile_type' : profile.profile_type or 'js',
 				'first_name' : profile.user.first_name,
 				'last_name' : profile.user.last_name,
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
-			
 			}
+			print >> sys.stderr, profile.gender
 			if profile.resume:
 				data.update({
 					'resume_short_description' : profile.resume.short_description,
@@ -106,7 +106,7 @@ class UserProfileForm(BaseForm):
 	gender = forms.ChoiceField(
 		required=True,
 		label='Sexo',
-		choices=(('F', 'Feminino'), ('M', 'Masculino')),
+		choices=(('F', 'Feminino'), ('M', 'Masculino'), ('U', 'Outro')),
 		widget=forms.RadioSelect()
 	)
 	birthday = forms.DateField(
