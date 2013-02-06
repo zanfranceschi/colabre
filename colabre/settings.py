@@ -1,5 +1,4 @@
 import os
-import sys
 from socket import gethostname
 
 # Custom apps location
@@ -8,8 +7,8 @@ from socket import gethostname
 
 _PROJECT_DIR = os.path.dirname(os.path.abspath(__file__)).replace('colabre', 'colabre_web').replace('\\', '/')
 
-def abs_path(dir, forwardslash=True):
-	result = os.path.join(_PROJECT_DIR, dir)
+def abs_path(_dir, forwardslash=True):
+	result = os.path.join(_PROJECT_DIR, _dir)
 	return result
 
 HOST = gethostname()
