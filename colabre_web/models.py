@@ -89,6 +89,29 @@ class UserProfile(models.Model):
 		verification = UserProfileVerification.create(profile)
 		
 		return profile
+		
+	@staticmethod
+	def create_from_linkedin(linkedin_data):
+		user = User.objects.find(username=linkedin_data['id'])
+		if user:
+			return
+
+		# Associate to a Django user
+		new_user = User()
+		new_user.is_superuser = False
+		new_user.is_staff = False
+		new_user.is_active = True
+		new_user.username = linkedin_data['id']
+		new_user.first_name = linkedin_data['first_name']
+		new_user.email = linkedin_data['email_address']
+		#new_user.set_password(password)
+		new_user.save()
+		profile = UserProfile()
+		profile.user = new_user
+		profile.is_verified = True
+		profile.save()
+		#verification = UserProfileVerification.create(profile)
+		return profile
 	
 	@staticmethod
 	def update_profile(user, first_name, last_name, email, profile_type, gender, birthday):
