@@ -1,9 +1,9 @@
-// infinite scroll
-var search = function(url, success_callback, error_callback, complete_callback, beforeSend_callback)
+var search = function(url, type, data, success_callback, error_callback, complete_callback, beforeSend_callback)
 {
 	$.ajax({
 		url: url,
-		type: 'get',
+		type: type,
+		data: data,
 		success: function(result)
 		{
 			success_callback(result);

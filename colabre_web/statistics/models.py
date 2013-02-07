@@ -21,7 +21,7 @@ class RequestLogger:
 			'CSRF_COOKIE' 				: request.META['CSRF_COOKIE'],
 			'PATH_INFO' 				: request.META['PATH_INFO'],
 			'HTTP_ACCEPT_LANGUAGE' 		: request.META['HTTP_ACCEPT_LANGUAGE'],
-			#'NUMBER_OF_PROCESSORS' 		: request.META['NUMBER_OF_PROCESSORS'],
+			#'NUMBER_OF_PROCESSORS' 	: request.META['NUMBER_OF_PROCESSORS'],
 			#'OS' 						: request.META['OS'],
 			'ACCESS_DATETIME' 			: datetime.now(),
 			}

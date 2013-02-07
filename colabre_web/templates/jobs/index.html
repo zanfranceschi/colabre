@@ -121,11 +121,6 @@
 				$("#segment-" + segmentId).attr("checked", checked);
 			});
 		
-			var search_url = function(page, term)
-			{
-				return '/vagas/parcial/buscar/' + page + '/' + term ;
-			};
-			
 			var page = 1;
 			
 			// avoid resending the same request twice when page is scrolled all the way down
@@ -150,10 +145,6 @@
 				lock = false;
 			};
 			
-			
-			
-			//search(search_url(0, q), display_result);
-			
 			var send_search = function(callback)
 			{
 				job_titles = [];
@@ -164,10 +155,17 @@
 				$(".location-item:checked").each(function(){
 					_locations.push($(this).val());
 				});
-				url = "/vagas/parcial/buscar/" + q + "/" + job_titles.join("-") + "/" + _locations.join("-") + "/" + $("#period-days").val() + "/" + page + "/";
+				data = {
+					term: q,
+					job_titles: job_titles.join("-"),
+					locations: _locations.join("-"),
+					days: $("#period-days").val(),
+					page: page,
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				};
 				$("#jobs-loading-img").show();
 				$("#jobs-search-info").hide();
-				search(url, callback);
+				search("/vagas/parcial/buscar/", 'post', data, callback);
 			};
 			
 			$(".filter-control").bind('change select', function() { 

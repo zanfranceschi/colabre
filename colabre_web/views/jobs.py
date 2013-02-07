@@ -21,9 +21,8 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^$', 'index', name='jobs_index'),
-	url(r'^parcial/buscar/(.*)/([\d\-]*)/([\d\-]*)/([\d]*)/([\d]*)/$', 'partial_html_search'),
+	url(r'^parcial/buscar/$', 'partial_html_search'),
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='jobs_partial_details'),
-	
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
 )
 
@@ -42,20 +41,29 @@ def partial_details(request, id, search_term = None):
 def detail(request, id):
 	job = Job.objects.get(id=id)
 	return render(request, get_template_path("detail.html"), { 'job' : job })
-	
+
 @handle_exception
-def partial_html_search(request, term, job_titles, locations, days = 3, page = 1):
-	job_titles_ids = None
-	if job_titles:
-		job_titles_ids = [int(n) for n in job_titles.split("-")]
-	
-	locations_ids = None
-	if locations:
-		locations_ids = [int(n) for n in locations.split("-")]
-	
-	jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
-	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
-	
+def partial_html_search(request):
+	if request.method == 'POST':
+		job_titles = request.POST['job_titles']
+		locations = request.POST['locations']
+		term = request.POST['term']
+		days = request.POST['days']
+		page = request.POST['page']
+		
+		job_titles_ids = None
+		if job_titles:
+			job_titles_ids = [int(n) for n in request.job_titles.split("-")]
+		
+		locations_ids = None
+		if locations:
+			locations_ids = [int(n) for n in locations.split("-")]
+		
+		jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
+		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
+	else:
+		return HttpResponse('')
+
 @handle_exception
 def index(request):
 	segments = Segment.getAllActive()

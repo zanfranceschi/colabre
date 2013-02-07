@@ -23,11 +23,8 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 	url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='my_jobs_confirm_del'),
 	url(r'^excluir/([\d]+)/$', 'delete', name='my_jobs_delete'),
 	
-	url(r'^parcial/buscar/(.*)/([\d\-]*)/([\d\-]*)/([\d\-1]*)/([\d]*)/$', 'partial_html_search'),
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='my_jobs_partial_details'),
-	#url(r'^parcial/buscar/([\d]+)/(.+)/$', 'partial_html_search'),
-	#url(r'^parcial/buscar/(.+)/$', 'partial_html_search'),
-	#url(r'^parcial/buscar/$', 'partial_html_search'),
+	url(r'^parcial/buscar/$', 'partial_html_search'),
 	#url(r'^parcial/alternar-ativacao/([\d]+)/$', 'partial_toggle_published'),
 	
 	url(r'^parcial/buscar-cargo/(.+)/$', 'partial_json_search_job_title', name= 'my_jobs_partial_json_search_job_title'),
@@ -63,17 +60,27 @@ def partial_details(request, id, search_term = None):
 
 @login_required
 @handle_exception
-def partial_html_search(request, term, job_titles, locations, days = 3, page = 1):
-	job_titles_ids = None
-	if job_titles:
-		job_titles_ids = [int(n) for n in job_titles.split("-")]
-	
-	locations_ids = None
-	if locations:
-		locations_ids = [int(n) for n in locations.split("-")]
-	
-	jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, locations_ids, int(days), page, 30)
-	return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
+def partial_html_search(request):
+	if request.method == 'POST':
+		
+		job_titles = request.POST['job_titles']
+		locations = request.POST['locations']
+		term = request.POST['term']
+		days = request.POST['days']
+		page = request.POST['page']
+		
+		job_titles_ids = None
+		if job_titles:
+			job_titles_ids = [int(n) for n in job_titles.split("-")]
+		
+		locations_ids = None
+		if locations:
+			locations_ids = [int(n) for n in locations.split("-")]
+		
+		jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, locations_ids, int(days), page, 30)
+		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
+	else:
+		return HttpResponse('')
 	
 @login_required
 @handle_exception
