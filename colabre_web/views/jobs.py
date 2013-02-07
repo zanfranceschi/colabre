@@ -53,7 +53,7 @@ def partial_html_search(request):
 		
 		job_titles_ids = None
 		if job_titles:
-			job_titles_ids = [int(n) for n in request.job_titles.split("-")]
+			job_titles_ids = [int(n) for n in job_titles.split("-")]
 		
 		locations_ids = None
 		if locations:

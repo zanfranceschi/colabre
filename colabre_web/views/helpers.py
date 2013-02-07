@@ -6,7 +6,7 @@ import traceback
 from django.contrib import messages
 import time
 from datetime import datetime
-from django.core.signals import request_started
+#from django.core.signals import request_started, request_finished
 from django.dispatch import receiver
 #from gadjo.requestprovider.signals import get_request
 from pymongo import MongoClient
@@ -17,16 +17,24 @@ def is_verified(user):
 	return user.get_profile().is_verified
 
 '''
-@receiver(request_started)
+@receiver(request_finished)
 def signal_callback(sender, **kwargs):
 	http_request = get_request()
-	print "\n\n", http_request.META['PATH_INFO']
+	print "\n\n", http_request
 '''
-	
-def handle_exception(method):
+
+def log_request(method):
 	def wrapper(request, *args):
 		try:
 			RequestLogger.log(request)
+		except:
+			pass
+		return method(request, *args)
+	return wrapper
+
+def handle_exception(method):
+	def wrapper(request, *args):
+		try:
 			return method(request, *args)
 		except Exception, e:
 			print >> sys.stderr, "-" * 60
