@@ -1,5 +1,5 @@
 import urllib2
-HTTP_PROXY = 'http://xxxxx:xxx'
+HTTP_PROXY = ''
 proxy = urllib2.ProxyHandler({'http': HTTP_PROXY, 'https' : HTTP_PROXY})
 auth = urllib2.HTTPBasicAuthHandler()
 opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
@@ -11,11 +11,12 @@ AUTHENTICATION_BACKENDS = (
     # add the social_auth authentication backend. We're not using the default
     # ModelBackend, but if you are, leave it in the list.
     'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    'social_auth.backends.twitter.TwitterBackend',
 )
 
 # These settings are used by the social_auth app.
-LINKEDIN_CONSUMER_KEY = 'xxxxxxx' # linkedin calls this the "API Key"
-LINKEDIN_CONSUMER_SECRET = 'xxxxxx' # "Secret Key"
+LINKEDIN_CONSUMER_KEY = '' # linkedin calls this the "API Key"
+LINKEDIN_CONSUMER_SECRET = '' # "Secret Key"
 # Scope determines what linkedin permissions your app will request when users
 # sign up. Linkedin reccomends requesting three.
 LINKEDIN_SCOPE = ['r_basicprofile', 'r_emailaddress', 'r_fullprofile']
@@ -23,6 +24,7 @@ LINKEDIN_SCOPE = ['r_basicprofile', 'r_emailaddress', 'r_fullprofile']
 LINKEDIN_EXTRA_FIELD_SELECTORS = [
     'id',
     'email-address',
+    'date-of-birth',
     'headline',
     'industry',
     'location',
@@ -42,13 +44,15 @@ LINKEDIN_EXTRA_DATA = [('id', 'id'),
                             for field in LINKEDIN_EXTRA_FIELD_SELECTORS
                         ]
 
+TWITTER_CONSUMER_KEY         = 'AXu7w1hJNFvRmv0zc6rUDQ'
+TWITTER_CONSUMER_SECRET      = 'T6BzcKZZFLmBKOPRFGR1yFTgk3DP1CHc6ErJY2Azs'
+
+
 # See the social_auth docs for all the configuration options
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/oauth/talent/new/'
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = SOCIAL_AUTH_NEW_USER_REDIRECT_URL
 
-#LOGIN_ERROR_URL = '/oauth/error/'
-#LOGIN_URL = "/oauth/login/"
-#LOGIN_REDIRECT_URL = '/meu-perfil'
+
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/meu-perfil/'
@@ -60,6 +64,7 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
+    #'colabre_openauth.pipeline.check_oauth_email_existence',
     #'social_auth.backends.pipeline.associate.associate_by_email',
     'social_auth.backends.pipeline.user.get_username',
     'social_auth.backends.pipeline.user.create_user',
@@ -70,3 +75,4 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.misc.save_status_to_session',
 )
 
+SOCIAL_AUTH_EMAIL_ALREAY_EXISTS_URL = '/cadastro/linkedin/email-existente'

@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core import validators
 import re
-from django.forms import ModelForm
+from django.forms import ModelForm, extras
 from datetime import datetime
 import time
 
@@ -16,33 +16,35 @@ def set_bbcode(field):
 
 def custom_init(instance):
 	for field in instance.fields:
-		
-		if 'address' in field:
-			instance.fields[field].widget.attrs['title'] = 'Não inclua o complemento se desejar integração com o Google Maps (futuro recurso).'
-
-		if 'date' in field:
-			if 'class' in instance.fields[field].widget.attrs:
-				instance.fields[field].widget.attrs['class'] += ' date-input'
-			else:
-				instance.fields[field].widget.attrs['class'] = 'date-input'
-				
-		if 'tags' in field:
-			if 'class' in instance.fields[field].widget.attrs:
-				instance.fields[field].widget.attrs['class'] += ' tags'
-			else:
-				instance.fields[field].widget.attrs['class'] = 'tags'
-
-			if 'style' in instance.fields[field].widget.attrs:
-				instance.fields[field].widget.attrs['style'] += ' width: 200px;'
-			else:
-				instance.fields[field].widget.attrs['style'] = 'width: 200px;'
-		
-		if instance.fields[field].required:
-			if 'class' in instance.fields[field].widget.attrs:
-				instance.fields[field].widget.attrs['class'] += ' required'
-			else:
-				instance.fields[field].widget.attrs['class'] = 'required'
-			instance.fields[field].label += '*'
+		try:
+			if 'address' in field:
+				instance.fields[field].widget.attrs['title'] = 'Não inclua o complemento se desejar integração com o Google Maps (futuro recurso).'
+	
+			if 'date' in field:
+				if 'class' in instance.fields[field].widget.attrs:
+					instance.fields[field].widget.attrs['class'] += ' date-input'
+				else:
+					instance.fields[field].widget.attrs['class'] = 'date-input'
+					
+			if 'tags' in field:
+				if 'class' in instance.fields[field].widget.attrs:
+					instance.fields[field].widget.attrs['class'] += ' tags'
+				else:
+					instance.fields[field].widget.attrs['class'] = 'tags'
+	
+				if 'style' in instance.fields[field].widget.attrs:
+					instance.fields[field].widget.attrs['style'] += ' width: 200px;'
+				else:
+					instance.fields[field].widget.attrs['style'] = 'width: 200px;'
+			
+			if instance.fields[field].required:
+				if 'class' in instance.fields[field].widget.attrs:
+					instance.fields[field].widget.attrs['class'] += ' required'
+				else:
+					instance.fields[field].widget.attrs['class'] = 'required'
+				instance.fields[field].label += '*'
+		except:
+			pass
 			
 def validate_username_unique(value):
 	'''Custom validator for user uniqueness.'''
@@ -78,10 +80,11 @@ class UserProfileForm(BaseForm):
 				'profile_type' : profile.profile_type or 'js',
 				'first_name' : profile.user.first_name,
 				'last_name' : profile.user.last_name,
-				'birthday' :  profile.birthday,
+				'birth_year' :  profile.birth_year,
+				'birth_month' :  profile.birth_month,
+				'birth_day' :  profile.birth_day,
 				'gender' :  profile.gender,
 			}
-			print >> sys.stderr, profile.gender
 			if profile.resume:
 				data.update({
 					'resume_short_description' : profile.resume.short_description,
@@ -101,7 +104,7 @@ class UserProfileForm(BaseForm):
 		label='Tipo de Perfil',
 		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você.', 
 		choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')),
-		widget=forms.RadioSelect()
+		widget=forms.RadioSelect(),
 	)
 	gender = forms.ChoiceField(
 		required=True,
@@ -109,11 +112,29 @@ class UserProfileForm(BaseForm):
 		choices=(('F', 'Feminino'), ('M', 'Masculino'), ('U', 'Outro')),
 		widget=forms.RadioSelect()
 	)
-	birthday = forms.DateField(
+	
+	CHOICES_YEAR = zip(reversed(xrange(1900, datetime.now().year + 1)), reversed(xrange(1900, datetime.now().year + 1))) 
+	CHOICES_MONTH = zip(xrange(1, 12 + 1), xrange(1, 12 + 1))
+	CHOICES_DAY = zip(xrange(1, 31 + 1), xrange(1, 31 + 1))
+	
+	birth_year = forms.ChoiceField(
 		required=True,
-		label='Data do seu nascimento (dd/mm/aaaa)',
-		help_text='Note que o Colabre é apenas para maiores de 16 anos.'
+		label='Ano',
+		choices=(CHOICES_YEAR),
 	)
+	birth_month = forms.ChoiceField(
+		required=True,
+		label='Mês',
+		choices=(CHOICES_MONTH)
+	)
+	birth_day = forms.ChoiceField(
+		required=True,
+		label='Dia',
+		choices=(CHOICES_DAY)
+	)
+	
+	birth_date = forms.DateField(widget=extras.SelectDateWidget(attrs={'style' : 'width: 100px;'}, years=reversed(xrange(1900, datetime.now().year + 1))))
+	
 	password = forms.CharField(
 				widget=forms.PasswordInput,
 				help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
@@ -160,7 +181,9 @@ class UserProfileForm(BaseForm):
 			self.cleaned_data['email'],
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
-			self.cleaned_data['birthday']
+			self.cleaned_data['birth_year'],
+			self.cleaned_data['birth_month'],
+			self.cleaned_data['birth_day']
 		)
 	
 class LoginForm(BaseForm):

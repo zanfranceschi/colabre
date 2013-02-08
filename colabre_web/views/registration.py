@@ -29,3 +29,5 @@ def index(request):
 	})
 	
 
+def linkedin_email_already_exists(request):
+	return render(request, get_template_path('email-already-exists.html'), { 'email' : 'nnn' })

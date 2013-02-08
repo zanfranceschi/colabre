@@ -31,8 +31,11 @@ class UserProfile(models.Model):
 	is_verified = models.BooleanField(default=False)
 	profile_type = models.CharField(max_length=2, choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')))
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
-	birthday = models.DateField(null=True)
-	#must_change_password = models.BooleanField(default=False)
+	
+	birth_year = models.IntegerField(null=True)
+	birth_month = models.IntegerField(null=True)
+	birth_day = models.IntegerField(null=True)
+	
 	active = models.BooleanField(default=True)
 	def set_password(self, password):
 		self.user.set_password(password)
@@ -42,7 +45,6 @@ class UserProfile(models.Model):
 	def retrieve_access(username_or_email):
 		try:
 			user = User.objects.get(Q(username=username_or_email) | Q(email=username_or_email))
-			profile = user.get_profile()
 			um = UserManager()
 			new_password = um.make_random_password(6, user.username)
 			user.set_password(new_password)
@@ -86,35 +88,23 @@ class UserProfile(models.Model):
 		profile.user = new_user
 		profile.is_verified = False
 		profile.save()
-		verification = UserProfileVerification.create(profile)
+		UserProfileVerification.create(profile)
 		
 		return profile
 		
-	@staticmethod
-	def create_from_linkedin(linkedin_data):
-		user = User.objects.find(username=linkedin_data['id'])
-		if user:
-			return
-
-		# Associate to a Django user
-		new_user = User()
-		new_user.is_superuser = False
-		new_user.is_staff = False
-		new_user.is_active = True
-		new_user.username = linkedin_data['id']
-		new_user.first_name = linkedin_data['first_name']
-		new_user.email = linkedin_data['email_address']
-		#new_user.set_password(password)
-		new_user.save()
-		profile = UserProfile()
-		profile.user = new_user
-		profile.is_verified = True
-		profile.save()
-		#verification = UserProfileVerification.create(profile)
-		return profile
 	
 	@staticmethod
-	def update_profile(user, first_name, last_name, email, profile_type, gender, birthday):
+	def update_profile(
+					user, 
+					first_name, 
+					last_name, 
+					email, 
+					profile_type, 
+					gender,
+					birth_year,
+					birth_month, 
+					birth_day):
+
 		profile = UserProfile.objects.get(user=user)
 		profile.user.first_name = first_name
 		profile.user.last_name = last_name
@@ -130,18 +120,20 @@ class UserProfile(models.Model):
 	
 		profile.profile_type = profile_type
 		profile.gender = gender
-		profile.birthday = birthday
+		profile.birth_year = birth_year
+		profile.birth_month = birth_month
+		profile.birth_day = birth_day
 		profile.save()
 
 
 	def save(self, *args, **kwargs):
 		id = self.user.id
 		user = User.objects.get(id=id)
-		import sys
 		if user.email != self.user.email:
 			self.is_verified = False
 		super(UserProfile, self).save(*args, **kwargs)
 		self.user.save()
+
 
 class Resume(models.Model):
 	profile = models.ForeignKey(UserProfile, unique=True)
