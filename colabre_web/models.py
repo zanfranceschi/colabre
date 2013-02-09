@@ -127,8 +127,7 @@ class UserProfile(models.Model):
 
 
 	def save(self, *args, **kwargs):
-		id = self.user.id
-		user = User.objects.get(id=id)
+		user = User.objects.get(id=self.user.id)
 		if user.email != self.user.email:
 			self.is_verified = False
 		super(UserProfile, self).save(*args, **kwargs)
