@@ -20,8 +20,6 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^meu-curriculo/', include('colabre_web.views.my_resume')),
 	
 	url(r'^cadastro/$', 'registration.index', name='registration_index'),
-	url(r'^cadastro/linkedin/email-existente/$', 'registration.linkedin_email_already_exists', name='registration_linkedin_email_already_exists'),
-	
 	
 	url(r'^vagas/', include('colabre_web.views.jobs')),
 	url(r'^profissionais/', include('colabre_web.views.resumes')),

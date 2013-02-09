@@ -77,12 +77,10 @@ class UserProfileForm(BaseForm):
 
 			data = {
 				'email' : profile.user.email,
-				'profile_type' : profile.profile_type or 'js',
+				'profile_type' : profile.profile_type or 'JS',
 				'first_name' : profile.user.first_name,
 				'last_name' : profile.user.last_name,
-				'birth_year' :  profile.birth_year,
-				'birth_month' :  profile.birth_month,
-				'birth_day' :  profile.birth_day,
+				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
 			}
 			if profile.resume:
@@ -96,16 +94,24 @@ class UserProfileForm(BaseForm):
 	first_name = forms.CharField(max_length=20, label='Primeiro Nome')
 	last_name = forms.CharField(max_length=20, label='Sobrenome', help_text='Se tiver mais de um sobrenome, coloque todos aqui se desejar.')
 	email = forms.EmailField(widget=forms.TextInput(),
-				help_text='Se alterar seu email, será necessário verificá-lo.', 
-				label='Email')
+		help_text='Se alterar seu email, será necessário verificá-lo.', 
+		label='Email')
 
 	profile_type = forms.ChoiceField(
 		required=True,
 		label='Tipo de Perfil',
 		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você.', 
-		choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')),
+		choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')),
 		widget=forms.RadioSelect(),
 	)
+	
+	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
+	
+	birthday = forms.DateField(
+		required=True,
+		label='Data de Nascimento',
+		widget=extras.SelectDateWidget(years=CHOICES_YEAR))
+	
 	gender = forms.ChoiceField(
 		required=True,
 		label='Sexo',
@@ -113,28 +119,10 @@ class UserProfileForm(BaseForm):
 		widget=forms.RadioSelect()
 	)
 	
-	CHOICES_YEAR = zip(reversed(xrange(1900, datetime.now().year + 1)), reversed(xrange(1900, datetime.now().year + 1))) 
-	CHOICES_MONTH = zip(xrange(1, 12 + 1), xrange(1, 12 + 1))
-	CHOICES_DAY = zip(xrange(1, 31 + 1), xrange(1, 31 + 1))
 	
-	birth_year = forms.ChoiceField(
-		required=True,
-		label='Ano',
-		choices=(CHOICES_YEAR),
-	)
-	birth_month = forms.ChoiceField(
-		required=True,
-		label='Mês',
-		choices=(CHOICES_MONTH)
-	)
-	birth_day = forms.ChoiceField(
-		required=True,
-		label='Dia',
-		choices=(CHOICES_DAY)
-	)
 	
-	birth_date = forms.DateField(widget=extras.SelectDateWidget(attrs={'style' : 'width: 100px;'}, years=reversed(xrange(1900, datetime.now().year + 1))))
-	
+	"""
+	How would it be used with Linkedin?
 	password = forms.CharField(
 				widget=forms.PasswordInput,
 				help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
@@ -143,6 +131,7 @@ class UserProfileForm(BaseForm):
 				},
 				label='Senha'
 	)
+	"""
 	
 	def clean(self):
 		super(forms.Form, self).clean()
@@ -150,24 +139,16 @@ class UserProfileForm(BaseForm):
 			from dateutil.relativedelta import relativedelta
 			current_date = date.today()
 			user_birthday = self.cleaned_data['birthday']
-			
-			diff = relativedelta(current_date, user_birthday)
-			
-			print >> sys.stderr, diff
-			#print >> sys.stderr, 
-			
-			if diff.years < 16:
-				self._errors['birthday'] = u'Você tem menos de 16 anos. Com isso, você não poderá usar os serviços do Colabre.'
-		
-			password = self.cleaned_data['password']
+			#password = self.cleaned_data['password']
 			username = self.user.username
 			email = self.cleaned_data['email']
 			
+			"""
 			_user = authenticate(username=username, password=password)
-			
 			if _user is None:
 				self._errors['password'] = u'Senha incorreta.'
-			
+			"""
+
 			if self.user and User.objects.filter(Q(Q(email=email), ~Q(id=self.user.id))).exists():
 				self._errors['email'] = u'O email %s já está cadastrado para outro usuário.' % email
 			
@@ -181,9 +162,7 @@ class UserProfileForm(BaseForm):
 			self.cleaned_data['email'],
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
-			self.cleaned_data['birth_year'],
-			self.cleaned_data['birth_month'],
-			self.cleaned_data['birth_day']
+			self.cleaned_data['birthday']
 		)
 	
 class LoginForm(BaseForm):

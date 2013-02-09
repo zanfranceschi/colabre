@@ -87,10 +87,12 @@ $(function(){
 	days:          'domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado',
 	shortDays:     'dom,seg,ter,qua,qui,sex,sáb'
 	});
+	/*
 	$(".date-input").dateinput({
 		format: 'dd/mm/yyyy',
 		lang: 'pt-br'
 	});
+	*/
 });
 
 

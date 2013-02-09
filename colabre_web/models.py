@@ -29,14 +29,12 @@ class UserProfile(models.Model):
 	#company = models.ForeignKey('domain.Company')
 	user = models.ForeignKey(User, unique=True)
 	is_verified = models.BooleanField(default=False)
-	profile_type = models.CharField(max_length=2, choices=(('js', 'Buscar Vagas'), ('jp', 'Publicar Vagas')))
+	is_from_oauth = models.BooleanField(default=False)
+	profile_type = models.CharField(max_length=2, choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')))
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
-	
-	birth_year = models.IntegerField(null=True)
-	birth_month = models.IntegerField(null=True)
-	birth_day = models.IntegerField(null=True)
-	
+	birthday = models.DateField(null=True)
 	active = models.BooleanField(default=True)
+	
 	def set_password(self, password):
 		self.user.set_password(password)
 		self.user.save()
@@ -75,7 +73,6 @@ class UserProfile(models.Model):
 	
 	@staticmethod
 	def create(username, email, password):
-		# Associate to a Django user
 		new_user = User()
 		new_user.is_superuser = False
 		new_user.is_staff = False
@@ -89,7 +86,6 @@ class UserProfile(models.Model):
 		profile.is_verified = False
 		profile.save()
 		UserProfileVerification.create(profile)
-		
 		return profile
 		
 	
@@ -101,9 +97,7 @@ class UserProfile(models.Model):
 					email, 
 					profile_type, 
 					gender,
-					birth_year,
-					birth_month, 
-					birth_day):
+					birthday):
 
 		profile = UserProfile.objects.get(user=user)
 		profile.user.first_name = first_name
@@ -120,9 +114,7 @@ class UserProfile(models.Model):
 	
 		profile.profile_type = profile_type
 		profile.gender = gender
-		profile.birth_year = birth_year
-		profile.birth_month = birth_month
-		profile.birth_day = birth_day
+		profile.birthday = birthday
 		profile.save()
 
 
@@ -739,6 +731,14 @@ class UserProfileVerification(models.Model):
 		
 		UserNotification.getNotification().notify(profile, verification.uuid)
 		
+		return verification
+	
+	@staticmethod
+	def create_verified(profile):
+		verification = UserProfileVerification()
+		verification.date_verified = datetime.now()
+		verification.profile = profile
+		verification.save()
 		return verification
 	
 	@staticmethod

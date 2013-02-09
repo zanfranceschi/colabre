@@ -36,7 +36,7 @@ def index(request):
 		form = UserProfileForm(request.POST, user=request.user)
 		if form.is_valid():
 			form.save()
-			messages.success(request, 'Perfil atualizado. Note que o seu nome no menu pode levar até 5 minutos para ser atualizado caso tenha sido alterado.')
+			messages.success(request, 'Perfil atualizado.')
 		else:
 			messages.error(request, 'Verifique o preenchimento do perfil.')
 	else:

@@ -15,7 +15,18 @@ li label
 {
 	font-weight: normal;
 }
-
+#id_birthday_year
+{
+	width: 70px !important;
+}
+#id_birthday_month
+{
+	width: 110px !important;
+}
+#id_birthday_day
+{
+	width: 50px !important;
+}
 
 </style>
 {% endblock %}
@@ -75,18 +86,15 @@ li label
 
 		<input type="submit" value="salvar" class="btn-info" />
 	</form>
+	{% if not user.get_profile.is_from_oauth %}
+	<div style="margin-top: 30px">
+		<a style="margin-left: 0px" class="" href="{% url my_profile_change_password %}">alterar senha</a>
+	</div>
+	{% endif %}
+	
 	<script type="text/javascript">
 		$(function(){
-		
-			$("#id_birthday").datepicker({
-				changeMonth: true,
-				changeYear: true,
-				dateFormat: "dd/mm/yy",
-				yearRange: "-85:-15"
-			});
 			
-			$("#id_birthday").datepicker( $.datepicker.regional[ "pt-BR" ] );
-		
 			$("#resend-verification-email").click(function(){
 				
 				error_message = 'Nos desculpe! Fizemos alguma coisa errado. Tente novamente mais tarde, por favor.';

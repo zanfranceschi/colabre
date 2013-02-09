@@ -1,15 +1,15 @@
 ﻿{% extends "_base.html" %}
 
-{% block title %}Cadastro{% endblock %}
+{% block title %}Email já cadastrado{% endblock %}
 
 {% block body %}
-	<h1>Cadastro</h1>
+	<h1>Email já cadastrado</h1>
 	<p>
-		O email <b>{{ email }}</b>, cadastrado com sua conta já está em uso por outro usuário do Colabre!
+		O email <b>{{ email }}</b> -- cadastrado com sua conta do LinkedIn -- já está em uso por outro usuário do Colabre!
 	</p>
 	<p>
-		Se foi você mesmo que cadastrou uma conta no Colabre com esse email, você pode <a href="{% url my_profile_retrieve_access %}">solicitar a recuperação de acesso</a>.
-		Se outra pessoa cadastrou uma conta com esse email por engano, a conta será excluída se não tiver o email verificado em até 48 horas.
+		Se foi você mesmo quem cadastrou uma conta com esse email no Colabre, <a href="{% url my_profile_retrieve_access %}">solicite a recuperação de acesso</a>.
+		Agora, se outra pessoa cadastrou uma conta com esse email por engano, a conta será excluída se não tiver o email verificado em até 48 horas.
 	</p>
 	<p>
 		Obrigado,
