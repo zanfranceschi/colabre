@@ -53,8 +53,8 @@ LINKEDIN_EXTRA_DATA = [('id', 'id'),
                             for field in LINKEDIN_EXTRA_FIELD_SELECTORS
                         ]
 
-TWITTER_CONSUMER_KEY         = 'AXu7w1hJNFvRmv0zc6rUDQ'
-TWITTER_CONSUMER_SECRET      = 'T6BzcKZZFLmBKOPRFGR1yFTgk3DP1CHc6ErJY2Azs'
+TWITTER_CONSUMER_KEY         = ''
+TWITTER_CONSUMER_SECRET      = ''
 
 
 # See the social_auth docs for all the configuration options
