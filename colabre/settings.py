@@ -140,7 +140,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 	'colabre_web',
     'django.contrib.admin',
-	'colabre_openauth',
 	'social_auth',
 	#'south',
 )
@@ -180,4 +179,4 @@ LOGGING = {
     }
 }
 
-from settings_linkedin import *
+from colabre_web.oauth.settings import *

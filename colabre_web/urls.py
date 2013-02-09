@@ -31,5 +31,5 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^admin/', include(admin.site.urls)),
 	
 	url(r'', include('social_auth.urls')),
-	url(r'^oauth/', include('colabre_openauth.views')),
+	#url(r'^oauth/', include('colabre_openauth.views')),
 )

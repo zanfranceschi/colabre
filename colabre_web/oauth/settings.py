@@ -1,9 +1,11 @@
+"""
 import urllib2
 HTTP_PROXY = ''
 proxy = urllib2.ProxyHandler({'http': HTTP_PROXY, 'https' : HTTP_PROXY})
 auth = urllib2.HTTPBasicAuthHandler()
 opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
 urllib2.install_opener(opener)
+"""
 
 AUTHENTICATION_BACKENDS = (
     #'emailusernames.backends.EmailAuthBackend',
@@ -35,6 +37,13 @@ LINKEDIN_EXTRA_FIELD_SELECTORS = [
     #'skills',
     #'summary',
 ]
+
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = [
+                                     'first_name',
+                                     'last_name',
+                                     'email'
+]
+
 # extra_data determines what data will be stored in a JSON field in the
 # UserSocialAuth table. This should parallel the field selectors.
 LINKEDIN_EXTRA_DATA = [('id', 'id'),
@@ -64,15 +73,15 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
-    #'colabre_openauth.pipeline.check_oauth_email_existence',
+    'colabre_web.oauth.pipeline.check_oauth_email_existence',
     #'social_auth.backends.pipeline.associate.associate_by_email',
     'social_auth.backends.pipeline.user.get_username',
     'social_auth.backends.pipeline.user.create_user',
-    'colabre_openauth.pipeline.bind_to_profile',
+    'colabre_web.oauth.pipeline.bind_to_profile',
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
     'social_auth.backends.pipeline.misc.save_status_to_session',
 )
 
-SOCIAL_AUTH_EMAIL_ALREAY_EXISTS_URL = '/cadastro/linkedin/email-existente'
+SOCIAL_AUTH_EMAIL_ALREAY_EXISTS_TEMPLATE_PATH = 'registration/email-already-exists.html'
