@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from colabre_web.models import *
 from colabre_web.statistics.models import *
 import traceback
+import logging
 from django.contrib import messages
 import time
 from datetime import datetime
@@ -41,10 +42,8 @@ def handle_exception(method):
 		try:
 			return method(request, *args)
 		except Exception, e:
-			print >> sys.stderr, "-" * 60
-			print >> sys.stderr, traceback.format_exc()
-			print >> sys.stderr, "-" * 60
-			messages.error(request, e.message)
+			logging.error(traceback.format_exc())
+			messages.error(request, traceback.format_exc())
 			if request.is_ajax():
 				return HttpResponse('{ "error" : "%s" }' % e.message)
 			else:

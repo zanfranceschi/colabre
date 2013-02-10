@@ -2,19 +2,15 @@
 from aux_models import *
 from django.db import models, connection
 from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.core.exceptions import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth import authenticate
-from django.template.loader import get_template
 from django.template import Context
 import uuid
 from datetime import *
 import time
-from django.core.mail import send_mail
 import colabre.settings
-import sys
 
 def dictfetchall(cursor):
 	"Returns all rows from a cursor as a dict"
@@ -23,310 +19,6 @@ def dictfetchall(cursor):
 		dict(zip([col[0] for col in desc], row))
 		for row in cursor.fetchall()
 	]
-
-class UserProfile(models.Model):
-	""" Binds Django user to resume and jobs """
-	#company = models.ForeignKey('domain.Company')
-	user = models.ForeignKey(User, unique=True)
-	is_verified = models.BooleanField(default=False)
-	is_from_oauth = models.BooleanField(default=False)
-	profile_type = models.CharField(max_length=2, choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')))
-	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
-	birthday = models.DateField(null=True)
-	active = models.BooleanField(default=True)
-	
-	def set_password(self, password):
-		self.user.set_password(password)
-		self.user.save()
-
-	@staticmethod
-	def retrieve_access(username_or_email):
-		try:
-			user = User.objects.get(Q(username=username_or_email) | Q(email=username_or_email))
-			um = UserManager()
-			new_password = um.make_random_password(6, user.username)
-			user.set_password(new_password)
-			user.save()
-			UserNotification.getNotification().notify_password_change(user, new_password)
-			return True
-		except User.DoesNotExist:
-			return False
-
-	@staticmethod
-	def get_profile_by_user(user):
-		return UserProfile.objects.get(user=user)
-
-	@property
-	def resume(self):
-		try:
-			return Resume.objects.get(profile=self)
-		except Resume.DoesNotExist:
-			pass
-
-	@property
-	def jobs(self):
-		return Job.objects.filter(profile=self)
-		
-
-	def __unicode__(self):
-		return "%s %s (%s)" % (self.user.first_name, self.user.last_name, self.user.username)
-	
-	@staticmethod
-	def create(username, email, password):
-		new_user = User()
-		new_user.is_superuser = False
-		new_user.is_staff = False
-		new_user.is_active = True
-		new_user.username = new_user.first_name = username
-		new_user.email = email
-		new_user.set_password(password)
-		new_user.save()
-		profile = UserProfile()
-		profile.user = new_user
-		profile.is_verified = False
-		profile.save()
-		UserProfileVerification.create(profile)
-		return profile
-		
-	
-	@staticmethod
-	def update_profile(
-					user, 
-					first_name, 
-					last_name, 
-					email, 
-					profile_type, 
-					gender,
-					birthday):
-
-		profile = UserProfile.objects.get(user=user)
-		profile.user.first_name = first_name
-		profile.user.last_name = last_name
-	
-		new_email = email
-		if new_email != profile.user.email and profile.is_verified:
-			verification = UserProfileVerification.objects.get(profile=profile)
-			verification.uuid = str(uuid.uuid4())
-			verification.save()
-			UserNotification.getNotification().notify(profile, verification.uuid)
-			profile.is_verified = False
-		profile.user.email = email
-	
-		profile.profile_type = profile_type
-		profile.gender = gender
-		profile.birthday = birthday
-		profile.save()
-
-
-	def save(self, *args, **kwargs):
-		user = User.objects.get(id=self.user.id)
-		if user.email != self.user.email:
-			self.is_verified = False
-		super(UserProfile, self).save(*args, **kwargs)
-		self.user.save()
-
-
-class Resume(models.Model):
-	profile = models.ForeignKey(UserProfile, unique=True)
-	short_description = models.TextField(max_length=255)
-	full_description = models.TextField()
-	visible = models.BooleanField(default=True)
-	active = models.BooleanField(default=True)
-	@staticmethod
-	def view_search_public(after_id, q, limit):
-		query_id = Q(id__lt=after_id)
-		if after_id == '0' or after_id == 0:
-			query_id = Q()
-			
-		query_description = Q(
-			Q(short_description__icontains=q) | 
-			Q(full_description__icontains=q)
-		)
-		if q == None:
-			query_description = Q()
-		
-		visible_query = Q(visible=True)
-		
-		resumes = Resume.objects.filter(visible_query, query_id, query_description).order_by("-id")[:limit]
-		exists = Resume.objects.filter(visible_query, query_description).exists()
-		return resumes, exists
-	
-	@staticmethod
-	def save_(profile, short_description, full_description, visible):
-		try:
-			resume = Resume.objects.get(profile=profile)
-			resume.short_description = short_description
-			resume.full_description = full_description
-			resume.visible = visible
-			resume.save()
-		except Resume.DoesNotExist:
-			resume = Resume()
-			resume.profile = profile
-			resume.short_description = short_description
-			resume.full_description = full_description
-			resume.visible = visible
-			resume.save()
-
-	file = models.FileField(
-		null=True,
-		upload_to=lambda instance, filename: 
-			colabre.settings.UPLOAD_DIR
-			+ '/resumes/'
-			+ str(instance.id)
-			+ '/' 
-			+ filename
-		)
-
-	def __unicode__(self):
-		return self.short_description
-
-class Segment(models.Model):
-	name = models.CharField(max_length=50, unique=True)
-	active = models.BooleanField(default=True)
-
-	@classmethod
-	def getAllActive(cls):
-		cursor = connection.cursor()
-		cursor.execute(
-			"""			
-			select  
-				jt.id							, 
-			 	jt.id 		as job_title_id		, 
-			 	jt.name		as job_title_name	, 
-			 	se.id 		as segment_id 		, 
-				se.name		as segment_name		
-			 from colabre_web_jobtitle jt 
-			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
-			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
-			 where jt.active = 1 
-			 	and jo.active = 1 
-			 	and se.active = 1
-			 group by 
-			 	jt.id		,
-			 	jt.name		,
-			 	se.id 	 	,
-				se.name	
-			 order by
-			 	se.name	,
-			 	jt.name	; """
-		)
-		all = dictfetchall(cursor)
-		segments = []
-		[{
-			'id' : s['segment_id'],
-			'name' : s['segment_name'],
-		} for s in all
-			if 
-			{
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			} not in segments 
-			and segments.append({
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			})]
-		job_titles = []
-		[{
-			'id' : j['job_title_id'],
-			'name' : j['job_title_name'],
-			'segment_id' : j['segment_id']
-		} for j in all
-			if 
-			{
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			} not in job_titles
-			and job_titles.append({
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			})]
-		for segment in segments:
-			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
-
-		return segments
-		
-	@classmethod
-	def getAllActiveByProfile(cls, profile):
-		cursor = connection.cursor()
-		cursor.execute(
-			"""			
-			select  
-				jt.id							, 
-			 	jt.id 		as job_title_id		, 
-			 	jt.name		as job_title_name	, 
-			 	se.id 		as segment_id 		, 
-				se.name		as segment_name		
-			 from colabre_web_jobtitle jt 
-			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
-			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
-			 where jt.active = 1 
-			 	and jo.active = 1 
-			 	and se.active = 1
-			 	and jo.profile_id = {0}
-			 group by 
-			 	jt.id		,
-			 	jt.name		,
-			 	se.id 	 	,
-				se.name	
-			 order by
-			 	se.name	,
-			 	jt.name	; 
-			""".format(profile.id)
-		)
-		all = dictfetchall(cursor)
-		segments = []
-		[{
-			'id' : s['segment_id'],
-			'name' : s['segment_name'],
-		} for s in all
-			if 
-			{
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			} not in segments 
-			and segments.append({
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			})]
-		job_titles = []
-		[{
-			'id' : j['job_title_id'],
-			'name' : j['job_title_name'],
-			'segment_id' : j['segment_id']
-		} for j in all
-			if 
-			{
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			} not in job_titles
-			and job_titles.append({
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			})]
-		for segment in segments:
-			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
-
-		return segments
-	
-	def __unicode__(self):
-		return self.name
-
-class JobTitle(models.Model):
-	name = models.CharField(max_length=50)
-	segment = models.ForeignKey(Segment)
-	active = models.BooleanField(default=True)
-	def __unicode__(self):
-		return "%s (%s)" % (self.name, self.segment.name)
-		
-class Company(models.Model):
-	name = models.CharField(max_length=50, unique=True)
-	active = models.BooleanField(default=True)
-	def __unicode__(self):
-		return self.name
 
 class PoliticalLocation(models.Model):
 	country_id = models.IntegerField()
@@ -341,6 +33,18 @@ class PoliticalLocation(models.Model):
 	city_name = models.CharField(max_length=60)
 	
 	active = models.BooleanField(default=True)
+	
+	@classmethod
+	def try_parse(cls, political_location_name):
+		try:
+			# IMPORTANT! check PoliticalLocation.name for correct format...
+			location = political_location_name.split('/')
+			city_name = location[0].strip()
+			region_code = location[1].strip()
+			country_code = location[2].strip()
+			return PoliticalLocation.objects.get(city_name=city_name, region_code=region_code, country_code=country_code)
+		except:
+			return None
 	
 	@classmethod
 	def getAllActiveCountries(cls):
@@ -532,7 +236,344 @@ class PoliticalLocation(models.Model):
 	
 	def __unicode__(self):
 		return "%s / %s / %s" % (self.city_name, self.region_code, self.country_code)
+
+class UserProfile(models.Model):
+	""" Binds Django user to resume and jobs """
+	#company = models.ForeignKey('domain.Company')
+	user = models.ForeignKey(User, unique=True)
+	is_verified = models.BooleanField(default=False)
+	is_from_oauth = models.BooleanField(default=False)
+	profile_type = models.CharField(max_length=2, choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')))
+	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
+	birthday = models.DateField(null=True)
 	
+	political_location = models.ForeignKey(PoliticalLocation, null=True)
+	political_location_name = models.CharField(max_length=120, null=True)
+	
+	excluded = models.BooleanField(default=False)
+	active = models.BooleanField(default=True)
+	
+	def set_password(self, password):
+		self.user.set_password(password)
+		self.user.save()
+
+	@classmethod
+	def retrieve_access(cls, username_or_email):
+		profiles = UserProfile.objects.filter(Q(user__username=username_or_email) | Q(user__email=username_or_email)).exclude(is_from_oauth=True)
+		for user in [profile.user for profile in profiles]:
+			um = UserManager()
+			new_password = um.make_random_password(6, user.username)
+			user.set_password(new_password)
+			user.save()
+			UserNotification.getNotification().notify_password_change(user, new_password)
+		return True
+
+	@classmethod
+	def get_profile_by_user(cls, user):
+		return UserProfile.objects.get(user=user)
+
+	@property
+	def resume(self):
+		try:
+			return Resume.objects.get(profile=self)
+		except Resume.DoesNotExist:
+			pass
+	@property
+	def jobs(self):
+		return Job.objects.filter(profile=self)
+		
+	def __unicode__(self):
+		return "%s %s (%s)" % (self.user.first_name, self.user.last_name, self.user.username)
+	
+	@classmethod
+	def create(cls, username, email, password):
+		new_user = User()
+		new_user.is_superuser = False
+		new_user.is_staff = False
+		new_user.is_active = True
+		new_user.username = new_user.first_name = username
+		new_user.email = email
+		new_user.set_password(password)
+		new_user.save()
+		profile = UserProfile()
+		profile.user = new_user
+		profile.is_verified = False
+		profile.save()
+		UserProfileVerification.create(profile)
+		return profile
+	
+	@classmethod
+	def create_oauth_if_new(cls, user, **kwargs):
+		should_not_exist_profile = cls.objects.filter(user=user)
+		if (user and not should_not_exist_profile):
+			profile = UserProfile()
+			profile.user = user
+			profile.is_verified = True
+			profile.is_from_oauth = True
+			if kwargs.get('year') and kwargs.get('month') and kwargs.get('day'):
+				profile.birthday = datetime(int(kwargs['year']), int(kwargs['month']), int(kwargs['day']))
+			profile.save()
+			#UserProfileVerification.create_verified(profile)
+		
+	@classmethod
+	def update_profile(
+					cls,
+					user, 
+					first_name, 
+					last_name, 
+					email, 
+					profile_type, 
+					gender,
+					birthday,
+					location):
+		profile = cls.objects.get(user=user)
+		profile.user.first_name = first_name
+		profile.user.last_name = last_name
+	
+		new_email = email
+		if new_email != profile.user.email and profile.is_verified:
+			verification = UserProfileVerification.objects.get(profile=profile)
+			verification.uuid = str(uuid.uuid4())
+			verification.save()
+			UserNotification.getNotification().notify(profile, verification.uuid)
+			profile.is_verified = False
+		profile.user.email = email
+	
+		profile.profile_type = profile_type
+		profile.gender = gender
+		profile.birthday = birthday
+		profile.political_location_name = location
+		profile.political_location = PoliticalLocation.try_parse(location)
+		profile.save()
+
+	@classmethod
+	def update_profile_oauth(
+							cls,
+							user, 
+							profile_type, 
+							gender,
+							birthday,
+							location):
+
+		profile = cls.objects.get(user=user)
+		profile.profile_type = profile_type
+		profile.gender = gender
+		profile.birthday = birthday
+		profile.political_location_name = location
+		profile.political_location = PoliticalLocation.try_parse(location)
+		profile.save()
+
+	def save(self, *args, **kwargs):
+		user = User.objects.get(id=self.user.id)
+		if user.email != self.user.email:
+			self.is_verified = False
+		super(UserProfile, self).save(*args, **kwargs)
+		self.user.save()
+
+class Segment(models.Model):
+	name = models.CharField(max_length=50, unique=True)
+	active = models.BooleanField(default=True)
+
+	@classmethod
+	def getAllActive(cls):
+		cursor = connection.cursor()
+		cursor.execute(
+			"""			
+			select  
+				jt.id							, 
+			 	jt.id 		as job_title_id		, 
+			 	jt.name		as job_title_name	, 
+			 	se.id 		as segment_id 		, 
+				se.name		as segment_name		
+			 from colabre_web_jobtitle jt 
+			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
+			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
+			 where jt.active = 1 
+			 	and jo.active = 1 
+			 	and se.active = 1
+			 group by 
+			 	jt.id		,
+			 	jt.name		,
+			 	se.id 	 	,
+				se.name	
+			 order by
+			 	se.name	,
+			 	jt.name	; """
+		)
+		all = dictfetchall(cursor)
+		segments = []
+		[{
+			'id' : s['segment_id'],
+			'name' : s['segment_name'],
+		} for s in all
+			if 
+			{
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			} not in segments 
+			and segments.append({
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			})]
+		job_titles = []
+		[{
+			'id' : j['job_title_id'],
+			'name' : j['job_title_name'],
+			'segment_id' : j['segment_id']
+		} for j in all
+			if 
+			{
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			} not in job_titles
+			and job_titles.append({
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			})]
+		for segment in segments:
+			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
+
+		return segments
+		
+	@classmethod
+	def getAllActiveByProfile(cls, profile):
+		cursor = connection.cursor()
+		cursor.execute(
+			"""			
+			select  
+				jt.id							, 
+			 	jt.id 		as job_title_id		, 
+			 	jt.name		as job_title_name	, 
+			 	se.id 		as segment_id 		, 
+				se.name		as segment_name		
+			 from colabre_web_jobtitle jt 
+			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
+			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
+			 where jt.active = 1 
+			 	and jo.active = 1 
+			 	and se.active = 1
+			 	and jo.profile_id = {0}
+			 group by 
+			 	jt.id		,
+			 	jt.name		,
+			 	se.id 	 	,
+				se.name	
+			 order by
+			 	se.name	,
+			 	jt.name	; 
+			""".format(profile.id)
+		)
+		all = dictfetchall(cursor)
+		segments = []
+		[{
+			'id' : s['segment_id'],
+			'name' : s['segment_name'],
+		} for s in all
+			if 
+			{
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			} not in segments 
+			and segments.append({
+				'id' : s['segment_id'],
+				'name' : s['segment_name'],
+			})]
+		job_titles = []
+		[{
+			'id' : j['job_title_id'],
+			'name' : j['job_title_name'],
+			'segment_id' : j['segment_id']
+		} for j in all
+			if 
+			{
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			} not in job_titles
+			and job_titles.append({
+				'id' : j['job_title_id'],
+				'name' : j['job_title_name'],
+				'segment_id' : j['segment_id']
+			})]
+		for segment in segments:
+			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
+
+		return segments
+	
+	def __unicode__(self):
+		return self.name
+
+class JobTitle(models.Model):
+	name = models.CharField(max_length=50)
+	segment = models.ForeignKey(Segment)
+	active = models.BooleanField(default=True)
+	def __unicode__(self):
+		return "%s (%s)" % (self.name, self.segment.name)
+		
+class Company(models.Model):
+	name = models.CharField(max_length=50, unique=True)
+	active = models.BooleanField(default=True)
+	def __unicode__(self):
+		return self.name
+
+class Resume(models.Model):
+	profile = models.ForeignKey(UserProfile, unique=True)
+	segments = models.ManyToManyField(Segment)
+	short_description = models.TextField(max_length=255)
+	full_description = models.TextField()
+	visible = models.BooleanField(default=True)
+	active = models.BooleanField(default=True)
+	
+	@classmethod
+	def view_search_public(cls, after_id, q, limit):
+		query_id = Q(id__lt=after_id)
+		if after_id == '0' or after_id == 0:
+			query_id = Q()
+			
+		query_description = Q(
+			Q(short_description__icontains=q) | 
+			Q(full_description__icontains=q)
+		)
+		if q == None:
+			query_description = Q()
+		
+		visible_query = Q(visible=True)
+		
+		resumes = Resume.objects.filter(visible_query, query_id, query_description).order_by("-id")[:limit]
+		exists = Resume.objects.filter(visible_query, query_description).exists()
+		return resumes, exists
+	
+	@classmethod
+	def save_(cls, profile, short_description, full_description, visible):
+		try:
+			resume = Resume.objects.get(profile=profile)
+			resume.short_description = short_description
+			resume.full_description = full_description
+			resume.visible = visible
+			resume.save()
+		except Resume.DoesNotExist:
+			resume = Resume()
+			resume.profile = profile
+			resume.short_description = short_description
+			resume.full_description = full_description
+			resume.visible = visible
+			resume.save()
+
+	file = models.FileField(
+		null=True,
+		upload_to=lambda instance, filename: 
+			colabre.settings.UPLOAD_DIR
+			+ '/resumes/'
+			+ str(instance.id)
+			+ '/' 
+			+ filename
+		)
+
+	def __unicode__(self):
+		return self.short_description
+
 class Job(models.Model):
 
 	def get_is_editable(self):
@@ -567,8 +608,8 @@ class Job(models.Model):
 	active = models.BooleanField(default=True)
 
 	# to remove
-	@staticmethod
-	def _view_search_my_jobs(profile, after_id, q, limit):
+	@classmethod
+	def _view_search_my_jobs(cls, profile, after_id, q, limit):
 		query_id = Q(id__lt=after_id)
 		if after_id == '0' or after_id == 0:
 			query_id = Q()
@@ -586,8 +627,8 @@ class Job(models.Model):
 		exists = Job.objects.filter(Q(profile=profile), query_name).exists()
 		return jobs, exists
 
-	@staticmethod
-	def view_search_my_jobs(profile, term, job_titles_ids, locations_ids, days, page, limit):
+	@classmethod
+	def view_search_my_jobs(cls, profile, term, job_titles_ids, locations_ids, days, page, limit):
 		
 		query = Q(published=True) & Q(profile=profile)
 		
@@ -620,8 +661,8 @@ class Job(models.Model):
 
 		return jobs, is_last_page, total_jobs
 		
-	@staticmethod
-	def view_search_public(term, job_titles_ids, locations_ids, days, page, limit):
+	@classmethod
+	def view_search_public(cls, term, job_titles_ids, locations_ids, days, page, limit):
 		now = datetime.now()
 		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
 		
@@ -670,21 +711,12 @@ class Job(models.Model):
 				segment.save()
 				job_title = JobTitle(name=self.job_title_name, segment=segment)
 				job_title.save()
+		
 		self.job_title = job_title
 		self.job_title_name = job_title.name
 		self.segment_name = self.job_title.segment.name
-
-
-		try:
-			# IMPORTANT! check PoliticalLocation.name for correct format...
-			location = self.workplace_political_location_name.split('/')
-			city_name = location[0].strip()
-			region_code = location[1].strip()
-			country_code = location[2].strip()
-			self.workplace_political_location = PoliticalLocation.objects.get(city_name=city_name, region_code=region_code, country_code=country_code)
-		except:
-			self.workplace_political_location = None
-			
+		self.workplace_political_location = PoliticalLocation.try_parse(self.workplace_political_location_name)
+		
 		try:
 			self.company = Company.objects.get(name=self.company_name.strip())
 			self.company_name = self.company.name
@@ -720,8 +752,8 @@ class UserProfileVerification(models.Model):
 		else:
 			return False
 	
-	@staticmethod
-	def create(profile):
+	@classmethod
+	def create(cls, profile):
 		""" Create the user verification object.
 			This whole thing of notification should be placed elsewhere
 			since it will be very little used """
@@ -733,24 +765,24 @@ class UserProfileVerification(models.Model):
 		
 		return verification
 	
-	@staticmethod
-	def create_verified(profile):
+	@classmethod
+	def create_verified(cls, profile):
 		verification = UserProfileVerification()
 		verification.date_verified = datetime.now()
 		verification.profile = profile
 		verification.save()
 		return verification
 	
-	@staticmethod
-	def verify(uuid):
+	@classmethod
+	def verify(cls, uuid):
 		verification = UserProfileVerification.objects.filter(uuid = uuid)[0]
 		if verification is None:
 			raise BusinessException(u"Número de verificação inexistente")
 		verification.__setVerified(uuid)
 		return verification.profile
 		
-	@staticmethod
-	def resend_verification_email(user):
+	@classmethod
+	def resend_verification_email(cls, user):
 		profile = UserProfile.objects.get(user=user)
 		verification = UserProfileVerification.objects.get(profile=profile)
 		UserNotification.getNotification().notify(profile, verification.uuid)

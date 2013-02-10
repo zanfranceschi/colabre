@@ -12870,7 +12870,9 @@ class Command(BaseCommand):
 			username,
 			email,
 			password)
-		
+		profile.political_location_name = random.choice(self.locations).__unicode__()
+		profile.political_location = random.choice(self.locations)
+		profile.save()
 		return profile
 	
 	def generateRandomDateTime(self):
@@ -12935,7 +12937,7 @@ class Command(BaseCommand):
 			profile = self.generateRandomUserProfile()
 			short_description = self.generateRandomParagraphs(max_paragraphs = 1)
 			full_description = self.generateRandomParagraphs(max_paragraphs = 6)
-			resume = Resume.save_(profile, short_description, full_description, True)
+			Resume.save_(profile, short_description, full_description, True)
 			generated_profiles.append(profile)
 
 			current_percentage = round(Decimal(i) / Decimal(num_profiles), 2) * 100
@@ -12946,7 +12948,6 @@ class Command(BaseCommand):
 				
 			#self.stdout.write(str(round(Decimal(i) / Decimal(num_profiles), 2)))
 		
-		generated_jobs = []
 		# Jobs
 		self.stdout.write("\n\nCreating %i jobs...\n" % num_jobs)
 		percentage = -1

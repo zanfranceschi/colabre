@@ -25,13 +25,18 @@
 		$(function() {
 		
 			$("#id_job_title_name").autocomplete({
-				minLength: 2,
+				minLength: 1,
 				source: function(request, response) 
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/minhas-vagas/parcial/buscar-cargo/' + term,
-						type: 'get',
+						url: '/minhas-vagas/parcial/buscar-cargo/',
+						data: {
+							q : term,
+							segment : $("#id_segment_name").val(),
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
 						success: function(data)
 						{
 							response($.map(data, function(item)
@@ -44,7 +49,7 @@
 			});
 		
 			$("#id_segment_name").autocomplete({
-				minLength: 2,
+				minLength: 1,
 				source: function(request, response) 
 				{
 					var term = request.term;
@@ -63,7 +68,7 @@
 			});
 		
 			$("#id_workplace_political_location_name").autocomplete({
-				minLength: 2,
+				minLength: 1,
 				source: function(request, response) 
 				{
 					var term = request.term;
@@ -82,7 +87,7 @@
 			});
 			
 			$("#id_company_name").autocomplete({
-				minLength: 2,
+				minLength: 1,
 				source: function(request, response) 
 				{
 					var term = request.term;

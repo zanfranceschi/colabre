@@ -27,7 +27,7 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 	url(r'^parcial/buscar/$', 'partial_html_search'),
 	#url(r'^parcial/alternar-ativacao/([\d]+)/$', 'partial_toggle_published'),
 	
-	url(r'^parcial/buscar-cargo/(.+)/$', 'partial_json_search_job_title', name= 'my_jobs_partial_json_search_job_title'),
+	url(r'^parcial/buscar-cargo/$', 'partial_json_search_job_title', name= 'my_jobs_partial_json_search_job_title'),
 	url(r'^parcial/buscar-segmento/(.+)/$', 'partial_json_search_segment', name= 'my_jobs_partial_json_search_segment'),
 	url(r'^parcial/buscar-cidade/(.+)/$', 'partial_json_search_city', name= 'my_jobs_partial_json_search_city'),
 	url(r'^parcial/buscar-empresa/(.+)/$', 'partial_json_search_company', name= 'my_jobs_partial_json_search_company'),
@@ -51,7 +51,7 @@ def index(request):
 
 @login_required
 @handle_exception
-def partial_details(request, id, search_term = None):
+def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
 	JobViewLogger.log(request, search_term, job)
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
@@ -84,9 +84,19 @@ def partial_html_search(request):
 	
 @login_required
 @handle_exception
-def partial_json_search_job_title(request, q):
-	list = serializers.serialize("json", JobTitle.objects.filter(name__icontains=q).distinct().order_by("name")[:10])
-	return HttpResponse(list, mimetype="application/json")
+def partial_json_search_job_title(request):
+	if request.method == 'POST':
+		q = request.POST['q']
+		segment = request.POST['segment']
+		titles = None
+		if (segment != None):
+			titles = JobTitle.objects.filter(name__icontains=q, segment__name=segment)
+		else:
+			titles = JobTitle.objects.filter(name__icontains=q)
+		
+		list = serializers.serialize("json", titles.order_by('name')[:10])
+		return HttpResponse(list, mimetype="application/json")
+
 
 @login_required
 @handle_exception

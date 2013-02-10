@@ -31,10 +31,10 @@ li label
 </style>
 {% endblock %}
 
-
-
 {% block body %}
-	<h1>Perfil</h1>	
+	<h1>Perfil	{% if user.get_profile.is_from_oauth %} <img src="{{ STATIC_URL }}img/linkedin-logo-small.png" style="vertical-align: middle;" alt="membro linkedin" />{% endif %}</h1>
+
+
 	<form action="{% url my_profile_index %}" method="post">
 		{% csrf_token %}
 		
@@ -86,14 +86,28 @@ li label
 
 		<input type="submit" value="salvar" class="btn-info" />
 	</form>
-	{% if not user.get_profile.is_from_oauth %}
-	<div style="margin-top: 30px">
-		<a style="margin-left: 0px" class="" href="{% url my_profile_change_password %}">alterar senha</a>
-	</div>
-	{% endif %}
-	
+
 	<script type="text/javascript">
 		$(function(){
+			
+			$("#id_political_location_name").autocomplete({
+				minLength: 1,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/meu-perfil/parcial/buscar-cidade/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.extras['name'];
+							}));
+						}
+					});
+				}
+			});
 			
 			$("#resend-verification-email").click(function(){
 				

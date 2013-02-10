@@ -1,21 +1,38 @@
-﻿{% extends "_base.html" %}
+﻿{% extends "_or-linkedin.html" %}
+{% load url from future %}
 {% block title %}Cadastre-se{% endblock %}
-{% block body %}
-	<h1>Cadastre-se</h1>
-	<p>
-		Cadastre-se no Colabre! É rápido, fácil e você terá todos 
-		os benefícios do melhor serviço de busca e divulgação de empregos do Brasil.
-	</p>
-	<form action="{% url registration_index %}" method="post">
+{% block extra_head %}
+<style type="text/css">
+	.table td
+	{
+		vertical-align: top;
+	}
+	.table td.or, .table td.oauth 
+	{
+		padding: 50px 40px 0 40px;
+	}
+	.table td.oauth 
+	{
+		padding-top: 100px;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<h1>Cadastre-se</h1>
+<p>
+	Cadastre-se no Colabre! É rápido, fácil e você terá todos 
+	os benefícios do melhor serviço de busca e divulgação de empregos do Brasil.
+</p>
+<form action="{% url 'registration_index' %}" method="post">
 
-		
-		{% csrf_token %}
-		{% include "_form.html" %}
+	
+	{% csrf_token %}
+	{% include "_form.html" %}
 
-		<div class="alert alert-info small" style="padding: 10px;">
-			Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
-			<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
-		</div>
-		<input type="submit" value="cadastre-se" class="btn-info" />
-	</form>
-{% endblock body %}
+	<div class="alert alert-info small" style="padding: 10px;">
+		Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
+		<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
+	</div>
+	<input type="submit" value="cadastre-se" class="btn-info" />
+</form>
+{% endblock content %}

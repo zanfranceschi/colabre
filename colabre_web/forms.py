@@ -9,7 +9,6 @@ from django.core import validators
 import re
 from django.forms import ModelForm, extras
 from datetime import datetime
-import time
 
 def set_bbcode(field):
 	field.widget.attrs['class'] += ' bbcode'
@@ -54,8 +53,10 @@ def validate_username_unique(value):
 def validate_email_unique(value):
 	pass
 	'''Custom validator for email uniqueness.'''
+	"""
 	if User.objects.filter(email=value).exists():
 		raise ValidationError(u'Este email já está cadastrado para outro usuário.')
+	"""
 
 class BaseForm(forms.Form):
 	def __init__(self, *args, **kwargs):
@@ -67,35 +68,38 @@ class BaseModelForm(ModelForm):
 		super(BaseModelForm, self).__init__(*args, **kwargs)
 		custom_init(self)
 
-class UserProfileForm(BaseForm):
-	user = None
+def get_user_profile_form(*args, **kwargs):
+	user = kwargs['user']
+	profile = UserProfile.objects.get(user=user)
+	if profile.is_from_oauth:
+		return UserProfileFormOAuth(*args, **kwargs)
+	else:
+		return UserProfileFormColabre(*args, **kwargs)
+
+class UserProfileFormOAuth(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.user = kwargs.pop('user', None)
-		super(UserProfileForm, self).__init__(*args, **kwargs)
+		super(UserProfileFormOAuth, self).__init__(*args, **kwargs)
+		self.fields.keyOrder = ['political_location_name', 'profile_type', 'birthday', 'gender']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
-
 			data = {
-				'email' : profile.user.email,
+				'political_location_name' : profile.political_location_name,
 				'profile_type' : profile.profile_type or 'JS',
-				'first_name' : profile.user.first_name,
-				'last_name' : profile.user.last_name,
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
 			}
-			if profile.resume:
-				data.update({
-					'resume_short_description' : profile.resume.short_description,
-					'resume_full_description' : profile.resume.full_description	
-				})
 			self.initial = data
-	
 
-	first_name = forms.CharField(max_length=20, label='Primeiro Nome')
-	last_name = forms.CharField(max_length=20, label='Sobrenome', help_text='Se tiver mais de um sobrenome, coloque todos aqui se desejar.')
-	email = forms.EmailField(widget=forms.TextInput(),
-		help_text='Se alterar seu email, será necessário verificá-lo.', 
-		label='Email')
+	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
+
+
+	political_location_name = forms.CharField(
+		required=False,
+		max_length=120,
+		label='Cidade',
+		help_text='Ao informar sua cidade, os resultados das buscas irão considerar sua localização.',
+		)
 
 	profile_type = forms.ChoiceField(
 		required=True,
@@ -104,8 +108,6 @@ class UserProfileForm(BaseForm):
 		choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')),
 		widget=forms.RadioSelect(),
 	)
-	
-	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
 	
 	birthday = forms.DateField(
 		required=True,
@@ -119,38 +121,62 @@ class UserProfileForm(BaseForm):
 		widget=forms.RadioSelect()
 	)
 	
+	def save(self, commit=True):
+		UserProfile.update_profile_oauth(
+			self.user, 
+			self.cleaned_data['profile_type'],
+			self.cleaned_data['gender'],
+			self.cleaned_data['birthday'],
+			self.cleaned_data['political_location_name']
+		)
+
+class UserProfileFormColabre(UserProfileFormOAuth):
+	def __init__(self, *args, **kwargs):
+		super(UserProfileFormColabre, self).__init__(*args, **kwargs)
+		self.fields.keyOrder = ['first_name', 'last_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
+		if self.user:
+			profile = UserProfile.objects.get(user=self.user)
+
+			data = {
+				'email' : profile.user.email,
+				'profile_type' : profile.profile_type or 'JS',
+				'first_name' : profile.user.first_name,
+				'last_name' : profile.user.last_name,
+				'birthday' :  profile.birthday,
+				'gender' :  profile.gender,
+			}
+			self.initial = data
 	
-	
-	"""
-	How would it be used with Linkedin?
+
+	first_name = forms.CharField(max_length=20, label='Primeiro Nome')
+	last_name = forms.CharField(max_length=20, label='Sobrenome', help_text='Se tiver mais de um sobrenome, coloque todos aqui se desejar.')
+	email = forms.EmailField(widget=forms.TextInput(),
+		help_text='Se alterar seu email, será necessário verificá-lo.', 
+		label='Email')
 	password = forms.CharField(
-				widget=forms.PasswordInput,
-				help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
-				error_messages = { 
-					'required' : u'Para atualizar seu cadastro, é necessário colocar sua senha.'
-				},
-				label='Senha'
+		widget=forms.PasswordInput,
+		help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
+		error_messages = { 
+			'required' : u'Para atualizar seu cadastro, é necessário colocar sua senha.'
+		},
+		label='Senha'
 	)
-	"""
 	
 	def clean(self):
-		super(forms.Form, self).clean()
+		super(UserProfileFormOAuth, self).clean()
 		if self.is_valid():
-			from dateutil.relativedelta import relativedelta
-			current_date = date.today()
-			user_birthday = self.cleaned_data['birthday']
-			#password = self.cleaned_data['password']
+			password = self.cleaned_data['password']
 			username = self.user.username
 			email = self.cleaned_data['email']
 			
-			"""
 			_user = authenticate(username=username, password=password)
 			if _user is None:
 				self._errors['password'] = u'Senha incorreta.'
+			
 			"""
-
 			if self.user and User.objects.filter(Q(Q(email=email), ~Q(id=self.user.id))).exists():
 				self._errors['email'] = u'O email %s já está cadastrado para outro usuário.' % email
+			"""
 			
 			return self.cleaned_data
 			
@@ -164,7 +190,7 @@ class UserProfileForm(BaseForm):
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday']
 		)
-	
+
 class LoginForm(BaseForm):
 	username = forms.CharField(
 		max_length=30, 
@@ -224,12 +250,21 @@ class JobForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
 		super(JobForm, self).__init__(*args, **kwargs)
-		self.fields['job_title_name'].label = u'Título'
+		self.fields.keyOrder = [
+							'segment_name', 
+							'job_title_name', 
+							'description', 
+							'workplace_political_location_name', 
+							'workplace_location', 
+							'company_name', 
+							'contact_email', 
+							'contact_phone']
+		self.fields['job_title_name'].label = u'Cargo'
 		self.fields['job_title_name'].help_text = u'Exemplos: Analista de Sistemas, Enfermeiro, Auxiliar de Expedição, etc.'
-		self.fields['segment_name'].label = u'Segmento da Vaga'
+		self.fields['segment_name'].label = u'Segmento'
 		self.fields['segment_name'].help_text = u'Segmento da vaga. Ex.: Finanças, Tecnologia da Informação, Medicina, etc..'
 		self.fields['workplace_political_location_name'].label = u'Cidade'
-		self.fields['workplace_political_location_name'].help_text = u'Cidade / Estado / País da vaga.'
+		self.fields['workplace_political_location_name'].help_text = u'Cidade / Estado / País da vaga. Use uma cidade sugerida pelo sistema para que sua vaga seja filtrável por Localização nas buscas.'
 		self.fields['description'].label = u'Descrição da Vaga'
 		self.fields['description'].help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
 		self.fields['description'].widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70})
@@ -264,7 +299,6 @@ class JobForm(ModelForm):
 					'contact_phone' : last_posted_job.contact_phone
 				})
 		custom_init(self)
-	
 
 class ResumeForm(BaseForm):
 
@@ -283,6 +317,7 @@ class ResumeForm(BaseForm):
 				self.initial = { 'visible' : True }
 			if resume:
 				data = {
+					#'segments' : resume.segments,
 					'short_description' : resume.short_description,
 					'full_description' : resume.full_description,
 					'visible' : resume.visible

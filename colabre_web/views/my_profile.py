@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from colabre_web.models import *
+from colabre_web.views.my_jobs import partial_json_search_city as my_jobs_partial_json_search_city  
 from colabre_web.forms import *
 from helpers import *
 from django.conf.urls import patterns, url
@@ -16,6 +17,7 @@ urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^verificar-email/([\w\d\-]+)/$', 'verify_email', name='my_profile_verify_email'),
 	url(r'^solicitar-verificacao/$', 'demand_verification', name='my_profile_demand_verification'),
 	url(r'^recuperar-acesso/$', 'retrieve_access', name='my_profile_retrieve_access'),
+	url(r'^parcial/buscar-cidade/(.+)/$', 'partial_json_search_city', name= 'my_profile_partial_json_search_city'),
 )
 
 def get_template_path(template):
@@ -28,21 +30,19 @@ def demand_verification(request):
 		return render(request, 'index.html')	
 	return render(request, get_template_path('demand-verification.html'))
 	
-
 @login_required
 @handle_exception
 def index(request):
 	if request.method == 'POST':
-		form = UserProfileForm(request.POST, user=request.user)
+		form = get_user_profile_form(request.POST, user=request.user)
 		if form.is_valid():
 			form.save()
 			messages.success(request, 'Perfil atualizado.')
 		else:
 			messages.error(request, 'Verifique o preenchimento do perfil.')
 	else:
-		form = UserProfileForm(user=request.user)
+		form = get_user_profile_form(user=request.user)
 	return render(request, get_template_path('index.html'), {'form' : form })
-
 
 @login_required
 @handle_exception
@@ -53,7 +53,6 @@ def partial_resend_verification_email(request):
 	except Exception:
 		return HttpResponse('0')
 	
-
 @handle_exception
 def verify_email(request, uuid):
 	try:
@@ -61,12 +60,11 @@ def verify_email(request, uuid):
 		if profile:
 			messages.success(request, 'Obrigado! Seu email foi verificado com sucesso.')
 		if request.user:
-			form = UserProfileForm(user=request.user)
+			form = get_user_profile_form(user=request.user)
 			return render(request, get_template_path('index.html'), {'form' : form})
 	except Exception:
 		pass
 	return render(request, 'index.html')
-	
 
 @login_required
 @handle_exception
@@ -75,13 +73,12 @@ def change_password(request):
 		form = ChangePasswordForm(request.POST, user=request.user)
 		if form.is_valid():
 			form.save()
-			form = UserProfileForm(user=request.user) #return to the profile form
+			form = get_user_profile_form(user=request.user) #return to the profile form
 			messages.success(request, 'Senha alterada.')
 			return render(request, get_template_path('index.html'), {'form' : form})
 	else:
 		form = ChangePasswordForm()
 	return render(request, get_template_path('change-password.html'), {'form' : form})
-	
 	
 @handle_exception
 def retrieve_access(request):
@@ -104,3 +101,8 @@ def retrieve_access(request):
 	else:
 		form = RetrieveAccessForm()
 	return render(request, get_template_path('retrieve-access.html'), {'form' : form})
+
+@login_required
+@handle_exception
+def partial_json_search_city(request, q):
+	return my_jobs_partial_json_search_city(request, q)

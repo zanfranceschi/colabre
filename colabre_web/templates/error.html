@@ -15,13 +15,7 @@
 	<p>Nos desculpe. Fizemos alguma coisa errada e ocorreu um erro no sistema. Se lhe interessar, pode ver o que ocorreu no quadro abaixo.</p>
 	<p style="background: #df4b28; border: 1px solid #555; padding: 5px;">
 		<b>Erro: </b>
-			{% if messages %}
-			{% for message in messages %}
-				{% if message %}
-					{{ message|safe }}<br />
-				{% endif %}
-			{% endfor %}
-		{% endif %}
+		<span style="white-space: pre;">{% if messages %}{% for message in messages %}{% if message %}{{ message|safe }}{% endif %}{% endfor %}{% endif %}</span>
 	</p>
 	<div style="text-align: right; margin-top: 40px;">
 		<a href="javascript:history.go(-1);" class="btn btn-info">Voltar</a>

@@ -8,21 +8,14 @@ urllib2.install_opener(opener)
 """
 
 AUTHENTICATION_BACKENDS = (
-    #'emailusernames.backends.EmailAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
-    # add the social_auth authentication backend. We're not using the default
-    # ModelBackend, but if you are, leave it in the list.
     'social_auth.backends.contrib.linkedin.LinkedinBackend',
-    'social_auth.backends.twitter.TwitterBackend',
 )
 
 # These settings are used by the social_auth app.
 LINKEDIN_CONSUMER_KEY = '' # linkedin calls this the "API Key"
 LINKEDIN_CONSUMER_SECRET = '' # "Secret Key"
-# Scope determines what linkedin permissions your app will request when users
-# sign up. Linkedin reccomends requesting three.
 LINKEDIN_SCOPE = ['r_basicprofile', 'r_emailaddress', 'r_fullprofile']
-# Field selectors determine what data social_auth will get from linkedin
 LINKEDIN_EXTRA_FIELD_SELECTORS = [
     'id',
     'email-address',
@@ -52,10 +45,6 @@ LINKEDIN_EXTRA_DATA = [('id', 'id'),
                             (field, field.replace('-', '_'), True)
                             for field in LINKEDIN_EXTRA_FIELD_SELECTORS
                         ]
-
-TWITTER_CONSUMER_KEY         = ''
-TWITTER_CONSUMER_SECRET      = ''
-
 
 # See the social_auth docs for all the configuration options
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/oauth/talent/new/'

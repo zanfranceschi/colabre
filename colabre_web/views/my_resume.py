@@ -21,6 +21,13 @@ def get_template_path(template):
 @handle_exception
 def index(request):
 	if request.method == 'POST':
+		"""test"""
+		import sys
+		segments = request.POST.getlist('segment')
+		
+		for segment in segments:
+			print >> sys.stderr, segment
+		
 		form = ResumeForm(request.POST, profile=request.user.get_profile())
 		if form.is_valid():
 			form.save()
