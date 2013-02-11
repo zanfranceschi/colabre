@@ -58,6 +58,8 @@ else: #alwaysdata
 
 EMAIL_FROM = 'no-reply@colabre.org'
 
+USE_REAL_USER_NOTIFICATION = True
+
 STATIC_ROOT = abs_path('static')
 
 UPLOAD_DIR = abs_path('uploads').replace('_web', '')

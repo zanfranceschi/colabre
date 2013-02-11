@@ -5,12 +5,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from colabre_web.models import *
 from colabre_web.forms import *
+from colabre_web.views.my_jobs import partial_json_search_segment as my_profile_partial_json_search_segment
 from helpers import *
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('colabre_web.views.my_resume',
 	
 	url(r'^$', 'index', name='my_resume_index'),
+	url(r'^parcial/buscar-segmento/(.+)/$', 'partial_json_search_segment', name= 'my_resume_partial_json_search_segment'),
 )
 
 def get_template_path(template):
@@ -35,3 +37,8 @@ def index(request):
 	else:
 		form = ResumeForm(profile=request.user.get_profile())
 	return render(request, get_template_path('index.html'), {'form' : form })
+
+@login_required
+@handle_exception
+def partial_json_search_segment(request, q):
+	return my_profile_partial_json_search_segment(request, q)

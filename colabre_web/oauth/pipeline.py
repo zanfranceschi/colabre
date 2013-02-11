@@ -46,6 +46,12 @@ def bind_to_profile(request, *args, **kwargs):
 					
 				if date.has_key('day'):
 					data.update({'day' : date['day']})
+			
+			#if response.has_key('industry'):
+			#	data.update({'resume_segment_name' : response['industry']})
+				
+			if response.has_key('summary'):
+				data.update({'resume_short_description' : response['summary']})
 					
 		UserProfile.create_oauth_if_new(user, **data)
 		

@@ -63,4 +63,7 @@ class UserNotification:
 	
 	@staticmethod
 	def getNotification():
-		return RealUserNotification
+		if colabre.settings.USE_REAL_USER_NOTIFICATION:
+			return RealUserNotification
+		else:
+			return DummyUserNotification

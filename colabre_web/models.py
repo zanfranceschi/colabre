@@ -47,20 +47,9 @@ class PoliticalLocation(models.Model):
 			return None
 	
 	@classmethod
-	def getAllActiveCountries(cls):
+	def getCountriesByQuery(cls, query):
 		cursor = connection.cursor()
-		cursor.execute(
-			"""
-			select l.* 
-			from colabre_web_politicallocation l 
-				inner join colabre_web_job j on j.workplace_political_location_id = l.id
-			where j.active = 1
-			order by 
-				l.country_code, 
-				l.region_code, 
-				l.city_name 
-			"""
-		)
+		cursor.execute(query)
 		locations = dictfetchall(cursor)
 		countries = []
 		[{
@@ -138,99 +127,6 @@ class PoliticalLocation(models.Model):
 				
 		return countries
 		
-	@classmethod
-	def getAllActiveCountriesByProfile(cls, profile):
-		cursor = connection.cursor()
-		cursor.execute(
-			"""
-			select l.* 
-			from colabre_web_politicallocation l 
-				inner join colabre_web_job j on j.workplace_political_location_id = l.id
-			where j.active = 1
-				and j.profile_id = {0}
-			order by 
-				l.country_code, 
-				l.region_code, 
-				l.city_name 
-			""".format(profile.id)
-		)
-		locations = dictfetchall(cursor)
-		countries = []
-		[{
-			'id' : c['country_id'],
-			'code' : c['country_code'],
-			'name' : c['country_name'],
-		} for c in locations
-			if 
-			{
-				'id' : c['country_id'],
-				'code' : c['country_code'],
-				'name' : c['country_name'],
-			} not in countries 
-			and countries.append({
-				'id' : c['country_id'],
-				'code' : c['country_code'],
-				'name' : c['country_name'],
-				})]
-					
-		regions = []
-		[{
-			'id' : r['region_id'],
-			'country_id' : r['country_id'],
-			'code' : r['region_code'],
-			'name' : r['region_name'],
-		} for r in locations
-			if 
-			{
-				'id' : r['region_id'],
-				'country_id' : r['country_id'],
-				'code' : r['region_code'],
-				'name' : r['region_name'],
-			} not in regions 
-			and regions.append({
-				'id' : r['region_id'],
-				'country_id' : r['country_id'],
-				'code' : r['region_code'],
-				'name' : r['region_name'],
-				})]
-				
-		cities = []
-		[{
-			'id' : c['id'],
-			'country_id' : c['country_id'],
-			'region_id' : c['region_id'],
-			'country_code' : c['country_code'],
-			'region_code' : c['region_code'],
-			'name' : c['city_name'],
-			'friendly_name' : str(c),
-		} for c in locations
-			if 
-			{
-				'id' : c['id'],
-				'country_id' : c['country_id'],
-				'region_id' : c['region_id'],
-				'country_code' : c['country_code'],
-				'region_code' : c['region_code'],
-				'name' : c['city_name'],
-				'friendly_name' : str(c),
-			} not in cities 
-			and cities.append({
-				'id' : c['id'],
-				'country_id' : c['country_id'],
-				'region_id' : c['region_id'],
-				'country_code' : c['country_code'],
-				'region_code' : c['region_code'],
-				'name' : c['city_name'],
-				'friendly_name' : str(c),
-				})]
-
-		for country in countries:
-			country['regions'] = [region for region in regions if country['id'] == region['country_id']]
-			for region in country['regions']:
-				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
-				
-		return countries
-	
 	def name(self):
 		return self.__unicode__()
 	
@@ -312,8 +208,23 @@ class UserProfile(models.Model):
 			profile.is_from_oauth = True
 			if kwargs.get('year') and kwargs.get('month') and kwargs.get('day'):
 				profile.birthday = datetime(int(kwargs['year']), int(kwargs['month']), int(kwargs['day']))
+			
 			profile.save()
-			#UserProfileVerification.create_verified(profile)
+			
+			resume_segment_name = ' '
+			resume_short_description = ' '
+			should_save = False
+			
+			if kwargs.get('resume_segment_name'):
+				resume_segment_name = kwargs['resume_segment_name']
+				should_save = True
+			
+			if kwargs.get('resume_short_description'):
+				resume_short_description = kwargs['resume_short_description'][0:255]
+				should_save = True
+			
+			if should_save:	
+				Resume.save_(profile, resume_segment_name, resume_short_description, '', False)
 		
 	@classmethod
 	def update_profile(
@@ -331,7 +242,7 @@ class UserProfile(models.Model):
 		profile.user.last_name = last_name
 	
 		new_email = email
-		if new_email != profile.user.email and profile.is_verified:
+		if new_email.lower() != profile.user.email.lower() and profile.is_verified:
 			verification = UserProfileVerification.objects.get(profile=profile)
 			verification.uuid = str(uuid.uuid4())
 			verification.save()
@@ -369,79 +280,20 @@ class UserProfile(models.Model):
 			self.is_verified = False
 		super(UserProfile, self).save(*args, **kwargs)
 		self.user.save()
-
-class Segment(models.Model):
-	name = models.CharField(max_length=50, unique=True)
-	active = models.BooleanField(default=True)
-
-	@classmethod
-	def getAllActive(cls):
-		cursor = connection.cursor()
-		cursor.execute(
-			"""			
-			select  
-				jt.id							, 
-			 	jt.id 		as job_title_id		, 
-			 	jt.name		as job_title_name	, 
-			 	se.id 		as segment_id 		, 
-				se.name		as segment_name		
-			 from colabre_web_jobtitle jt 
-			 	inner join colabre_web_segment se	on jt.segment_id = se.id 
-			 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
-			 where jt.active = 1 
-			 	and jo.active = 1 
-			 	and se.active = 1
-			 group by 
-			 	jt.id		,
-			 	jt.name		,
-			 	se.id 	 	,
-				se.name	
-			 order by
-			 	se.name	,
-			 	jt.name	; """
-		)
-		all = dictfetchall(cursor)
-		segments = []
-		[{
-			'id' : s['segment_id'],
-			'name' : s['segment_name'],
-		} for s in all
-			if 
-			{
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			} not in segments 
-			and segments.append({
-				'id' : s['segment_id'],
-				'name' : s['segment_name'],
-			})]
-		job_titles = []
-		[{
-			'id' : j['job_title_id'],
-			'name' : j['job_title_name'],
-			'segment_id' : j['segment_id']
-		} for j in all
-			if 
-			{
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			} not in job_titles
-			and job_titles.append({
-				'id' : j['job_title_id'],
-				'name' : j['job_title_name'],
-				'segment_id' : j['segment_id']
-			})]
-		for segment in segments:
-			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
-
-		return segments
 		
 	@classmethod
-	def getAllActiveByProfile(cls, profile):
-		cursor = connection.cursor()
-		cursor.execute(
-			"""			
+	def getCountriesForSearchFilter(cls, profile):
+		query = """	select distinct l.* 
+					from colabre_web_politicallocation l 
+						inner join colabre_web_job j on j.workplace_political_location_id = l.id
+					where j.active = 1
+						and j.profile_id = {0}
+					order by l.country_code, l.region_code, l.city_name """.format(profile.id)
+		return PoliticalLocation.getCountriesByQuery(query)
+	
+	@classmethod
+	def getSegmentsForSearchFilter(cls, profile):
+		query = """			
 			select  
 				jt.id							, 
 			 	jt.id 		as job_title_id		, 
@@ -464,7 +316,21 @@ class Segment(models.Model):
 			 	se.name	,
 			 	jt.name	; 
 			""".format(profile.id)
-		)
+		return Segment.getSegmentsByQuery(query)
+
+class Segment(models.Model):
+	name = models.CharField(max_length=50, unique=True)
+	active = models.BooleanField(default=True)
+
+	@classmethod
+	def try_parse(cls, segment_name):
+		objs = cls.objects.filter(name=segment_name)
+		return objs[0] if objs else None
+
+	@classmethod
+	def getSegmentsByQuery(cls, query):
+		cursor = connection.cursor()
+		cursor.execute(query)
 		all = dictfetchall(cursor)
 		segments = []
 		[{
@@ -501,7 +367,7 @@ class Segment(models.Model):
 			segment['job_titles'] = [job_title for job_title in job_titles if segment['id'] == job_title['segment_id']]
 
 		return segments
-	
+		
 	def __unicode__(self):
 		return self.name
 
@@ -509,57 +375,81 @@ class JobTitle(models.Model):
 	name = models.CharField(max_length=50)
 	segment = models.ForeignKey(Segment)
 	active = models.BooleanField(default=True)
+	
+	@classmethod
+	def try_parse(cls, segment_name, job_title_name):
+		objs = cls.objects.filter(segment__name=segment_name, name=job_title_name)
+		return objs[0] if objs else None
+		
 	def __unicode__(self):
 		return "%s (%s)" % (self.name, self.segment.name)
 		
 class Company(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	active = models.BooleanField(default=True)
+	
 	def __unicode__(self):
 		return self.name
 
 class Resume(models.Model):
 	profile = models.ForeignKey(UserProfile, unique=True)
-	segments = models.ManyToManyField(Segment)
+	
+	segment_name = models.CharField(max_length=50)
+	segment = models.ForeignKey(Segment, null=True)
+	
 	short_description = models.TextField(max_length=255)
 	full_description = models.TextField()
 	visible = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
 	
-	@classmethod
-	def view_search_public(cls, after_id, q, limit):
-		query_id = Q(id__lt=after_id)
-		if after_id == '0' or after_id == 0:
-			query_id = Q()
-			
-		query_description = Q(
-			Q(short_description__icontains=q) | 
-			Q(full_description__icontains=q)
-		)
-		if q == None:
-			query_description = Q()
-		
-		visible_query = Q(visible=True)
-		
-		resumes = Resume.objects.filter(visible_query, query_id, query_description).order_by("-id")[:limit]
-		exists = Resume.objects.filter(visible_query, query_description).exists()
-		return resumes, exists
+	def try_get_job_title(self, index):
+		return self.segments[index-1:index]
 	
 	@classmethod
-	def save_(cls, profile, short_description, full_description, visible):
+	def view_search_public(cls, term, segments_ids, locations_ids, page, limit):
+		
+		query = Q(visible=True)
+		
+		if segments_ids:
+			query = query & Q(segment__in=(segments_ids))
+			
+		if locations_ids:
+			query = query & Q(profile__political_location__in=(locations_ids))
+		
+		list = cls.objects.filter(
+			Q(Q(short_description__icontains=term) | Q(full_description__icontains=term)), 
+			query
+		).order_by("-id")
+
+		resumes = None
+		
 		try:
-			resume = Resume.objects.get(profile=profile)
-			resume.short_description = short_description
-			resume.full_description = full_description
-			resume.visible = visible
-			resume.save()
-		except Resume.DoesNotExist:
-			resume = Resume()
-			resume.profile = profile
-			resume.short_description = short_description
-			resume.full_description = full_description
-			resume.visible = visible
-			resume.save()
+			paginator = Paginator(list, limit)
+			resumes = paginator.page(page)
+		except EmptyPage:
+			pass
+		
+		is_last_page = page >= paginator.num_pages
+		total_resumes = paginator.count
+		return resumes, is_last_page, total_resumes
+	
+	@classmethod
+	def save_(
+			cls, 
+			profile, 
+			segment_name, 
+			short_description, 
+			full_description, 
+			visible):
+		objs = Resume.objects.filter(profile=profile)
+		resume = objs[0] if objs else Resume() 
+		resume.profile = profile
+		resume.segment_name = segment_name
+		resume.segment = Segment.try_parse(segment_name)
+		resume.short_description = short_description
+		resume.full_description = full_description
+		resume.visible = visible
+		resume.save()
 
 	file = models.FileField(
 		null=True,
@@ -573,6 +463,40 @@ class Resume(models.Model):
 
 	def __unicode__(self):
 		return self.short_description
+	
+	@classmethod
+	def getCountriesForSearchFilter(cls):
+		query = """	select distinct l.* 
+					from colabre_web_politicallocation l 
+						inner join colabre_web_userprofile up on up.political_location_id = l.id
+					where up.active = 1
+					order by l.country_code, l.region_code, l.city_name """
+		return PoliticalLocation.getCountriesByQuery(query)
+	
+	@classmethod
+	def getSegmentsForSearchFilter(cls):
+		query = """
+				select  
+					jt.id							, 
+					jt.id 		as job_title_id		, 
+					jt.name		as job_title_name	, 
+					se.id 		as segment_id 		, 
+					se.name		as segment_name		
+				 from colabre_web_jobtitle jt 
+					inner join colabre_web_segment se	on jt.segment_id = se.id 
+					inner join colabre_web_resume re	on re.segment_id = se.id
+				 where jt.active = 1 
+					and se.active = 1	
+					and re.visible = 1 
+				 group by 
+					jt.id		,
+					jt.name		,
+					se.id 	 	,
+					se.name	
+				 order by
+					se.name	,
+					jt.name	;"""
+		return Segment.getSegmentsByQuery(query)
 
 class Job(models.Model):
 
@@ -606,26 +530,6 @@ class Job(models.Model):
 	published = models.BooleanField(default=True)
 	
 	active = models.BooleanField(default=True)
-
-	# to remove
-	@classmethod
-	def _view_search_my_jobs(cls, profile, after_id, q, limit):
-		query_id = Q(id__lt=after_id)
-		if after_id == '0' or after_id == 0:
-			query_id = Q()
-			
-		query_name = Q(
-			Q(job_title_name__icontains=q) | 
-			Q(description__icontains=q) |
-			Q(segment_name__icontains=q) |
-			Q(company_name__icontains=q)
-		)
-		if q == None:
-			query_name = Q()
-		
-		jobs = Job.objects.filter(Q(profile=profile), query_id, query_name).order_by("-id")[:limit]
-		exists = Job.objects.filter(Q(profile=profile), query_name).exists()
-		return jobs, exists
 
 	@classmethod
 	def view_search_my_jobs(cls, profile, term, job_titles_ids, locations_ids, days, page, limit):
@@ -729,8 +633,42 @@ class Job(models.Model):
 		super(Job, self).save(*args, **kwargs)
 	
 	def __unicode__(self):
-		return self.title
+		return self.job_title_name
 	
+	@classmethod
+	def getCountriesForSearchFilter(cls):
+		query = """	select distinct l.* 
+					from colabre_web_politicallocation l 
+						inner join colabre_web_job j on j.workplace_political_location_id = l.id
+					where j.active = 1
+					order by l.country_code, l.region_code, l.city_name """
+		return PoliticalLocation.getCountriesByQuery(query)
+	
+	@classmethod
+	def getSegmentsForSearchFilter(cls):
+		query = """			
+				select  
+					jt.id							, 
+				 	jt.id 		as job_title_id		, 
+				 	jt.name		as job_title_name	, 
+				 	se.id 		as segment_id 		, 
+					se.name		as segment_name		
+				 from colabre_web_jobtitle jt 
+				 	inner join colabre_web_segment se	on jt.segment_id = se.id 
+				 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
+				 where jt.active = 1 
+				 	and jo.active = 1 
+				 	and se.active = 1
+				 group by 
+				 	jt.id		,
+				 	jt.name		,
+				 	se.id 	 	,
+					se.name	
+				 order by
+				 	se.name	,
+				 	jt.name	; """
+		return Segment.getSegmentsByQuery(query)
+		
 class UserProfileVerification(models.Model):
 
 	profile = models.ForeignKey(UserProfile, unique=True)
@@ -754,9 +692,6 @@ class UserProfileVerification(models.Model):
 	
 	@classmethod
 	def create(cls, profile):
-		""" Create the user verification object.
-			This whole thing of notification should be placed elsewhere
-			since it will be very little used """
 		verification = UserProfileVerification()
 		verification.profile = profile
 		verification.save()

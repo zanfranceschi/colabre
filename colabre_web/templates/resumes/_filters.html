@@ -1,0 +1,52 @@
+			<div class="filters-wrapper">
+				
+				<!-- locations -->
+				<div id="filter-locations" class="filter-element-wrapper">
+					<h4>Localização</h4>
+					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
+					{% for country in countries %}
+						<div>
+							<input type="checkbox" class="filter-control country country-{{ country.id }}" id="country-{{ country.id }}" />
+							<label for="country-{{ country.id }}">{{ country.name }}</label>
+							<a target="country-regions-{{ country.id }}" class="filter-toggler">◄</a>
+							
+							<div class="filter-element-content-level-02 filter-element-content-level-wrapper" id="country-regions-{{ country.id }}">
+							{% for region in country.regions %}
+								<div>
+									<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
+									<label for="region-{{ region.id }}">{{ region.name }}</label>
+									<a target="region-cities-{{ region.id }}" class="filter-toggler">◄</a>
+									
+									<div id="region-cities-{{ region.id }}" class="filter-element-content-level-last">
+									{% for city in region.cities %}
+										<div>
+											<input id="location-{{ city.id }}" class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" type="checkbox" value="{{ city.id }}" />
+											<label for="location-{{ city.id }}">{{ city.name }}</label>
+										</div>
+									{% endfor %}
+									</div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					{% endfor %}
+					</div>
+				</div>
+				
+				<!-- segments -->
+				<div id="filter-segments" class="filter-element-wrapper">
+					<h4>Segmentos</h4>
+					<div class="">
+						{% for segment in segments %}
+						<div class="segment-wrapper">
+							<input id="segment-{{ segment.id }}" 
+								type="checkbox" 
+								value="{{ segment.id }}" 
+								class="filter-control segment-item"  />
+							<label for="segment-{{ segment.id }}">{{ segment.name }}</label>
+						</div>
+					{% endfor %}
+					</div>
+				</div>
+
+			</div>

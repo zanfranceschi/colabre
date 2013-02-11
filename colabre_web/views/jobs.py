@@ -66,7 +66,7 @@ def partial_html_search(request):
 
 @handle_exception
 def index(request):
-	segments = Segment.getAllActive()
-	countries = PoliticalLocation.getAllActiveCountries()
+	segments = Job.getSegmentsForSearchFilter()
+	countries = Job.getCountriesForSearchFilter()
 	days = [3, 7, 15, 30, 60, 90, 120, 150]
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })

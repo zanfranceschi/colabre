@@ -32,13 +32,6 @@ var search = function(url, type, data, success_callback, error_callback, complet
 	});
 };
 
-// gets the last id of registries
-var lastEntityLoadedId = function(last_selector, id_attr)
-{
-	lastId = $(last_selector).last().attr(id_attr);
-	return typeof(lastId) == 'undefined' ? 0 : lastId;
-};
-
 $(function(){
 	$(".message-close-btn").click(function(){
 		$(this).parent().fadeOut(200);

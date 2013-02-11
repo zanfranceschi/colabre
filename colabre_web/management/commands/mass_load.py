@@ -12826,7 +12826,7 @@ class Command(BaseCommand):
 		u"Finanças",
 		u"Fiscal",
 		u"Gestão Empresarial",
-		u"Informática/T.I.",
+		u"Tecnologia da Informação",
 		u"Internet",
 		u"Jornalismo",
 		u"Logística",
@@ -12841,10 +12841,10 @@ class Command(BaseCommand):
 		u"Web Design",
 	)
 
-	bra_locations = PoliticalLocation.objects.filter(country_code='BRA')[:25]
-	usa_locations = PoliticalLocation.objects.filter(country_code='USA')[:3]
-	oth_locations = PoliticalLocation.objects.filter(country_code__in=('CHL', 'DEU', 'FRA', 'JPN'))[:7]
-	locations = list(chain(bra_locations, usa_locations, oth_locations))
+	bra_locations = PoliticalLocation.objects.filter(country_code='BRA')
+	#usa_locations = PoliticalLocation.objects.filter(country_code='USA')
+	#oth_locations = PoliticalLocation.objects.filter(country_code__in=('CHL', 'DEU', 'FRA', 'JPN'))
+	locations = bra_locations #list(chain(bra_locations, usa_locations, oth_locations))
 
 	def generateRandomParagraphs(self, max_paragraphs = 6, min_paragraph_words = 20, max_paragraph_words = 100):
 		if max_paragraphs == 1:
@@ -12906,6 +12906,9 @@ class Command(BaseCommand):
 		return str(result.replace(tzinfo=utc))
 		
 	def handle(self, *args, **options):
+		num_profiles = num_resumes = int(args[0])
+		num_jobs = int(args[1])
+		
 		self.stdout.write("Starting mass load script...\n")
 		start = datetime.now()
 
@@ -12925,9 +12928,6 @@ class Command(BaseCommand):
 		for clazz in classes:
 			clazz.objects.all().delete()
 		
-		num_profiles = num_resumes = 13
-		num_jobs = 247
-		
 		generated_profiles = []
 		
 		# Profiles and resumes...
@@ -12937,14 +12937,19 @@ class Command(BaseCommand):
 			profile = self.generateRandomUserProfile()
 			short_description = self.generateRandomParagraphs(max_paragraphs = 1)
 			full_description = self.generateRandomParagraphs(max_paragraphs = 6)
-			Resume.save_(profile, short_description, full_description, True)
+			Resume.save_(
+						profile,
+						random.choice(self.field_names),
+						short_description, 
+						full_description, 
+						True)
 			generated_profiles.append(profile)
 
 			current_percentage = round(Decimal(i) / Decimal(num_profiles), 2) * 100
 			
 			if current_percentage > percentage:
 				percentage = current_percentage
-				self.stdout.write("resumes progress\t" + str(int(percentage)) + "%\t(" + str(i) + " resumes)\n")
+				self.stdout.write("resumes progress\t" + str(int(percentage)) + "%\t(" + str(i+1) + " resumes)\n")
 				
 			#self.stdout.write(str(round(Decimal(i) / Decimal(num_profiles), 2)))
 		
@@ -12971,7 +12976,14 @@ class Command(BaseCommand):
 			
 			if current_percentage > percentage:
 				percentage = current_percentage
-				self.stdout.write("jobs progress\t" + str(int(percentage)) + "%\t(" + str(i) + " jobs)\n")
+				self.stdout.write("jobs progress\t" + str(int(percentage)) + "%\t(" + str(i+1) + " jobs)\n")
+		
+		self.stdout.write('Updating resumes segments...')
+		
+		resumes = Resume.objects.all()
+		for resume in resumes:
+			resume.segment = Segment.try_parse(resume.segment_name)
+			resume.save()
 		
 		end = datetime.now()
 		load_time = end - start

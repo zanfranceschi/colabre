@@ -1,6 +1,5 @@
-{% load bbcode %}
-<div class="resume" resume-id="{{ resume.id }}">
-	<p>{{ resume.short_description }}</p>
-	<div>{{ resume.full_description|bbcode|safe }}</div>
-	<p>{{ resume.profile.user.first_name }}</p>
+<div class="{% if forloop.first and not forloop.last %}resume-first-child {% endif %}{% if forloop.last and not forloop.first %}resume-last-child {% endif %}{% if forloop.first and forloop.last %}resume-single {% endif %}resume resume-wrapper-summary" resume-id="{{ resume.id }}">
+	<small><i><b>{{ resume.segment_name }}</b></i> em {{ resume.profile.political_location_name }}</small>
+	<p>{{ resume.short_description|truncatechars:140 }}</p>
+	<div class="resume-details"></div>
 </div>

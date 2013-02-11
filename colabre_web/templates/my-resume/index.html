@@ -8,16 +8,30 @@
 		{% csrf_token %}
 		{% include '_form.html' %}
 		<input type="submit" value="salvar" class="btn-info" /> 
-		
-		<div>
-			<input type="text" name="segment" />
-			<input type="text" name="segment" />
-			<input type="text" name="segment" />
-		</div>
 	</form>
 	
 	<script type="text/javascript">
 	$(document).ready(function() {
+		
+		$("#id_segment_name").autocomplete({
+				minLength: 1,
+				source: function(request, response) 
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/meu-curriculo/parcial/buscar-segmento/' + term,
+						type: 'get',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{ 
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+		
 		$("textarea.bbcode").sceditorBBCodePlugin({
 			style: "{{ STATIC_URL }}sceditor/jquery.sceditor.default.min.css",
 			toolbar: "bold,italic,underline|size|left,center,right,justify|source",

@@ -22,7 +22,7 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^cadastro/$', 'registration.index', name='registration_index'),
 	
 	url(r'^vagas/', include('colabre_web.views.jobs')),
-	url(r'^profissionais/', include('colabre_web.views.resumes')),
+	url(r'^curriculos/', include('colabre_web.views.resumes')),
 	
 	
 	url(r'^$', 'home.index', name='home_index'),

@@ -1,16 +1,25 @@
+{% if page = "1" %}
+	<div id="resumes-search-info"
+		style="padding: 5px; margin-bottom: 10px; font-size: small; text-align: center;">
+		{% if q %}
+			<b>{{ total_resumes }}</b> currículos encontrados para o termo '<b>{{ q }}</b>'.
+		{% else %}
+			<b>{{ total_resumes }}</b> currículos encontrados.
+		{% endif %}
+	</div>
+{% endif %}
+
 {% for resume in resumes %}
 	{% include 'resumes/partial/resume-item.html' %}
 {% empty %}
-	{% if not exists %}
-		<div>
-			{% if q %}
-				Não há profissionais com o critério de busca <b>{{ q }}</b>.
-			{% else %}
-				Não há profissionais para exibir.
-			{% endif %}
-		</div>
-	{% else %}
+	{% if is_last_page %}
 		<!-- signal to stop sending requests -->
 		<div id="stop_request_on_scroll" style="display: none;" />
+	{% endif %}
+	{% if not page = "1" and "s" = "d" %}
+		<div id="resumes-search-info"
+			style="background: #eee; border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; padding: 7px; margin-bottom: 10px; font-size: small; text-align: center;">
+				Não há mais currículos.
+		</div>
 	{% endif %}
 {% endfor %}

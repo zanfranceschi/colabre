@@ -23,12 +23,11 @@ LINKEDIN_EXTRA_FIELD_SELECTORS = [
     'headline',
     'industry',
     'location',
-    #'summary',
+    'summary',
     #'specialties',
     #'positions',
     #'educations',
     #'skills',
-    #'summary',
 ]
 
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = [

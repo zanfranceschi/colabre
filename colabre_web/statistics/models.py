@@ -60,4 +60,10 @@ class JobViewLogger:
 			db = connection.colabre
 			db.jobviews.insert(job_view)
 		
+class ResumeViewLogger:
+	
+	@classmethod
+	def log(cls, request, search_term, resume):
+		pass
+		
 		

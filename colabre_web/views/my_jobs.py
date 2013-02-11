@@ -38,8 +38,8 @@ def get_template_path(template):
 
 def _index_data(request):
 	profile = request.user.get_profile()
-	segments = Segment.getAllActiveByProfile(profile)
-	countries = PoliticalLocation.getAllActiveCountriesByProfile(profile)
+	segments = UserProfile.getSegmentsForSearchFilter(profile)
+	countries = UserProfile.getCountriesForSearchFilter(profile)
 	days = [3, 7, 15, 30, 60, 90, 120, 150]
 	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
 	

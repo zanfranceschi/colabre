@@ -133,11 +133,12 @@ class UserProfileFormOAuth(BaseForm):
 class UserProfileFormColabre(UserProfileFormOAuth):
 	def __init__(self, *args, **kwargs):
 		super(UserProfileFormColabre, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['first_name', 'last_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
+		self.fields.keyOrder = ['first_name', 'last_name', 'political_location_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
 
 			data = {
+				'political_location_name' : profile.political_location_name,
 				'email' : profile.user.email,
 				'profile_type' : profile.profile_type or 'JS',
 				'first_name' : profile.user.first_name,
@@ -188,7 +189,8 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['email'],
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
-			self.cleaned_data['birthday']
+			self.cleaned_data['birthday'],
+			self.cleaned_data['political_location_name']
 		)
 
 class LoginForm(BaseForm):
@@ -307,7 +309,12 @@ class ResumeForm(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
 		super(ResumeForm, self).__init__(*args, **kwargs)
-		#self.fields['full_description'].widget.attrs['class'] += ' bbcode'
+		self.fields.keyOrder = [
+							'visible',
+							'segment_name',
+							'short_description',
+							'full_description',
+							]
 		set_bbcode(self.fields['full_description'])
 		if self.profile:
 			resume = None
@@ -317,12 +324,18 @@ class ResumeForm(BaseForm):
 				self.initial = { 'visible' : True }
 			if resume:
 				data = {
-					#'segments' : resume.segments,
+					'segment_name' : resume.segment_name,
 					'short_description' : resume.short_description,
 					'full_description' : resume.full_description,
 					'visible' : resume.visible
 				}
 				self.initial = data
+	
+	segment_name = forms.CharField(
+		label='Segmento',
+		help_text='Coloque o segmento do seu campo de trabalho. Por exemplo: Tecnologia da Informação',
+		max_length=50
+	)
 	
 	short_description = forms.CharField(
 		label='Mini currículo',
@@ -344,12 +357,11 @@ class ResumeForm(BaseForm):
 	
 	def save(self, commit=True):
 		Resume.save_(
-			self.profile, 
+			self.profile,
+			self.cleaned_data['segment_name'],
 			self.cleaned_data['short_description'], 
 			self.cleaned_data['full_description'], 
 			self.cleaned_data['visible'])
-		#self.instance.profile = self.profile
-		#super(ResumeForm, self).save(commit=commit)
 
 class RetrieveAccessForm(BaseForm):
 	username_or_email = forms.CharField(
