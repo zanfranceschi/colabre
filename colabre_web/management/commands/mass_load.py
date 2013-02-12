@@ -12870,8 +12870,9 @@ class Command(BaseCommand):
 			username,
 			email,
 			password)
-		profile.political_location_name = random.choice(self.locations).__unicode__()
-		profile.political_location = random.choice(self.locations)
+		political_location = random.choice(self.locations)
+		profile.political_location_name = political_location.__unicode__()
+		profile.political_location = political_location
 		profile.save()
 		return profile
 	
