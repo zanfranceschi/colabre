@@ -1,7 +1,6 @@
-from django.core import serializers
-from pymongo import MongoClient
-from datetime import *
-import sys
+#from django.core import serializers
+from tasks import log as celery_log
+from datetime import datetime
 
 class RequestLogger:
 
@@ -11,24 +10,16 @@ class RequestLogger:
 		
 		access = {
 			'HTTP_REFERER' 				: http_access,
-			#'PROCESSOR_IDENTIFIER' 		: request.META['PROCESSOR_IDENTIFIER'],
 			'REQUEST_METHOD' 			: request.META['REQUEST_METHOD'],
 			'QUERY_STRING' 				: request.META['QUERY_STRING'],
 			'HTTP_USER_AGENT' 			: request.META['HTTP_USER_AGENT'],
-			#'HTTP_COOKIE' 				: request.META['HTTP_COOKIE'],
 			'REMOTE_ADDR' 				: request.META['REMOTE_ADDR'],
-			#'PROCESSOR_ARCHITECTURE' 	: request.META['PROCESSOR_ARCHITECTURE'],
 			'CSRF_COOKIE' 				: request.META['CSRF_COOKIE'],
 			'PATH_INFO' 				: request.META['PATH_INFO'],
 			'HTTP_ACCEPT_LANGUAGE' 		: request.META['HTTP_ACCEPT_LANGUAGE'],
-			#'NUMBER_OF_PROCESSORS' 	: request.META['NUMBER_OF_PROCESSORS'],
-			#'OS' 						: request.META['OS'],
 			'ACCESS_DATETIME' 			: datetime.now(),
 			}
-			
-		connection = MongoClient()
-		db = connection.colabre
-		db.accesses.insert(access)
+		celery_log.delay('accesses', access)
 
 class JobViewLogger:
 	
@@ -56,14 +47,4 @@ class JobViewLogger:
 				'http_cookie' 							: request.META['HTTP_COOKIE'],
 				'remote_addr' 							: request.META['REMOTE_ADDR'],
 			}
-			connection = MongoClient()
-			db = connection.colabre
-			db.jobviews.insert(job_view)
-		
-class ResumeViewLogger:
-	
-	@classmethod
-	def log(cls, request, search_term, resume):
-		pass
-		
-		
+			celery_log.delay('jobviews', job_view)

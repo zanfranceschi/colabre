@@ -10,7 +10,7 @@ from datetime import datetime
 #from django.core.signals import request_started, request_finished
 from django.dispatch import receiver
 #from gadjo.requestprovider.signals import get_request
-from pymongo import MongoClient
+import sys
 
 is_not_verified_url = '/meu-perfil/solicitar-verificacao/'
 
@@ -33,7 +33,8 @@ def log_request(method):
 		try:
 			RequestLogger.log(request)
 		except:
-			pass
+			logging.error(traceback.format_exc())
+			messages.error(request, traceback.format_exc())
 		return method(request, *args)
 	return wrapper
 
