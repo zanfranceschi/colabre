@@ -1,11 +1,15 @@
-"""
-import urllib2
-HTTP_PROXY = ''
-proxy = urllib2.ProxyHandler({'http': HTTP_PROXY, 'https' : HTTP_PROXY})
-auth = urllib2.HTTPBasicAuthHandler()
-opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-urllib2.install_opener(opener)
-"""
+from colabre.secrets import *
+
+HTTP_USE_PROXY = True
+
+if HTTP_USE_PROXY:
+    import urllib2
+    HTTP_PROXY = SECRETS_HTTP_PROXY
+    proxy = urllib2.ProxyHandler({'http': HTTP_PROXY, 'https' : HTTP_PROXY})
+    auth = urllib2.HTTPBasicAuthHandler()
+    opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
+    urllib2.install_opener(opener)
+
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -13,8 +17,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # These settings are used by the social_auth app.
-LINKEDIN_CONSUMER_KEY = '' # linkedin calls this the "API Key"
-LINKEDIN_CONSUMER_SECRET = '' # "Secret Key"
+LINKEDIN_CONSUMER_KEY = SECRETS_LINKEDIN_CONSUMER_KEY
+LINKEDIN_CONSUMER_SECRET = SECRETS_LINKEDIN_CONSUMER_SECRET
 LINKEDIN_SCOPE = ['r_basicprofile', 'r_emailaddress', 'r_fullprofile']
 LINKEDIN_EXTRA_FIELD_SELECTORS = [
     'id',
