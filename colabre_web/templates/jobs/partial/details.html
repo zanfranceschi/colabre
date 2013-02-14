@@ -15,25 +15,26 @@
 	{% endif %}
 </fieldset>
 
-<div id="chartdiv" style="display: none; height: 300px; width: 100%; "></div>
+<div id="chart{{ job.id }}" style="display: block; height: 300px;"> </div>
 </div>
 <script type="text/javascript">
-	$(function(){
-		//$.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
-		$.jqplot('chartdiv',
-			[[10, 20, 30, 20, 10], [1, 3, 5, 10, 7, 8]],
-			{
-				title: 'Detalhes da vaga',
-				series : [
-					{
-						lineWidth:2, 
-						markerOptions: { style: 'dimaond' }
-					},
-					{
-						lineWidth:2, 
-						markerOptions: { style: 'circle' }
-					}
-				]
-			});
-	});
+	var load_chart{{job.id}} = function()
+	{
+		var line1=[1, 3, 4, 5, 6];
+		var ticks=['A', 'B', 'C', 'D', 'E'];
+		$.jqplot('chart{{ job.id }}', [line1], 
+		{
+			title:'Customized Date Axis', 
+			axes : {
+				xaxis : {
+					renderer: $.jqplot.CategoryAxisRenderer, 
+					//tickOptions:{formatString:'%b %#d, %y'},
+					//min:'May 30, 2008', 
+					//tickInterval:'1 month'
+					ticks : ticks
+    			}
+  			},
+  			series:[ { lineWidth: 2 , markerOptions : { style : 'square' } } ]
+  		});
+	};
 </script>

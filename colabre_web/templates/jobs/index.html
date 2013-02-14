@@ -71,7 +71,9 @@
 						details.empty();
 						details.html(data);
 						
-						details.show('fast');
+						details.show('fast', function(){
+							eval('load_chart' + respJobId + '();');
+						});
 					},
 					error: function(a, b, error)
 					{
