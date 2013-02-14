@@ -143,8 +143,6 @@ INSTALLED_APPS = (
 	'colabre_web',
     'django.contrib.admin',
 	'social_auth',
-	'djcelery',
-	#'south',
 )
 
 SERIALIZATION_MODULES = {
@@ -183,6 +181,4 @@ LOGGING = {
 }
 
 from colabre_web.oauth.settings import *
-from colabre_web.statistics.tasks import *
-import djcelery
-djcelery.setup_loader()
+from colabre_web.statistics.settings import *

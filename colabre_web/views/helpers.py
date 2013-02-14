@@ -1,7 +1,7 @@
 ﻿from django.shortcuts import render
 from django.http import HttpResponse
 from colabre_web.models import *
-from colabre_web.statistics.models import *
+from colabre_web.statistics.models import log_request as statisctics_log_request
 import traceback
 import logging
 from django.contrib import messages
@@ -21,17 +21,11 @@ def is_verified(user):
 def not_from_oauth(user):
 	return not user.get_profile().is_from_oauth
 	
-'''
-@receiver(request_finished)
-def signal_callback(sender, **kwargs):
-	http_request = get_request()
-	print "\n\n", http_request
-'''
 
 def log_request(method):
 	def wrapper(request, *args):
 		try:
-			RequestLogger.log(request)
+			statisctics_log_request(request)
 		except:
 			logging.error(traceback.format_exc())
 			messages.error(request, traceback.format_exc())

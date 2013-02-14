@@ -32,7 +32,7 @@ def get_template_path(template):
 @handle_exception
 def partial_details(request, id, search_term = None):
 	resume = Resume.objects.get(id=id)
-	ResumeViewLogger.log(request, search_term, resume)
+	log_job_request(request, search_term, resume)
 	response = render(request, get_template_path("partial/details.html"), { 'resume' : resume })
 	response['resume-id'] = id
 	return response

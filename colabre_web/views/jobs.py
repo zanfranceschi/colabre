@@ -15,7 +15,7 @@ from colabre_web.forms import *
 from colabre_web.statistics.models import *
 
 import time
-from helpers import *
+from helpers import handle_exception, log_request as view_log_request
 from django.core import serializers
 from django.conf.urls import patterns, include, url
 
@@ -29,22 +29,22 @@ urlpatterns = patterns('colabre_web.views.jobs',
 def get_template_path(template):
 	return 'jobs/%s' % template
 
-@log_request
+@view_log_request
 @handle_exception
 def partial_details(request, id, search_term = None):
 	job = Job.objects.get(id=id)
-	JobViewLogger.log(request, search_term, job)
+	log_job_request(request, search_term, job)
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
 	response['job-id'] = id
 	return response
 
-@log_request
+@view_log_request
 @handle_exception
 def detail(request, id):
 	job = Job.objects.get(id=id)
 	return render(request, get_template_path("detail.html"), { 'job' : job })
 
-@log_request
+@view_log_request
 @handle_exception
 def partial_html_search(request):
 	if request.method == 'POST':
@@ -67,7 +67,7 @@ def partial_html_search(request):
 	else:
 		return HttpResponse('')
 
-@log_request
+@view_log_request
 @handle_exception
 def index(request):
 	segments = Job.getSegmentsForSearchFilter()

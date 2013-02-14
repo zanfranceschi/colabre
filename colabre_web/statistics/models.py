@@ -1,50 +1,16 @@
 #from django.core import serializers
-from tasks import log as celery_log
-from datetime import datetime
+from tasks import *
 
-class RequestLogger:
 
-	@classmethod
-	def log(cls, request):
-		http_access = request.META['HTTP_REFERER'] if 'HTTP_REFERER' in request.META else None
-		
-		access = {
-			'HTTP_REFERER' 				: http_access,
-			'REQUEST_METHOD' 			: request.META['REQUEST_METHOD'],
-			'QUERY_STRING' 				: request.META['QUERY_STRING'],
-			'HTTP_USER_AGENT' 			: request.META['HTTP_USER_AGENT'],
-			'REMOTE_ADDR' 				: request.META['REMOTE_ADDR'],
-			'CSRF_COOKIE' 				: request.META['CSRF_COOKIE'],
-			'PATH_INFO' 				: request.META['PATH_INFO'],
-			'HTTP_ACCEPT_LANGUAGE' 		: request.META['HTTP_ACCEPT_LANGUAGE'],
-			'ACCESS_DATETIME' 			: datetime.now(),
-			}
-		celery_log.delay('accesses', access)
+def log_request(request):
+	request_META = request.META.copy()
+	celery_log_request.delay(request_META)
 
-class JobViewLogger:
+def log_job_request(request, search_term, job):
+	import sys
+	print >> sys.stderr,  request.META.__class__.__name__
+	#celery_log_job_request.delay(request, search_term, job)
 	
-	@classmethod
-	def log(cls, request, search_term, job):
-		session_id = 'job_viewer_logger-', job.id
-		if session_id not in request.session:
-			request.session[session_id] = True
-			username = request.user.username if request.user else None
-			user_id = request.user.id if request.user else None
-			job_view = {
-				'job_id' 								: job.id,
-				'job_profile_id' 						: job.profile.id,
-				'job_user_id' 							: job.profile.user.id,
-				'job_username' 							: job.profile.user.username,
-				'segment_name' 							: job.segment_name,
-				'job_title_name' 						: job.job_title_name,
-				'workplace_political_location_name' 	: job.workplace_political_location_name,
-				'company_name'							: job.company_name,
-				'creation_date'							: job.creation_date,
-				'viewer_user'							: username,
-				'search_term'							: search_term.lower(),
-				'view_date' 							: str(datetime.now().date()),
-				'view_time' 							: str(datetime.now().time()),
-				'http_cookie' 							: request.META['HTTP_COOKIE'],
-				'remote_addr' 							: request.META['REMOTE_ADDR'],
-			}
-			celery_log.delay('jobviews', job_view)
+def log_resume_request(request, search_term, resume):
+	pass
+	#celery_log_resume_request.delay(request, search_term, resume)
