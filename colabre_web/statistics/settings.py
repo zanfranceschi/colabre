@@ -10,4 +10,4 @@ import djcelery
 
 djcelery.setup_loader()
 
-GEOIP_DATAFILE_PATH = 'C:/Users/fzanfranceschi/Desktop/Colabre/svn/data/GeoLiteCity.dat'
+GEOIP_DATAFILE_PATH = 'C:/Users/zanfranceschi/Projects/Colabre/svn/data/GeoLiteCity.dat'

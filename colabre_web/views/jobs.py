@@ -34,7 +34,8 @@ def get_template_path(template):
 def partial_details(request, id, search_term = None):
 	job = Job.objects.get(id=id)
 	log_job_request(request, search_term, job)
-	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
+	job_view_count = 10
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response
 

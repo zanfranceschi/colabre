@@ -35,4 +35,5 @@ urlpatterns = patterns('colabre_web.views',
 	
 	
 	url(r'^estatisticas/', include('colabre_web.views.stats')),
+	
 )

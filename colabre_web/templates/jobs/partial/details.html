@@ -14,8 +14,10 @@
 	</div>
 	{% endif %}
 </fieldset>
-
-<div id="chart{{ job.id }}" style="display: block; height: 300px;"> </div>
+<p style="padding: 0; margin: 0;">
+	Esta vaga já foi vista <b>{{ job_view_count }}</b> vez(es).
+</p>
+<div id="chart{{ job.id }}" style="display: none; height: 300px;"> </div>
 </div>
 <script type="text/javascript">
 	var load_chart{{job.id}} = function()
