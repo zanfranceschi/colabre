@@ -24,6 +24,7 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^vagas/', include('colabre_web.views.jobs')),
 	url(r'^curriculos/', include('colabre_web.views.resumes')),
 	
+	url(r'^contato/', include('colabre_web.views.contact')),
 	
 	url(r'^$', 'home.index', name='home_index'),
 	url(r'^legal/$', 'home.legal'),

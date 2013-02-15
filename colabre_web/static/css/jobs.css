@@ -81,6 +81,10 @@
 	padding: 10px;
 	font-size: 90%;
 }
+.job fieldset
+{
+	border: 1px solid #ccc;
+}
 .job .job-date
 {
 	font-size: small;
@@ -114,4 +118,13 @@
 .my-job
 {
 	padding-bottom: 35px;
+}
+
+.job p.job_view_count
+{
+	white-space: normal;
+	margin: 0;
+	padding: 5px;
+	text-align: right;
+	font-size: 75%;
 }

@@ -19,6 +19,8 @@ from helpers import handle_exception, log_request as view_log_request
 from django.core import serializers
 from django.conf.urls import patterns, include, url
 
+from colabre_web.statistics.tasks import get_mongo_db
+
 urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^$', 'index', name='jobs_index'),
 	url(r'^parcial/buscar/$', 'partial_html_search'),
@@ -34,7 +36,8 @@ def get_template_path(template):
 def partial_details(request, id, search_term = None):
 	job = Job.objects.get(id=id)
 	log_job_request(request, search_term, job)
-	job_view_count = 10
+	db = get_mongo_db()
+	job_view_count = db.jobs_date.find({'jid': int(id)}).count()
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response

@@ -41,6 +41,9 @@
 		</div>
 	</div>
 	
+	{% include '_contact-modal.html' %}	
+
+	
 	<script type="text/javascript">
 		$(function(){
 			
@@ -82,10 +85,18 @@
 			
 			// toggle visibility after content is loaded...
 			$(".resume-wrapper-details").live('click', function() {
-				
 				details = $(this).children("div.resume-details");
 				details.toggle('fast');
 				
+			});
+			
+			$(".profile-name").live('click', function(e){
+				e.stopPropagation();
+			});
+			
+			$(".profile-name a").live('click', function(e){
+				user_id = $(this).attr("user-id");
+				openProfileContactForm(user_id);
 			});
 		
 			$(".filter-toggler").click(function(){

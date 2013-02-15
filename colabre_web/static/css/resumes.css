@@ -77,6 +77,10 @@
 	padding: 10px;
 	font-size: 90%;
 }
+.resume fieldset
+{
+	border: 1px solid #ccc;
+}
 .resume .resume-date
 {
 	font-size: small;
@@ -110,4 +114,19 @@
 .my-resume
 {
 	padding-bottom: 35px;
+}
+
+.resume .profile-name
+{
+	text-align: right;
+	padding: 10px;
+}
+.resume .profile-name a
+{
+	cursor: pointer;
+}
+.resume .profile-name a:hover
+{
+	cursor: pointer;
+	text-decoration: underline;
 }

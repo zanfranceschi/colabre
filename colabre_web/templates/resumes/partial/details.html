@@ -1,15 +1,12 @@
 ﻿{% load bbcode %}
+{% load newline_to_br %}
 <div resume-details-id="{{ resume.id }}">
-<p>
-	{{ resume.full_description|bbcode|removetags:"script link a img input form input select button textarea"|safe }}
-</p>
-	{% if resume.contact_email or resume.contact_phone %}
-	<div>
-		{% if resume.contact_name %}contato: <b>{{ resume.contact_name }}</b> / {% endif %}
-		{{ resume.contact_email|urlize }}
-		{% if resume.contact_email and resume.contact_phone %} / {% endif %}
-		{% if resume.contact_phone %}<b>{{ resume.contact_phone }}</b>{% endif %}
-		
+	<fieldset>
+		<legend>Currículo</legend>
+		{{ resume.full_description|bbcode|newline_to_br|removetags:"script link a img input form input select button textarea"|safe }}
+	</fieldset>
+	<div class="profile-name">
+		<a resume-segment="{{ resume.segment_name }}" resume-id="{{ resume.id }}" user-id="{{ resume.profile.user.id }}" resume-name="{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}">entrar em contato com</a> 
+		{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}
 	</div>
-	{% endif %}
 </div>

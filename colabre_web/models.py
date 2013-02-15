@@ -402,6 +402,8 @@ class Resume(models.Model):
 	visible = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
 	
+	last_update = models.DateField(auto_now=True)
+	
 	def try_get_job_title(self, index):
 		return self.segments[index-1:index]
 	
@@ -419,7 +421,7 @@ class Resume(models.Model):
 		list = cls.objects.filter(
 			Q(Q(short_description__icontains=term) | Q(full_description__icontains=term)), 
 			query
-		).order_by("-id")
+		).select_related().order_by("-last_update")
 
 		resumes = None
 		

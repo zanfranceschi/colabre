@@ -1,0 +1,66 @@
+{% load url from future %}
+<div id="profile-contact-dialog">
+	<h2 id="profile-contact-name"></h2>
+	<form id="profile-contact-form">
+		<input type="hidden" id="profile-contact-user-id" />
+		<div>
+			<label for="profile-contact-dialog">Mensagem</label>
+			<textarea rows="8" cols="60" id="profile-contact-message"></textarea>
+		</div>
+		<div>
+			<label for="profile-contact-cc-email">Enviar uma cópia da mensagem para o email abaixo</label>
+			<input type="text" id="profile-contact-cc-email" value="{{ user.email }}" /><br />
+			<small>* Este email não ficará visível ao destinatário.</small>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+	var resetProfileContactForm = function()
+	{
+		$("#profile-contact-form").find('textarea, input').val('');
+	};
+	
+	$("#profile-contact-dialog").dialog({
+		title: 'Formulário de Contato',
+		autoOpen: false,
+		modal: true,
+		width: 480,
+		height: 'auto',
+		buttons: {
+			'Enviar' : function(){
+				req = $.ajax({
+					url: '{% url 'contact_send_message' %}',
+					type: 'post',
+					data : {
+						user_id			: $("#profile-contact-user-id").val(),
+						message				: $("#profile-contact-message").val(),
+						cc_email			: $("#profile-contact-cc-email").val(),
+						csrfmiddlewaretoken : '{{ csrf_token }}'
+					},
+					success: function(data)
+					{
+						user_id = req.getResponseHeader('user-id')
+						alert(user_id);
+					},
+					error: function(a, b, error)
+					{
+						alert(error);
+					}
+				});
+			},
+			'Fechar' : function()
+			{
+				$(this).dialog("close");
+				resetProfileContactForm();
+			}
+		}
+	});
+	
+	var openProfileContactForm = function(user_id, title)
+	{
+		$("#profile-contact-user-id").val(user_id);
+		$("#profile-contact-dialog").dialog("option", { title: title });
+		$("#profile-contact-dialog").dialog("open");
+	};
+</script>
+	

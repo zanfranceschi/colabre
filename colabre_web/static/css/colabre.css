@@ -405,3 +405,18 @@ a.btn
 {
 	width: 198px !important;
 }
+
+
+#profile-contact-dialog
+{
+	text-align: left;
+}
+
+#profile-contact-dialog form div
+{
+	margin-bottom: 20px;
+}
+#profile-contact-dialog form div:last-child
+{
+	margin-bottom: 5px;
+}

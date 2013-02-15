@@ -17,6 +17,7 @@ def bbcode(value):
 		(r'\[u\](.+?)\[/u\]', r'<u>\1</u>'),
 		(r'\[quote\](.+?)\[/quote\]', r'<div style="margin-left: 1cm">\1</div>'),
 		(r'\[center\](.+?)\[/center\]', r'<div align="center">\1</div>'),
+		(r'\[left\](.+?)\[/left\]', r'\1'),
 		(r'\[code\](.+?)\[/code\]', r'<tt>\1</tt>'),
 		(r'\[big\](.+?)\[/big\]', r'<big>\1</big>'),
 		(r'\[small\](.+?)\[/small\]', r'<small>\1</small>'),

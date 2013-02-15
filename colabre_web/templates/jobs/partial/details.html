@@ -14,29 +14,13 @@
 	</div>
 	{% endif %}
 </fieldset>
-<p style="padding: 0; margin: 0;">
-	Esta vaga já foi vista <b>{{ job_view_count }}</b> vez(es).
+{% if not job_view_count == 0 %}
+<p class="job_view_count">
+	{% if job_view_count = 1 %}
+		Esta vaga foi vista <b>1</b> vez.
+	{% else %}
+		Esta vaga já foi vista <b>{{ job_view_count }}</b> vezes.
+	{% endif %}
 </p>
-<div id="chart{{ job.id }}" style="display: none; height: 300px;"> </div>
+{% endif %}
 </div>
-<script type="text/javascript">
-	var load_chart{{job.id}} = function()
-	{
-		var line1=[1, 3, 4, 5, 6];
-		var ticks=['A', 'B', 'C', 'D', 'E'];
-		$.jqplot('chart{{ job.id }}', [line1], 
-		{
-			title:'Customized Date Axis', 
-			axes : {
-				xaxis : {
-					renderer: $.jqplot.CategoryAxisRenderer, 
-					//tickOptions:{formatString:'%b %#d, %y'},
-					//min:'May 30, 2008', 
-					//tickInterval:'1 month'
-					ticks : ticks
-    			}
-  			},
-  			series:[ { lineWidth: 2 , markerOptions : { style : 'square' } } ]
-  		});
-	};
-</script>
