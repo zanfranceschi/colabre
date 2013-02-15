@@ -34,9 +34,6 @@ def partial_send_message(request):
 		user_id = request.POST['user_id']
 		cc_email = request.POST['cc_email']
 		message = request.POST['message']
-		import sys
-		print >> sys.stderr, user_id, cc_email, message
 		response = HttpResponse(user_id)
-		response['user-id'] = user_id
 		return response
 

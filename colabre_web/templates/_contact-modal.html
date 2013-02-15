@@ -28,7 +28,7 @@
 		height: 'auto',
 		buttons: {
 			'Enviar' : function(){
-				req = $.ajax({
+				$.ajax({
 					url: '{% url 'contact_send_message' %}',
 					type: 'post',
 					data : {
@@ -39,8 +39,7 @@
 					},
 					success: function(data)
 					{
-						user_id = req.getResponseHeader('user-id')
-						alert(user_id);
+						user_id = data;
 					},
 					error: function(a, b, error)
 					{
