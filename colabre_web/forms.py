@@ -193,6 +193,20 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['political_location_name']
 		)
 
+class ContactForm(BaseForm):
+	user_id = forms.HiddenInput()
+	subject = forms.HiddenInput()
+	message = forms.CharField(
+		label='Mensagem',
+		help_text=u'Máximo de 300 caracteres',
+		max_length=300, 
+		widget=forms.Textarea(attrs={'rows' : 3, 'cols' : 60})
+	)
+		
+	def save(self):
+		import sys
+		print >> sys.stderr, 'form sent:', self.cleaned_data['message'],
+
 class LoginForm(BaseForm):
 	username = forms.CharField(
 		max_length=30, 

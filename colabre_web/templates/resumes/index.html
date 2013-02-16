@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load cache %}
+{% load url from future %}
 {% block title %}Busca de currículos{% endblock %}
 {% block extra_head %}
 	<link href="{{ STATIC_URL }}css/resumes.css" rel="stylesheet" />
@@ -41,7 +42,7 @@
 		</div>
 	</div>
 	
-	{% include '_contact-modal.html' %}	
+	{#% include '_contact-modal.html' %#}	
 
 	
 	<script type="text/javascript">
@@ -90,13 +91,54 @@
 				
 			});
 			
-			$(".profile-name").live('click', function(e){
+			$(".profile-name, .contact-form").live('click', function(e){
 				e.stopPropagation();
 			});
 			
-			$(".profile-name a").live('click', function(e){
+			$(".contact-form-not-opened").live('click', function(e){
+				
+				$(this).addClass("contact-form-opener")
+					.removeClass("contact-form-not-opened");
+				
 				user_id = $(this).attr("user-id");
-				openProfileContactForm(user_id);
+				
+				resume_id = $(this).attr("resume-id");
+				
+				var reqForm = $.ajax({
+					url: "{% url 'contact_get_form' %}",
+					type: 'post',
+					data: {
+						resume_id : resume_id,
+						csrfmiddlewaretoken : '{{ csrf_token }}'
+					},
+					complete: function()
+					{
+						
+					},
+					success: function(data)
+					{
+						respResumeId = reqForm.getResponseHeader('resume-id')
+						form = $("#contact-form-" + respResumeId);
+						form.html(data);
+						form.show('fast', function(){
+							$(this).find('textarea').focus();
+						});
+					},
+					error: function(a, b, error)
+					{
+						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
+					}
+				});	
+			});
+			
+			$(".contact-form-opener").live('click', function(){
+				resume_id = $(this).attr("resume-id");
+				form = $("#contact-form-" + resume_id);
+				form.toggle('fast');	
+			});
+			
+			$(".contact-form-btn").live('click', function(){
+				// enviar mensagem ajax....
 			});
 		
 			$(".filter-toggler").click(function(){

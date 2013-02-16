@@ -2,11 +2,11 @@
 {% load newline_to_br %}
 <div resume-details-id="{{ resume.id }}">
 	<fieldset>
-		<legend>Currículo</legend>
+		<legend>Currículo de <b>{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}</b></legend>
 		{{ resume.full_description|bbcode|newline_to_br|removetags:"script link a img input form input select button textarea"|safe }}
 	</fieldset>
 	<div class="profile-name">
-		<a resume-segment="{{ resume.segment_name }}" resume-id="{{ resume.id }}" user-id="{{ resume.profile.user.id }}" resume-name="{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}">entrar em contato com</a> 
-		{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}
+		<a class="profile-contact-form contact-form-not-opened" resume-segment="{{ resume.segment_name }}" resume-id="{{ resume.id }}" user-id="{{ resume.profile.user.id }}" resume-name="{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}">formulário de contato</a>
 	</div>
+	<div class="contact-form" id="contact-form-{{ resume.id }}" style="display: none;"></div>
 </div>

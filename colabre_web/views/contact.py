@@ -23,6 +23,7 @@ from colabre_web.statistics.tasks import get_mongo_db
 
 urlpatterns = patterns('colabre_web.views.contact',
 	url(r'^enviar-mensagem/$', 'partial_send_message', name='contact_send_message'),
+	url(r'^obter-formulario/$', 'partial_get_form', name='contact_get_form'),
 )
 
 def get_template_path(template):
@@ -37,3 +38,10 @@ def partial_send_message(request):
 		response = HttpResponse(user_id)
 		return response
 
+@handle_exception
+def partial_get_form(request):
+	form = ContactForm()
+	response = render(request, '_contact-form.html', {'form_id' : request.POST['resume_id'] })
+	response['resume-id'] = request.POST['resume_id']
+	return response
+	
