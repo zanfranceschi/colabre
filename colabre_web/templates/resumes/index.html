@@ -97,8 +97,7 @@
 			
 			$(".contact-form-not-opened").live('click', function(e){
 				
-				$(this).addClass("contact-form-opener")
-					.removeClass("contact-form-not-opened");
+				_this = $(this);
 				
 				user_id = $(this).attr("user-id");
 				
@@ -108,7 +107,7 @@
 					url: "{% url 'contact_get_form' %}",
 					type: 'post',
 					data: {
-						resume_id : resume_id,
+						user_id : user_id,
 						csrfmiddlewaretoken : '{{ csrf_token }}'
 					},
 					complete: function()
@@ -117,12 +116,17 @@
 					},
 					success: function(data)
 					{
-						respResumeId = reqForm.getResponseHeader('resume-id')
-						form = $("#contact-form-" + respResumeId);
+						_this.addClass("contact-form-opener")
+							.removeClass("contact-form-not-opened");
+
+						respUserId = reqForm.getResponseHeader('user-id')
+						form = $("#contact-form-" + respUserId);
 						form.html(data);
 						form.show('fast', function(){
 							$(this).find('textarea').focus();
 						});
+						
+						_this.text(_this.text().replace("◄", "▼"));
 					},
 					error: function(a, b, error)
 					{
@@ -132,13 +136,43 @@
 			});
 			
 			$(".contact-form-opener").live('click', function(){
-				resume_id = $(this).attr("resume-id");
-				form = $("#contact-form-" + resume_id);
-				form.toggle('fast');	
+				user_id = $(this).attr("user-id");
+				form = $("#contact-form-" + user_id);
+				_this = ($(this));
+				form.toggle('fast', function(){
+					if ($(this).is(":visible"))
+					{
+						_this.text(_this.text().replace("◄", "▼"));
+					}
+					else
+					{
+						_this.text(_this.text().replace("▼", "◄"));
+					}	
+				});
 			});
-			
+
 			$(".contact-form-btn").live('click', function(){
-				// enviar mensagem ajax....
+				
+				userId = $(this).attr("user-id");
+				
+				req = $.ajax({
+					url: '{% url 'contact_send_message' %}',
+					type: 'post',
+					data : {
+						user_id : user_id,
+						subject: 'Teste',
+						message : $("#id_message-" + user_id).val(),
+						csrfmiddlewaretoken : '{{ csrf_token }}'
+					},
+					success: function(data)
+					{
+						console.log(data);
+					},
+					error: function(a, b, error)
+					{
+						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
+					}					
+				});
 			});
 		
 			$(".filter-toggler").click(function(){

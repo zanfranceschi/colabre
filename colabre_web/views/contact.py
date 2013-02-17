@@ -33,15 +33,16 @@ def get_template_path(template):
 def partial_send_message(request):
 	if request.method == 'POST':
 		user_id = request.POST['user_id']
-		cc_email = request.POST['cc_email']
+		#cc_email = request.POST['cc_email']
 		message = request.POST['message']
+		return HttpResponse(message)
 		response = HttpResponse(user_id)
 		return response
 
 @handle_exception
 def partial_get_form(request):
 	form = ContactForm()
-	response = render(request, '_contact-form.html', {'form_id' : request.POST['resume_id'] })
-	response['resume-id'] = request.POST['resume_id']
+	response = render(request, '_contact-form.html', {'user_id' : request.POST['user_id'] })
+	response['user-id'] = request.POST['user_id']
 	return response
 	

@@ -53,7 +53,7 @@ def index(request):
 @handle_exception
 def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
-	JobViewLogger.log(request, search_term, job)
+	#JobViewLogger.log(request, search_term, job)
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
 	response['job-id'] = id
 	return response

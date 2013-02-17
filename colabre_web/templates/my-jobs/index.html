@@ -90,6 +90,10 @@
 				id = $(this).attr("job-id");
 				$("#job-details-" + id).toggle('fast');
 			});
+			
+			$(".job-wrapper-summary a").live('click', function(e) {
+				e.stopPropagation();
+			});
 		
 			$(".filter-toggler").click(function(){
 				

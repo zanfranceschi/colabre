@@ -89,6 +89,12 @@
 				details.toggle('fast');
 				
 			});
+			
+			$(".job-wrapper-details a").live('click', function(e) {
+				
+				e.stopPropagation();
+				
+			});
 		
 			$(".filter-toggler").click(function(){
 				

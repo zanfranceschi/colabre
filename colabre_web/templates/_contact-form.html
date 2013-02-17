@@ -1,21 +1,21 @@
 <form style="overflow: auto;">
-	<input type="hidden" id="user-id-{{ form_id }}" />
-	<input type="hidden" id="subject-{{ form_id }}" />
-	{% if not user.email %}
+	<input type="hidden" id="user-id-{{ user_id }}" />
+	<input type="hidden" id="subject-{{ user_id }}" />
+	
 	<div class="form-row">
-		<label for="id_email-{{ form_id }}">Email*</label>
-		<input type="text" id="id_email-{{ form_id }}" class="required" />
+		<label for="id_email-{{ user_id }}">Email*</label>
+		<input type="text" id="id_email-{{ user_id }}" value="{{ user.email }}" class="" />
 		<div>
-			<small id="message-{{ form_id }}"></small>
+			<small id="message-{{ user_id }}">Enviar uma cópia para o email informado</small>
 		</div>
 	</div>
-	{% endif %}
+	
 	<div class="form-row" style="border: 0px solid red; padding-bottom: 0;">
-		<label for="id_message-{{ form_id }}">Mensagem*</label>
-		<textarea style="width: 99%;" id="id_message" rows="3" cols="60" name="message" class="required"></textarea>
+		<label for="id_message-{{ user_id }}">Mensagem*</label>
+		<textarea style="width: 99%;" id="id_message-{{ user_id }}" rows="3" cols="60" name="message" class="required"></textarea>
 		<div>
-			<small id="message-{{ form_id }}">Máximo de 300 caracteres</small>
+			<small id="message-{{ user_id }}">Máximo de 300 caracteres</small>
 		</div>
 	</div>
-	<input type="button" id="btn-{{ form_id }}" value="enviar" class="btn-info contact-form-btn" style="float: right; margin-top: -20px;" />
+	<input type="button" user-id="{{ user_id }}" id="btn-{{ user_id }}" value="enviar" class="btn-info contact-form-btn" style="float: right; margin-top: -20px;" />
 </form>
