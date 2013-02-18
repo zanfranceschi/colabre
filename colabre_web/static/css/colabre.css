@@ -9,6 +9,13 @@ body
 	background: url('../img/body-bg.png');
 	cursor: default;
 }
+.iframe-body
+{
+	text-align: left;
+	margin: 0;
+	padding: 0;
+	background: inherit;
+}
 
 h1, h2, h3
 {

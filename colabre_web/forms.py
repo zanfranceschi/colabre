@@ -194,7 +194,9 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 		)
 
 class ContactForm(BaseForm):
-	user_id = forms.HiddenInput()
+	user_id = forms.HiddenInput({'id' : 'teste' })
+	email_to = forms.CharField()
+	email_from = forms.CharField()
 	subject = forms.HiddenInput()
 	message = forms.CharField(
 		label='Mensagem',
@@ -202,7 +204,11 @@ class ContactForm(BaseForm):
 		max_length=300, 
 		widget=forms.Textarea(attrs={'rows' : 3, 'cols' : 60})
 	)
-		
+	
+	def send_email(self):
+		import sys
+		print >> sys.stderr, 'form sent:', self.cleaned_data['message'],
+	
 	def save(self):
 		import sys
 		print >> sys.stderr, 'form sent:', self.cleaned_data['message'],

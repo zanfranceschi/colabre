@@ -1,21 +1,10 @@
-<form style="overflow: auto;">
-	<input type="hidden" id="user-id-{{ user_id }}" />
-	<input type="hidden" id="subject-{{ user_id }}" />
-	
-	<div class="form-row">
-		<label for="id_email-{{ user_id }}">Email*</label>
-		<input type="text" id="id_email-{{ user_id }}" value="{{ user.email }}" class="" />
-		<div>
-			<small id="message-{{ user_id }}">Enviar uma cópia para o email informado</small>
-		</div>
-	</div>
-	
-	<div class="form-row" style="border: 0px solid red; padding-bottom: 0;">
-		<label for="id_message-{{ user_id }}">Mensagem*</label>
-		<textarea style="width: 99%;" id="id_message-{{ user_id }}" rows="3" cols="60" name="message" class="required"></textarea>
-		<div>
-			<small id="message-{{ user_id }}">Máximo de 300 caracteres</small>
-		</div>
-	</div>
-	<input type="button" user-id="{{ user_id }}" id="btn-{{ user_id }}" value="enviar" class="btn-info contact-form-btn" style="float: right; margin-top: -20px;" />
+{% extends "_base-iframe.html" %}
+{% load url from future %}
+{% block title %}Contato{% endblock %}
+{% block body %}
+<form action="{% url 'contact_send_message' %}" method="post">
+	{% csrf_token %}
+	{% include '_form.html'%}
+	<input type="submit" class="btn btn-info" value="Enviar" />
 </form>
+{% endblock body%}

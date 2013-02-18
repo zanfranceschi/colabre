@@ -32,17 +32,14 @@ def get_template_path(template):
 @handle_exception
 def partial_send_message(request):
 	if request.method == 'POST':
-		user_id = request.POST['user_id']
-		#cc_email = request.POST['cc_email']
-		message = request.POST['message']
-		return HttpResponse(message)
-		response = HttpResponse(user_id)
-		return response
+		contact_form = ContactForm(request.POST)
+		if contact_form.is_valid():
+			contact_form.send_email()
+			return HttpResponse('blz')
+		else:
+			return render(request, '_contact-form.html', {'form' : contact_form })
 
 @handle_exception
 def partial_get_form(request):
-	form = ContactForm()
-	response = render(request, '_contact-form.html', {'user_id' : request.POST['user_id'] })
-	response['user-id'] = request.POST['user_id']
-	return response
+	return render(request, '_contact-form.html', { 'form' : ContactForm() })
 	
