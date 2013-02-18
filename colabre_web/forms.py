@@ -199,9 +199,9 @@ class ContactForm(BaseForm):
 	email_from = forms.EmailField(label='Seu email')
 	message = forms.CharField(
 		label='Mensagem',
-		help_text=u'Máximo de 300 caracteres',
-		max_length=300, 
-		widget=forms.Textarea(attrs={'rows' : 3, 'cols' : 60})
+		help_text=u'Máximo de 700 caracteres',
+		max_length=700, 
+		widget=forms.Textarea(attrs={'rows' : 5, 'cols' : 60})
 	)
 	
 	def __init__(self, *args, **kwargs):
