@@ -207,12 +207,15 @@ class ContactForm(BaseForm):
 	def __init__(self, *args, **kwargs):
 		user_id = kwargs.pop('user_id', None)
 		subject = kwargs.pop('subject', None)
+		email_from = kwargs.pop('email_from', None)
 		super(ContactForm, self).__init__(*args, **kwargs)
 		if user_id:
 			self.user = User.objects.get(id=user_id)
 			self.initial.update({ 'user_id' : user_id })
 		if subject:
 			self.initial.update({ 'subject' : subject })
+		if email_from:
+			self.initial.update({ 'email_from' : email_from })
 		
 
 	def send_email(self):

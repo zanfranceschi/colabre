@@ -27,6 +27,11 @@ def contact(request):
 			job_id = request.GET['job_id']
 			job = Job.objects.get(id=job_id)
 			subject += ' ', job.job_title
-		return render(request, '_contact-form.html', {'form' : ContactForm(user_id=user_id, subject=subject)})
+			
+		email_from = None
+		if (not request.user.is_anonymous()):
+			email_from = request.user.email
+
+		return render(request, '_contact-form.html', {'form' : ContactForm(user_id=user_id, subject=subject, email_from=email_from)})
 	
 	
