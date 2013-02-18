@@ -42,8 +42,6 @@
 		</div>
 	</div>
 	
-	{#% include '_contact-modal.html' %#}	
-
 	<script type="text/javascript">
 		$(function(){
 			
@@ -69,7 +67,7 @@
 						details = _this.children("div.resume-details");
 						
 						_this.removeClass("resume-wrapper-summary")
-							.addClass("resume-wrapper-details");
+							.addClass("resume-wrapper-details wrapper-expanded");
 						
 						details.empty();
 						details.html(data);
@@ -85,53 +83,15 @@
 			
 			// toggle visibility after content is loaded...
 			$(".resume-wrapper-details").live('click', function() {
+				_this = $(this);
 				details = $(this).children("div.resume-details");
-				details.toggle('fast');
-				
+				details.toggle('fast', function(){
+					_this.toggleClass("wrapper-expanded wrapper-contracted");
+				});
 			});
 			
 			$(".profile-name, .contact-form").live('click', function(e){
 				e.stopPropagation();
-			});
-			
-			$(".contact-form-not-opened").live('click', function(e){
-				
-				_this = $(this);
-				
-				user_id = $(this).attr("user-id");
-				
-				resume_id = $(this).attr("resume-id");
-				
-				var reqForm = $.ajax({
-					url: "{% url 'contact_get_form' %}",
-					type: 'post',
-					data: {
-						user_id : user_id,
-						csrfmiddlewaretoken : '{{ csrf_token }}'
-					},
-					complete: function()
-					{
-						
-					},
-					success: function(data)
-					{
-						_this.addClass("contact-form-opener")
-							.removeClass("contact-form-not-opened");
-
-						respUserId = reqForm.getResponseHeader('user-id')
-						form = $("#contact-form-" + respUserId);
-						form.html(data);
-						form.show('fast', function(){
-							$(this).find('textarea').focus();
-						});
-						
-						_this.text(_this.text().replace("◄", "▼"));
-					},
-					error: function(a, b, error)
-					{
-						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
-					}
-				});	
 			});
 			
 			$(".contact-form-opener").live('click', function(){
@@ -141,39 +101,15 @@
 				form.toggle('fast', function(){
 					if ($(this).is(":visible"))
 					{
-						_this.text(_this.text().replace("◄", "▼"));
+						_this.html(_this.html().replace("◄", "▼"));
 					}
 					else
 					{
-						_this.text(_this.text().replace("▼", "◄"));
+						_this.html(_this.html().replace("▼", "◄"));
 					}	
 				});
 			});
 
-			$(".contact-form-btn").live('click', function(){
-				
-				userId = $(this).attr("user-id");
-				
-				req = $.ajax({
-					url: '{% url 'contact_send_message' %}',
-					type: 'post',
-					data : {
-						user_id : user_id,
-						subject: 'Teste',
-						message : $("#id_message-" + user_id).val(),
-						csrfmiddlewaretoken : '{{ csrf_token }}'
-					},
-					success: function(data)
-					{
-						console.log(data);
-					},
-					error: function(a, b, error)
-					{
-						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
-					}					
-				});
-			});
-		
 			$(".filter-toggler").click(function(){
 				
 				target = $("#" + $(this).attr("target"));
@@ -196,19 +132,6 @@
 				$("." + id).attr("checked", checked);
 			});
 		
-			/*
-			$(".segment-item").change(function(){
-				checked = $(this).attr("checked") ? true : false;
-				$("[job-title-segmentid=" + $(this).val() + "]").attr("checked", checked);
-			});
-			
-			$(".job-title-item").change(function(){
-				segmentId = $(this).attr("job-title-segmentid");
-				checked = $(".job-title-item:checked[job-title-segmentid=" + segmentId + "]").size() > 0;
-				$("#segment-" + segmentId).attr("checked", checked);
-			});
-			*/
-			
 			var page = 1;
 			
 			// avoid resending the same request twice when page is scrolled all the way down

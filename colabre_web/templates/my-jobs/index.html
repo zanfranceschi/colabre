@@ -80,15 +80,18 @@
 						
 						$("#job-" + jobId)
 							.removeClass("job-show-details")
-							.addClass("job-toggle-details");
+							.addClass("job-toggle-details wrapper-expanded");
 					}
 				});				
 			});
 			
 			// toggle visibility after content is loaded...
 			$(".job-toggle-details").live('click', function() {
+				_this = $(this);
 				id = $(this).attr("job-id");
-				$("#job-details-" + id).toggle('fast');
+				$("#job-details-" + id).toggle('fast', function(){
+					_this.toggleClass("wrapper-expanded wrapper-contracted");
+				});
 			});
 			
 			$(".job-wrapper-summary a").live('click', function(e) {

@@ -194,10 +194,9 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 		)
 
 class ContactForm(BaseForm):
-	user_id = forms.HiddenInput({'id' : 'teste' })
-	email_to = forms.CharField()
-	email_from = forms.CharField()
-	subject = forms.HiddenInput()
+	user_id = forms.CharField(widget=forms.HiddenInput())
+	subject = forms.CharField(widget=forms.HiddenInput())
+	email_from = forms.EmailField(label='Seu email')
 	message = forms.CharField(
 		label='Mensagem',
 		help_text=u'Máximo de 300 caracteres',
@@ -205,13 +204,31 @@ class ContactForm(BaseForm):
 		widget=forms.Textarea(attrs={'rows' : 3, 'cols' : 60})
 	)
 	
+	def __init__(self, *args, **kwargs):
+		user_id = kwargs.pop('user_id', None)
+		subject = kwargs.pop('subject', None)
+		super(ContactForm, self).__init__(*args, **kwargs)
+		if user_id:
+			self.user = User.objects.get(id=user_id)
+			self.initial.update({ 'user_id' : user_id })
+		if subject:
+			self.initial.update({ 'subject' : subject })
+		
+
 	def send_email(self):
-		import sys
-		print >> sys.stderr, 'form sent:', self.cleaned_data['message'],
-	
-	def save(self):
-		import sys
-		print >> sys.stderr, 'form sent:', self.cleaned_data['message'],
+		user_id = self.cleaned_data['user_id']
+		subject = self.cleaned_data['subject']
+		user = User.objects.get(id=user_id)
+		email_to = user.email
+		email_from = self.cleaned_data['email_from']
+		message = self.cleaned_data['message']
+		send_mail(
+				subject,
+				message,
+				email_from, 
+				[email_to], 
+				fail_silently=False)
+
 
 class LoginForm(BaseForm):
 	username = forms.CharField(

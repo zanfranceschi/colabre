@@ -1,4 +1,4 @@
-<div class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job job-wrapper-summary" job-id="{{ job.id }}">
+<div class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job job-wrapper-summary wrapper-summary" job-id="{{ job.id }}">
 	<small><i><b>{{ job.segment_name }}</b></i> em {{ job.workplace_political_location_name }}</small>
 	<h3>{{ job.job_title_name }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>

@@ -7,14 +7,9 @@
 		{{ resume.full_description|bbcode|newline_to_br|removetags:"script link a img input form input select button textarea"|safe }}
 	</fieldset>
 	<div class="profile-name">
-		<a 
-			class="profile-contact-form contact-form-opener" 
-			resume-segment="{{ resume.segment_name }}" 
-			resume-id="{{ resume.id }}" 
-			user-id="{{ resume.profile.user.id }}" 
-			resume-name="{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}">contato com o profissional ◄</a>
+		<a user-id="{{ resume.profile.user.id }}" class="profile-contact-form contact-form-opener">Entre em contato com <b>{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}</b> ◄</a>
 	</div>
-	<div class="contact-form" id="contact-form-{{ resume.profile.user.id }}" style="display: none; padding: 0;">
-		<iframe src="{% url 'contact_get_form' %}" style="width: 100%; border: 0;"></iframe>
+	<div class="contact-form-wrapper" id="contact-form-{{ resume.profile.user.id }}">
+		<iframe src="{% url 'contact' %}?user_id={{ resume.profile.user.id }}&amp;subject=r" class="contact-form"></iframe>
 	</div>
 </div>

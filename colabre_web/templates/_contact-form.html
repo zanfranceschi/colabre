@@ -2,9 +2,15 @@
 {% load url from future %}
 {% block title %}Contato{% endblock %}
 {% block body %}
-<form action="{% url 'contact_send_message' %}" method="post">
+{% if form %}
+<form action="{% url 'contact' %}" method="post">
 	{% csrf_token %}
 	{% include '_form.html'%}
 	<input type="submit" class="btn btn-info" value="Enviar" />
 </form>
+{% else %}
+<div class="contact-message-sent">
+	{{ contact_message }}
+</div>
+{% endif %}
 {% endblock body%}

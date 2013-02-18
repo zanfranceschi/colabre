@@ -51,7 +51,7 @@
 			
 				jobId = $(this).attr("job-id");
 				
-				var req = $.ajax({
+				req = $.ajax({
 					url: '/vagas/parcial/detalhar/' + jobId + '/' + q + '/',
 					type: 'get',
 					complete: function()
@@ -66,13 +66,12 @@
 						details = _this.children("div.job-details");
 						
 						_this.removeClass("job-wrapper-summary")
-							.addClass("job-wrapper-details");
-						
+							.addClass("job-wrapper-details wrapper-expanded");
+							
 						details.empty();
 						details.html(data);
 						
 						details.show('fast', function(){
-							//eval('load_chart' + respJobId + '();');
 						});
 					},
 					error: function(a, b, error)
@@ -84,10 +83,14 @@
 			
 			// toggle visibility after content is loaded...
 			$(".job-wrapper-details").live('click', function() {
-				
+				_this = $(this);
 				details = $(this).children("div.job-details");
-				details.toggle('fast');
-				
+				details.toggle({
+					duration: 'fast',
+					complete: function(){
+						_this.toggleClass('wrapper-expanded wrapper-contracted');
+					}
+				});
 			});
 			
 			$(".job-wrapper-details a").live('click', function(e) {

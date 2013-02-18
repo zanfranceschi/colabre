@@ -1,0 +1,16 @@
+﻿.wrapper-expanded
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background-color: #e6ebf4; /* check .resume and .job */
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.wrapper-contracted
+{
+	margin-top: 0;
+	margin-bottom: 0;
+}
