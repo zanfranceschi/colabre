@@ -11,3 +11,6 @@ import djcelery
 djcelery.setup_loader()
 
 GEOIP_DATAFILE_PATH = 'C:/Users/zanfranceschi/Projects/Colabre/svn/data/GeoLiteCity.dat'
+
+MONGODB_HOST = 'localhost'
+MONGODB_PORT = 27017

@@ -7,7 +7,7 @@ from colabre_web.statistics.settings import *
 celery = Celery('tasks', broker='amqp://guest@localhost//', backend='amqp')
 
 def get_mongo_db():
-	connection = MongoClient('127.0.0.1', 27017)
+	connection = MongoClient(MONGODB_HOST, MONGODB_PORT)
 	return connection.colabre
 
 
