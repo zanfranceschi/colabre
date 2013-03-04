@@ -250,6 +250,14 @@ class LoginForm(BaseForm):
 	)
 	next = forms.CharField(widget=forms.HiddenInput, required=False)
 
+class LocationSelect(forms.Widget):
+	
+	def render(self, name, value, attrs=None):
+		from string import Template
+		from django.utils.safestring import mark_safe
+		tpl = Template(u"""<h1>There would be a colour widget here, for value $colour</h1>""")
+		return mark_safe(tpl.substitute(colour=value))
+
 class JobForm(ModelForm):
 	profile = None
 	
@@ -283,7 +291,11 @@ class JobForm(ModelForm):
 			'contact_name',
 			'company_name', 
 			'contact_email', 
-			'contact_phone')
+			'contact_phone'
+			)
+		widgets = {
+			#'workplace_political_location_name': LocationSelect(),
+        }
 	
 	def save(self, commit=True):
 		self.instance.profile = self.profile
