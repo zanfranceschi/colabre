@@ -37,9 +37,8 @@ class PoliticalLocation(models.Model):
 	@classmethod
 	def try_parse(cls, country, region, city):
 		try:
-			# IMPORTANT! check PoliticalLocation.name for correct format...
-			query = Q(city_name=city) & Q(Q(region_code=region) | Q(region_name=region)) & Q(Q(country_code=country) | Q(country_name=country))
-			return PoliticalLocation.objects.filter(query)[0]
+			query = Q(city_name=city) & Q(Q(region_code=region) | Q(region_name=region)) & Q(Q(country_code=country) | Q(country_name=country)) 
+			return cls.objects.filter(query)[0]
 		except:
 			return None
 	
@@ -140,8 +139,13 @@ class UserProfile(models.Model):
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
 	birthday = models.DateField(null=True)
 	
-	political_location = models.ForeignKey(PoliticalLocation, null=True)
-	political_location_name = models.CharField(max_length=120, null=True)
+	#political_location = models.ForeignKey(PoliticalLocation, null=True)
+	#political_location_name = models.CharField(max_length=120, null=True)
+	
+	location = models.ForeignKey(PoliticalLocation, null=True)
+	country = models.CharField(max_length=60, null=True)
+	region = models.CharField(max_length=60, null=True)
+	city = models.CharField(max_length=60, null=True)
 	
 	excluded = models.BooleanField(default=False)
 	active = models.BooleanField(default=True)
