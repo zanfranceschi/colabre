@@ -280,14 +280,15 @@ class JobForm(ModelForm):
 
 	class Meta:
 		model = Job
-		exclude = ('job_title', 'profile', 'company', 'workplace_political_location', 'date_creation')
+		exclude = ('job_title', 'profile', 'company', 'location', 'date_creation')
 		fields = (
 			'job_title_name', 
 			'segment_name',
 			'description',
-			'workplace_political_location_name',
-			'workplace_location', 
-			#'published',
+			'country',
+			'region',
+			'city', 
+			'address',
 			'contact_name',
 			'company_name', 
 			'contact_email', 
@@ -308,8 +309,10 @@ class JobForm(ModelForm):
 							'segment_name', 
 							'job_title_name', 
 							'description', 
-							'workplace_political_location_name', 
-							'workplace_location', 
+							'country',
+							'region',
+							'city',
+							'address',
 							'company_name', 
 							'contact_email', 
 							'contact_phone']
@@ -317,8 +320,13 @@ class JobForm(ModelForm):
 		self.fields['job_title_name'].help_text = u'Exemplos: Analista de Sistemas, Enfermeiro, Auxiliar de Expedição, etc.'
 		self.fields['segment_name'].label = u'Segmento'
 		self.fields['segment_name'].help_text = u'Segmento da vaga. Ex.: Finanças, Tecnologia da Informação, Medicina, etc..'
-		self.fields['workplace_political_location_name'].label = u'Cidade'
-		self.fields['workplace_political_location_name'].help_text = u'Cidade / Estado / País da vaga. Use uma cidade sugerida pelo sistema para que sua vaga seja filtrável por Localização nas buscas.'
+		
+		self.fields['country'].label = u'País'
+		self.fields['region'].label = u'Estado / Região'
+		self.fields['city'].label = u'Cidade'
+		
+		#self.fields['address'].label = u'Endereço'
+		
 		self.fields['description'].label = u'Descrição da Vaga'
 		self.fields['description'].help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
 		self.fields['description'].widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70})
@@ -331,10 +339,10 @@ class JobForm(ModelForm):
 		self.fields['contact_email'].required = True
 		self.fields['contact_phone'].label = u'Telefone para contato'
 		self.fields['contact_phone'].required = False
-		self.fields['workplace_location'].label = u'Endereço'
-		self.fields['workplace_location'].help_text = u'Coloque o endereço completo ou parcial, apenas bairro, região, ou outra informação relevante.'
-		self.fields['workplace_location'].required = False
-		self.fields['workplace_location'].widget = forms.TextInput(attrs={'class' : 'large'})
+		self.fields['address'].label = u'Endereço'
+		self.fields['address'].help_text = u'Coloque o endereço completo ou parcial, apenas bairro, região, ou outra informação relevante.'
+		self.fields['address'].required = False
+		self.fields['address'].widget = forms.TextInput(attrs={'class' : 'large'})
 		#self.fields['published'].label = u'Visível publicamente'
 		#self.fields['published'].help_text = u'Se este controle estiver desmarcado, esta vaga não ficará visível publicamente -- útil para quando desejar pré-cadastrar vagas.'
 		if not self.instance.id:
@@ -345,11 +353,12 @@ class JobForm(ModelForm):
 			if len(last_posted_jobs) > 0:
 				last_posted_job = last_posted_jobs[0]
 				self.initial.update({
-					'contact_name' : last_posted_job.contact_name,
-					'company_name' : last_posted_job.company_name,
-					'segment_name' : last_posted_job.segment_name,
-					'workplace_political_location_name' : last_posted_job.workplace_political_location_name,
-					'workplace_location' : last_posted_job.workplace_location,
+					'contact_name' 	: last_posted_job.contact_name,
+					'company_name' 	: last_posted_job.company_name,
+					'segment_name' 	: last_posted_job.segment_name,
+					'country' 		: last_posted_job.country,
+					'region' 		: last_posted_job.region,
+					'city' 			: last_posted_job.city,
 					'contact_phone' : last_posted_job.contact_phone
 				})
 		custom_init(self)

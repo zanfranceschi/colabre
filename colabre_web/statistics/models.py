@@ -31,7 +31,7 @@ class LogObjectFactory:
             'job_username'						: job.profile.user.username,
             'segment_name'						: job.segment_name,
             'job_title_name'					: job.job_title_name,
-            'workplace_political_location_name'	: job.workplace_political_location_name,
+            'location'							: str(job.location),
             'company_name'						: job.company_name,
             'creation_date'						: job.creation_date,
             'viewer_user_id'					: user_id,

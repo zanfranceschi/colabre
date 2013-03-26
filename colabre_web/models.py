@@ -35,14 +35,11 @@ class PoliticalLocation(models.Model):
 	active = models.BooleanField(default=True)
 	
 	@classmethod
-	def try_parse(cls, political_location_name):
+	def try_parse(cls, country, region, city):
 		try:
 			# IMPORTANT! check PoliticalLocation.name for correct format...
-			location = political_location_name.split('/')
-			city_name = location[0].strip()
-			region_code = location[1].strip()
-			country_code = location[2].strip()
-			return PoliticalLocation.objects.get(city_name=city_name, region_code=region_code, country_code=country_code)
+			query = Q(city_name=city) & Q(Q(region_code=region) | Q(region_name=region)) & Q(Q(country_code=country) | Q(country_name=country))
+			return PoliticalLocation.objects.filter(query)[0]
 		except:
 			return None
 	
@@ -285,7 +282,7 @@ class UserProfile(models.Model):
 	def getCountriesForSearchFilter(cls, profile):
 		query = """	select distinct l.* 
 					from colabre_web_politicallocation l 
-						inner join colabre_web_job j on j.workplace_political_location_id = l.id
+						inner join colabre_web_job j on j.location_id = l.id
 					where j.active = 1
 						and j.profile_id = {0}
 					order by l.country_code, l.region_code, l.city_name """.format(profile.id)
@@ -515,9 +512,13 @@ class Job(models.Model):
 	job_title = models.ForeignKey(JobTitle, null=True)
 	job_title_name = models.CharField(max_length=50)
 	
-	workplace_political_location = models.ForeignKey(PoliticalLocation, null=True)
-	workplace_political_location_name = models.CharField(max_length=120, null=True)
-	workplace_location = models.CharField(max_length=120, null=True)
+	#workplace_political_location = models.ForeignKey(PoliticalLocation, null=True)
+	#workplace_political_location_name = models.CharField(max_length=120, null=True)
+	address = models.CharField(max_length=120, null=True)
+	location = models.ForeignKey(PoliticalLocation, null=True)
+	country = models.CharField(max_length=60)
+	region = models.CharField(max_length=60)
+	city = models.CharField(max_length=60)
 	
 	description = models.TextField(max_length=5000)
 	
@@ -547,7 +548,7 @@ class Job(models.Model):
 			query = query & Q(job_title__in=(job_titles_ids))
 			
 		if locations_ids:
-			query = query & Q(workplace_political_location__in=(locations_ids))
+			query = query & Q(location__in=(locations_ids))
 		
 		list = Job.objects.filter(
 			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
@@ -578,7 +579,7 @@ class Job(models.Model):
 			query = query & Q(job_title__in=(job_titles_ids))
 			
 		if locations_ids:
-			query = query & Q(workplace_political_location__in=(locations_ids))
+			query = query & Q(location__in=(locations_ids))
 		
 		list = Job.objects.filter(
 			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
@@ -621,7 +622,14 @@ class Job(models.Model):
 		self.job_title = job_title
 		self.job_title_name = job_title.name
 		self.segment_name = self.job_title.segment.name
-		self.workplace_political_location = PoliticalLocation.try_parse(self.workplace_political_location_name)
+		
+		self.location = PoliticalLocation.try_parse(self.country, self.region, self.city)
+		if self.location is not None:
+			self.country = self.location.country_code 
+			self.region = self.location.region_code
+			self.city = self.location.city_name
+		else:
+			pass
 		
 		try:
 			self.company = Company.objects.get(name=self.company_name.strip())
@@ -641,7 +649,7 @@ class Job(models.Model):
 	def getCountriesForSearchFilter(cls):
 		query = """	select distinct l.* 
 					from colabre_web_politicallocation l 
-						inner join colabre_web_job j on j.workplace_political_location_id = l.id
+						inner join colabre_web_job j on j.location_id = l.id
 					where j.active = 1
 					order by l.country_code, l.region_code, l.city_name """
 		return PoliticalLocation.getCountriesByQuery(query)

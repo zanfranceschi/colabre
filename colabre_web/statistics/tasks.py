@@ -2,7 +2,11 @@ from datetime import datetime
 from celery import Celery
 from pymongo import MongoClient
 import pygeoip
-from colabre_web.statistics.settings import *
+
+
+GEOIP_DATAFILE_PATH = 'C:/Users/zanfranceschi/Projects/Colabre/svn/data/GeoLiteCity.dat'
+MONGODB_HOST = 'localhost'
+MONGODB_PORT = 27017
 
 celery = Celery('tasks', broker='amqp://guest@localhost//', backend='amqp')
 
