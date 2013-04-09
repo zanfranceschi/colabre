@@ -108,6 +108,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'colabre_web.middlewares.ColabreMiddleware',
+    'colabre_web.middlewares.HandleErrorMiddleware',
 	#'gadjo.requestprovider.middleware.RequestProvider',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -181,4 +183,4 @@ LOGGING = {
 }
 
 from colabre_web.oauth.settings import *
-from colabre_web.statistics.settings import *
+#from colabre_web.statistics.settings import *

@@ -51,11 +51,11 @@ class LogObjectFactory:
 
 def log_request(request):
 	log = LogObjectFactory.log_request(request)
-	celery_log_request.delay(log)
+	#celery_log_request.delay(log)
 
 def log_job_request(request, search_term, job):
 	log = LogObjectFactory.log_job_request(request, search_term, job)
-	celery_log_job_request.delay(log)
+	#celery_log_job_request.delay(log)
 	
 def log_resume_request(request, search_term, resume):
 	pass

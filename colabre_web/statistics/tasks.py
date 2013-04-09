@@ -1,5 +1,5 @@
 from datetime import datetime
-from celery import Celery
+#from celery import Celery
 from pymongo import MongoClient
 import pygeoip
 
@@ -8,14 +8,14 @@ GEOIP_DATAFILE_PATH = 'C:/Users/zanfranceschi/Projects/Colabre/svn/data/GeoLiteC
 MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
 
-celery = Celery('tasks', broker='amqp://guest@localhost//', backend='amqp')
+#celery = Celery('tasks', broker='amqp://guest@localhost//', backend='amqp')
 
 def get_mongo_db():
 	connection = MongoClient(MONGODB_HOST, MONGODB_PORT)
 	return connection.colabre
 
 
-@celery.task
+#@celery.task
 def celery_log_request(log):
 	db = get_mongo_db()
 	
@@ -49,7 +49,7 @@ def celery_log_request(log):
 	return 'request not logged'
 
 
-@celery.task
+#@celery.task
 def celery_log_job_request(log):
 	db = get_mongo_db()
 	should_log = db.jobs_full.find({ 
@@ -148,7 +148,7 @@ def celery_log_job_request(log):
 	
 	return 'job details not logged'
 
-@celery.task
+#@celery.task
 def celery_log_resume_request(request, search_term, resume):
 	pass
 	"""
@@ -267,6 +267,6 @@ def celery_log_resume_request(request, search_term, resume):
         }
 		db.resumes_full.insert(resume_full)
 
-@celery.task
+#@celery.task
 def celery_test(q):
 	return "\n --- ", q, " --- \n"

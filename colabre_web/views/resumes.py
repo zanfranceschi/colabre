@@ -12,7 +12,7 @@ from datetime import *
 from colabre_web.models import *
 from colabre_web.aux_models import *
 from colabre_web.forms import *
-from colabre_web.statistics.models import *
+#from colabre_web.statistics.models import *
 
 import time
 from helpers import *

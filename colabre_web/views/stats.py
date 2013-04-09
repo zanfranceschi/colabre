@@ -15,7 +15,6 @@ from colabre_web.forms import *
 from colabre_web.statistics.models import *
 
 import time
-from helpers import handle_exception, log_request as view_log_request
 from django.core import serializers
 from django.conf.urls import patterns, include, url
 
