@@ -20,24 +20,34 @@ def dictfetchall(cursor):
 		for row in cursor.fetchall()
 	]
 
-class PoliticalLocation(models.Model):
-	country_id = models.IntegerField()
-	country_code = models.CharField(max_length=3)
-	country_name = models.CharField(max_length=60)
+
+class Country(models.Model):
+	name = models.CharField(max_length=60)
+	code = models.CharField(max_length=3, null=True)
 	
-	region_id = models.IntegerField()
-	region_code = models.CharField(max_length=2)
-	region_name = models.CharField(max_length=60)
+class Region(models.Model):
+	name = models.CharField(max_length=60)
+	code = models.CharField(max_length=2, null=True)
+	country = models.ForeignKey(Country)
 	
-	city_id = models.IntegerField(unique=True)
-	city_name = models.CharField(max_length=60)
-	
+class City(models.Model):
+	name = models.CharField(max_length=60)
+	region = models.ForeignKey(Region)
+
+class Location(models.Model):
+	country_id = models.AutoField()
+	country = models.CharField(max_length=60)
+	#country_code = models.CharField(max_length=3, null=True)
+	region_id = models.AutoField()
+	region = models.CharField(max_length=60)
+	#region_code = models.CharField(max_length=2, null=True)
+	city = models.CharField(max_length=60)
 	active = models.BooleanField(default=True)
 	
 	@classmethod
 	def try_parse(cls, country, region, city):
 		try:
-			query = Q(city_name=city) & Q(Q(region_code=region) | Q(region_name=region)) & Q(Q(country_code=country) | Q(country_name=country)) 
+			query = Q(city=city) & Q(region=region) & Q(country=country) 
 			return cls.objects.filter(query)[0]
 		except:
 			return None
@@ -127,7 +137,7 @@ class PoliticalLocation(models.Model):
 		return self.__unicode__()
 	
 	def __unicode__(self):
-		return "%s / %s / %s" % (self.city_name, self.region_code, self.country_code)
+		return "%s / %s / %s" % (self.city, self.region, self.country)
 
 class UserProfile(models.Model):
 	""" Binds Django user to resume and jobs """
