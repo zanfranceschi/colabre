@@ -25,14 +25,147 @@ class Country(models.Model):
 	name = models.CharField(max_length=60)
 	code = models.CharField(max_length=3, null=True)
 	
+	def __unicode__(self):
+		return self.name
+	
 class Region(models.Model):
 	name = models.CharField(max_length=60)
 	code = models.CharField(max_length=2, null=True)
 	country = models.ForeignKey(Country)
 	
+	def __unicode__(self):
+		return self.code if self.code is not None else self.name
+	
 class City(models.Model):
 	name = models.CharField(max_length=60)
 	region = models.ForeignKey(Region)
+	
+	def __unicode__(self):
+		return "%s / %s / %s" % (self.name, self.region, self.region.country)
+
+	
+	@classmethod
+	def get_existing_or_create(cls, country_name, region_name, city_name):
+		countries = Country.objects.filter(name=country_name)
+		country = countries[0] if countries else None
+		if not country:
+			country = Country()
+			country.name = country_name
+			country.save()
+			
+		regions = Region.objects.filter(Q(country=country) & Q(Q(name=region_name) | Q(code=region_name)))
+		region = regions[0] if regions else None
+		if not region:
+			region = Region()
+			region.name = region_name
+			if len(region_name.strip()) == 2:
+				region.code = region_name.strip().upper()
+			region.country = country
+			region.save()
+			
+		cities = City.objects.filter(Q(region__country=country) & Q(Q(region__name=region_name) | Q(region__code=region_name)) & Q(name=city_name))
+		city = cities[0] if cities else None
+		if not city:
+			city = City()
+			city.name = city_name
+			city.region = region
+			city.save() 
+		
+		return city
+	
+
+	@classmethod
+	def get_full_countries_by_sql_query(cls, sql_query):
+		"""
+		 Expected projection:
+			country_id
+			country_code
+			country_name
+			region_id
+			region_code
+			region_name
+			city_id
+			city_name
+		"""
+		cursor = connection.cursor()
+		cursor.execute(sql_query)
+		locations = dictfetchall(cursor)
+		countries = []
+		[{
+			'id' : c['country_id'],
+			'code' : c['country_code'],
+			'name' : c['country_name'],
+		} for c in locations
+			if 
+			{
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
+			} not in countries 
+			and countries.append({
+				'id' : c['country_id'],
+				'code' : c['country_code'],
+				'name' : c['country_name'],
+				})]
+					
+		regions = []
+		[{
+			'id' : r['region_id'],
+			'country_id' : r['country_id'],
+			'code' : r['region_code'],
+			'name' : r['region_name'],
+		} for r in locations
+			if 
+			{
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
+			} not in regions 
+			and regions.append({
+				'id' : r['region_id'],
+				'country_id' : r['country_id'],
+				'code' : r['region_code'],
+				'name' : r['region_name'],
+				})]
+				
+		cities = []
+		[{
+			'id' : c['id'],
+			'country_id' : c['country_id'],
+			'region_id' : c['region_id'],
+			'country_code' : c['country_code'],
+			'region_code' : c['region_code'],
+			'name' : c['city_name'],
+			'friendly_name' : str(c),
+		} for c in locations
+			if 
+			{
+				'id' : c['city_id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
+				'friendly_name' : str(c),
+			} not in cities 
+			and cities.append({
+				'id' : c['city_id'],
+				'country_id' : c['country_id'],
+				'region_id' : c['region_id'],
+				'country_code' : c['country_code'],
+				'region_code' : c['region_code'],
+				'name' : c['city_name'],
+				'friendly_name' : str(c),
+				})]
+
+		for country in countries:
+			country['regions'] = [region for region in regions if country['id'] == region['country_id']]
+			for region in country['regions']:
+				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
+				
+		return countries
+		
 
 class Location(models.Model):
 	country_id = models.AutoField()
@@ -152,10 +285,7 @@ class UserProfile(models.Model):
 	#political_location = models.ForeignKey(PoliticalLocation, null=True)
 	#political_location_name = models.CharField(max_length=120, null=True)
 	
-	location = models.ForeignKey(PoliticalLocation, null=True)
-	country = models.CharField(max_length=60, null=True)
-	region = models.CharField(max_length=60, null=True)
-	city = models.CharField(max_length=60, null=True)
+	city = models.ForeignKey(City, null=True)
 	
 	excluded = models.BooleanField(default=False)
 	active = models.BooleanField(default=True)
@@ -247,7 +377,9 @@ class UserProfile(models.Model):
 					profile_type, 
 					gender,
 					birthday,
-					location):
+					country,
+					region,
+					city):
 		profile = cls.objects.get(user=user)
 		profile.user.first_name = first_name
 		profile.user.last_name = last_name
@@ -264,8 +396,7 @@ class UserProfile(models.Model):
 		profile.profile_type = profile_type
 		profile.gender = gender
 		profile.birthday = birthday
-		profile.political_location_name = location
-		profile.political_location = PoliticalLocation.try_parse(location)
+		profile.city = City.get_existing_or_create(country, region, city)
 		profile.save()
 
 	@classmethod
@@ -275,14 +406,14 @@ class UserProfile(models.Model):
 							profile_type, 
 							gender,
 							birthday,
-							location):
-
+							country,
+							region, 
+							city):
 		profile = cls.objects.get(user=user)
 		profile.profile_type = profile_type
 		profile.gender = gender
 		profile.birthday = birthday
-		profile.political_location_name = location
-		profile.political_location = PoliticalLocation.try_parse(location)
+		profile.city = City.get_existing_or_create(country, region, city)
 		profile.save()
 
 	def save(self, *args, **kwargs):
