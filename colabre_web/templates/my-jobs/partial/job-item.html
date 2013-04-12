@@ -1,6 +1,6 @@
 <div id="job-{{job.id}}" job-id="{{job.id}}" class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job-show-details my-job job job-wrapper-summary {% if job.is_editable %}job-editable{% endif %}">
-	<small><i><b>{{ job.segment_name }}</b></i> em {{ job.workplace_political_location_name }}</small>
-	<h3>{{ job.job_title_name }}</h3>
+	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
+	<h3>{{ job.job_title.full_name }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>
 	{% if job.is_editable %}<a alt="edição" title="editar" class="job-edit" href="{% url my_jobs_edit job.id %}"><img src="{{ STATIC_URL }}img/page_white_edit.png" /></a>{% endif %}
 	<a href="{% url my_jobs_confirm_del job.id %}" class="job-del">

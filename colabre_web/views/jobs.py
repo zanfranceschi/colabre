@@ -49,7 +49,7 @@ def detail(request, id):
 def partial_html_search(request):
 	if request.method == 'POST':
 		job_titles = request.POST['job_titles']
-		locations = request.POST['locations']
+		cities = request.POST['cities']
 		term = request.POST['term']
 		days = request.POST['days']
 		page = request.POST['page']
@@ -58,17 +58,17 @@ def partial_html_search(request):
 		if job_titles:
 			job_titles_ids = [int(n) for n in job_titles.split("-")]
 		
-		locations_ids = None
-		if locations:
-			locations_ids = [int(n) for n in locations.split("-")]
+		cities_ids = None
+		if cities:
+			cities_ids = [int(n) for n in cities.split("-")]
 		
-		jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, locations_ids, int(days), page, 30)
+		jobs, is_last_page, total_jobs = Job.view_search_public(term, job_titles_ids, cities_ids, int(days), page, 30)
 		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	else:
 		return HttpResponse('')
 
 def index(request):
-	segments = Job.getSegmentsForSearchFilter()
-	countries = Job.getCountriesForSearchFilter()
+	segments = Job.get_segments_for_search_filter()
+	countries = Job.get_countries_for_search_filter()
 	days = [3, 7, 15, 30, 60, 90, 120, 150]
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })

@@ -11,6 +11,7 @@ import uuid
 from datetime import *
 import time
 import colabre.settings
+import sys
 
 def dictfetchall(cursor):
 	"Returns all rows from a cursor as a dict"
@@ -28,56 +29,10 @@ class Country(models.Model):
 	def __unicode__(self):
 		return self.name
 	
-class Region(models.Model):
-	name = models.CharField(max_length=60)
-	code = models.CharField(max_length=2, null=True)
-	country = models.ForeignKey(Country)
-	
-	def __unicode__(self):
-		return self.code if self.code is not None else self.name
-	
-class City(models.Model):
-	name = models.CharField(max_length=60)
-	region = models.ForeignKey(Region)
-	
-	def __unicode__(self):
-		return "%s / %s / %s" % (self.name, self.region, self.region.country)
-
-	
-	@classmethod
-	def get_existing_or_create(cls, country_name, region_name, city_name):
-		countries = Country.objects.filter(name=country_name)
-		country = countries[0] if countries else None
-		if not country:
-			country = Country()
-			country.name = country_name
-			country.save()
-			
-		regions = Region.objects.filter(Q(country=country) & Q(Q(name=region_name) | Q(code=region_name)))
-		region = regions[0] if regions else None
-		if not region:
-			region = Region()
-			region.name = region_name
-			if len(region_name.strip()) == 2:
-				region.code = region_name.strip().upper()
-			region.country = country
-			region.save()
-			
-		cities = City.objects.filter(Q(region__country=country) & Q(Q(region__name=region_name) | Q(region__code=region_name)) & Q(name=city_name))
-		city = cities[0] if cities else None
-		if not city:
-			city = City()
-			city.name = city_name
-			city.region = region
-			city.save() 
-		
-		return city
-	
-
 	@classmethod
 	def get_full_countries_by_sql_query(cls, sql_query):
 		"""
-		 Expected projection:
+		 Expected columns projection:
 			country_id
 			country_code
 			country_name
@@ -165,115 +120,58 @@ class City(models.Model):
 				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
 				
 		return countries
-		
-
-class Location(models.Model):
-	country_id = models.AutoField()
-	country = models.CharField(max_length=60)
-	#country_code = models.CharField(max_length=3, null=True)
-	region_id = models.AutoField()
-	region = models.CharField(max_length=60)
-	#region_code = models.CharField(max_length=2, null=True)
-	city = models.CharField(max_length=60)
-	active = models.BooleanField(default=True)
 	
-	@classmethod
-	def try_parse(cls, country, region, city):
-		try:
-			query = Q(city=city) & Q(region=region) & Q(country=country) 
-			return cls.objects.filter(query)[0]
-		except:
-			return None
-	
-	@classmethod
-	def getCountriesByQuery(cls, query):
-		cursor = connection.cursor()
-		cursor.execute(query)
-		locations = dictfetchall(cursor)
-		countries = []
-		[{
-			'id' : c['country_id'],
-			'code' : c['country_code'],
-			'name' : c['country_name'],
-		} for c in locations
-			if 
-			{
-				'id' : c['country_id'],
-				'code' : c['country_code'],
-				'name' : c['country_name'],
-			} not in countries 
-			and countries.append({
-				'id' : c['country_id'],
-				'code' : c['country_code'],
-				'name' : c['country_name'],
-				})]
-					
-		regions = []
-		[{
-			'id' : r['region_id'],
-			'country_id' : r['country_id'],
-			'code' : r['region_code'],
-			'name' : r['region_name'],
-		} for r in locations
-			if 
-			{
-				'id' : r['region_id'],
-				'country_id' : r['country_id'],
-				'code' : r['region_code'],
-				'name' : r['region_name'],
-			} not in regions 
-			and regions.append({
-				'id' : r['region_id'],
-				'country_id' : r['country_id'],
-				'code' : r['region_code'],
-				'name' : r['region_name'],
-				})]
-				
-		cities = []
-		[{
-			'id' : c['id'],
-			'country_id' : c['country_id'],
-			'region_id' : c['region_id'],
-			'country_code' : c['country_code'],
-			'region_code' : c['region_code'],
-			'name' : c['city_name'],
-			'friendly_name' : str(c),
-		} for c in locations
-			if 
-			{
-				'id' : c['id'],
-				'country_id' : c['country_id'],
-				'region_id' : c['region_id'],
-				'country_code' : c['country_code'],
-				'region_code' : c['region_code'],
-				'name' : c['city_name'],
-				'friendly_name' : str(c),
-			} not in cities 
-			and cities.append({
-				'id' : c['id'],
-				'country_id' : c['country_id'],
-				'region_id' : c['region_id'],
-				'country_code' : c['country_code'],
-				'region_code' : c['region_code'],
-				'name' : c['city_name'],
-				'friendly_name' : str(c),
-				})]
-
-		for country in countries:
-			country['regions'] = [region for region in regions if country['id'] == region['country_id']]
-			for region in country['regions']:
-				region['cities'] = [city for city in cities if city['country_id'] == region['country_id'] and city['region_id'] == region['id']]
-				
-		return countries
-		
-	def name(self):
-		return self.__unicode__()
+class Region(models.Model):
+	name = models.CharField(max_length=60)
+	code = models.CharField(max_length=2, null=True)
+	country = models.ForeignKey(Country)
 	
 	def __unicode__(self):
-		return "%s / %s / %s" % (self.city, self.region, self.country)
-
+		return self.code if self.code else self.name
+	
+class City(models.Model):
+	name = models.CharField(max_length=60)
+	region = models.ForeignKey(Region)
+	
+	def __unicode__(self):
+		return self.name
+	
+	def full_name(self):
+		return "%s / %s / %s" % (self.name, self.region, self.region.country)
+	
+	@classmethod
+	def get_existing_or_create(cls, country_name, region_name, city_name):
+		countries = Country.objects.filter(name=country_name)
+		country = countries[0] if countries else None
+		if not country:
+			country = Country()
+			country.name = country_name
+			country.save()
+			
+		regions = Region.objects.filter(Q(country=country) & Q(Q(name=region_name) | Q(code=region_name)))
+		region = regions[0] if regions else None
+		if not region:
+			region = Region()
+			region.name = region_name
+			if len(region_name.strip()) == 2:
+				region.code = region_name.strip().upper()
+			region.country = country
+			region.save()
+			
+		cities = City.objects.filter(Q(region__country=country) & Q(Q(region__name=region_name) | Q(region__code=region_name)) & Q(name=city_name))
+		city = cities[0] if cities else None
+		if not city:
+			city = City()
+			city.name = city_name
+			city.region = region
+			city.save() 
+		
+		return city
+	
 class UserProfile(models.Model):
-	""" Binds Django user to resume and jobs """
+	""" 
+		Binds Django user to resume and jobs
+	"""
 	#company = models.ForeignKey('domain.Company')
 	user = models.ForeignKey(User, unique=True)
 	is_verified = models.BooleanField(default=False)
@@ -281,12 +179,7 @@ class UserProfile(models.Model):
 	profile_type = models.CharField(max_length=2, choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')))
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
 	birthday = models.DateField(null=True)
-	
-	#political_location = models.ForeignKey(PoliticalLocation, null=True)
-	#political_location_name = models.CharField(max_length=120, null=True)
-	
 	city = models.ForeignKey(City, null=True)
-	
 	excluded = models.BooleanField(default=False)
 	active = models.BooleanField(default=True)
 	
@@ -315,6 +208,7 @@ class UserProfile(models.Model):
 			return Resume.objects.get(profile=self)
 		except Resume.DoesNotExist:
 			pass
+	
 	@property
 	def jobs(self):
 		return Job.objects.filter(profile=self)
@@ -424,17 +318,30 @@ class UserProfile(models.Model):
 		self.user.save()
 		
 	@classmethod
-	def getCountriesForSearchFilter(cls, profile):
-		query = """	select distinct l.* 
-					from colabre_web_politicallocation l 
-						inner join colabre_web_job j on j.location_id = l.id
-					where j.active = 1
-						and j.profile_id = {0}
-					order by l.country_code, l.region_code, l.city_name """.format(profile.id)
-		return PoliticalLocation.getCountriesByQuery(query)
+	def get_countries_for_search_filter(cls, profile):
+		query = """select
+					co.id		country_id		,	
+					co.code		country_code	,	
+					co.name		country_name	,
+					r.id		region_id		,
+					r.code		region_code		,
+					r.name		region_name		,
+					ci.id		city_id			,
+					ci.name		city_name
+				from colabre_web_country co
+					inner join colabre_web_region r on co.id = r.country_id
+					inner join colabre_web_city ci	on r.id = ci.region_id
+					inner join colabre_web_job j	on ci.id = j.city_id
+				where j.active = 1
+					and j.profile_id = {0}
+				order by
+					co.name,
+					r.name,
+					ci.name """.format(profile.id)
+		return Country.get_full_countries_by_sql_query(query)
 	
 	@classmethod
-	def getSegmentsForSearchFilter(cls, profile):
+	def get_segments_for_search_filter(cls, profile):
 		query = """			
 			select  
 				jt.id							, 
@@ -458,21 +365,27 @@ class UserProfile(models.Model):
 			 	se.name	,
 			 	jt.name	; 
 			""".format(profile.id)
-		return Segment.getSegmentsByQuery(query)
+		return Segment.get_segments_by_sql_query(query)
 
 class Segment(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	active = models.BooleanField(default=True)
 
 	@classmethod
-	def try_parse(cls, segment_name):
-		objs = cls.objects.filter(name=segment_name)
-		return objs[0] if objs else None
+	def get_existing_or_create(cls, segment_name):
+		segments = Segment.objects.filter(name=segment_name.strip())[:1]
+		segment = segments[0] if segments else None
+		if not segment:
+			segment = Segment()
+			segment.name = segment_name.strip()
+			segment.save()
+
+		return segment
 
 	@classmethod
-	def getSegmentsByQuery(cls, query):
+	def get_segments_by_sql_query(cls, sql_query):
 		cursor = connection.cursor()
-		cursor.execute(query)
+		cursor.execute(sql_query)
 		all = dictfetchall(cursor)
 		segments = []
 		[{
@@ -519,16 +432,39 @@ class JobTitle(models.Model):
 	active = models.BooleanField(default=True)
 	
 	@classmethod
-	def try_parse(cls, segment_name, job_title_name):
-		objs = cls.objects.filter(segment__name=segment_name, name=job_title_name)
-		return objs[0] if objs else None
+	def get_existing_or_create(cls, segment_name, job_title_name):
+		segment = Segment.get_existing_or_create(segment_name)
 		
+		job_titles = JobTitle.objects.filter(name=job_title_name.strip(), segment=segment)
+		job_title = job_titles[0] if job_titles else None
+		if not job_title:
+			job_title = JobTitle()
+			job_title.name = job_title_name.strip()
+			job_title.segment = segment
+			job_title.save()
+		
+		return job_title
+	
 	def __unicode__(self):
+		return self.name
+	
+	def full_name(self):
 		return "%s (%s)" % (self.name, self.segment.name)
 		
 class Company(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	active = models.BooleanField(default=True)
+	
+	@classmethod
+	def get_existing_or_create(cls, company_name):
+		companies = cls.objects.filter(name=company_name.strip())
+		company = companies[0] if companies else None
+		if not company:
+			company = Company()
+			company.name = company_name.strip()
+			company.save()
+		
+		return company
 	
 	def __unicode__(self):
 		return self.name
@@ -589,36 +525,37 @@ class Resume(models.Model):
 		resume = objs[0] if objs else Resume() 
 		resume.profile = profile
 		resume.segment_name = segment_name
-		resume.segment = Segment.try_parse(segment_name)
+		resume.segment = Segment.get_existing_or_create(segment_name)
 		resume.short_description = short_description
 		resume.full_description = full_description
 		resume.visible = visible
 		resume.save()
 
-	file = models.FileField(
-		null=True,
-		upload_to=lambda instance, filename: 
-			colabre.settings.UPLOAD_DIR
-			+ '/resumes/'
-			+ str(instance.id)
-			+ '/' 
-			+ filename
-		)
-
 	def __unicode__(self):
 		return self.short_description
 	
 	@classmethod
-	def getCountriesForSearchFilter(cls):
-		query = """	select distinct l.* 
-					from colabre_web_politicallocation l 
-						inner join colabre_web_userprofile up on up.political_location_id = l.id
-					where up.active = 1
-					order by l.country_code, l.region_code, l.city_name """
-		return PoliticalLocation.getCountriesByQuery(query)
+	def get_countries_for_search_filter(cls):
+		query = """select
+					co.id		country_id		,	
+					co.code		country_code	,	
+					co.name		country_name	,
+					r.id		region_id		,
+					r.code		region_code		,
+					r.name		region_name		,
+					ci.id		city_id			,
+					ci.name		city_name
+				from colabre_web_country co
+					inner join colabre_web_region r on co.id = r.country_id
+					inner join colabre_web_city ci	on r.id = ci.region_id
+				order by
+					co.name,
+					r.name,
+					ci.name """ 
+		return Country.get_full_countries_by_sql_query(query)
 	
 	@classmethod
-	def getSegmentsForSearchFilter(cls):
+	def get_segments_for_search_filter(cls):
 		query = """
 				select  
 					jt.id							, 
@@ -640,7 +577,7 @@ class Resume(models.Model):
 				 order by
 					se.name	,
 					jt.name	;"""
-		return Segment.getSegmentsByQuery(query)
+		return Segment.get_segments_by_sql_query(query)
 
 class Job(models.Model):
 
@@ -652,35 +589,36 @@ class Job(models.Model):
 	is_editable = property(get_is_editable)
 
 	profile = models.ForeignKey(UserProfile)
-	
-	segment_name = models.CharField(max_length=50)
-	job_title = models.ForeignKey(JobTitle, null=True)
-	job_title_name = models.CharField(max_length=50)
-	
-	#workplace_political_location = models.ForeignKey(PoliticalLocation, null=True)
-	#workplace_political_location_name = models.CharField(max_length=120, null=True)
+	job_title = models.ForeignKey(JobTitle)
 	address = models.CharField(max_length=120, null=True)
-	location = models.ForeignKey(PoliticalLocation, null=True)
-	country = models.CharField(max_length=60)
-	region = models.CharField(max_length=60)
-	city = models.CharField(max_length=60)
-	
+	city = models.ForeignKey(City, null=True)
 	description = models.TextField(max_length=5000)
-	
 	company = models.ForeignKey(Company, null=True)
-	company_name = models.CharField(max_length=50, null=True)
-
-	contact_email = models.EmailField(max_length=254, null=True)
+	contact_name = models.CharField(max_length=60)
+	contact_email = models.EmailField(max_length=254)
 	contact_phone = models.CharField(max_length=25, null=True)
-	contact_name = models.CharField(max_length=61, null=True)
-	
 	creation_date = models.DateTimeField(default=datetime.now())
 	published = models.BooleanField(default=True)
-	
 	active = models.BooleanField(default=True)
 
+	def set_associations_by_name(self,
+								segment_name, 
+								job_title_name,
+								country_name,
+								region_name, 
+								city_name, 
+								company_name):
+		self.job_title = JobTitle.get_existing_or_create(segment_name, job_title_name)
+		self.city = City.get_existing_or_create(country_name, region_name, city_name)
+		
+		if company_name:
+			self.company = Company.get_existing_or_create(company_name)
+		
+	def __unicode__(self):
+		return self.job_title
+
 	@classmethod
-	def view_search_my_jobs(cls, profile, term, job_titles_ids, locations_ids, days, page, limit):
+	def view_search_my_jobs(cls, profile, term, job_titles_ids, cities_ids, days, page, limit):
 		
 		query = Q(published=True) & Q(profile=profile)
 		
@@ -692,8 +630,8 @@ class Job(models.Model):
 		if job_titles_ids:
 			query = query & Q(job_title__in=(job_titles_ids))
 			
-		if locations_ids:
-			query = query & Q(location__in=(locations_ids))
+		if cities_ids:
+			query = query & Q(city__in=(cities_ids))
 		
 		list = Job.objects.filter(
 			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
@@ -714,7 +652,7 @@ class Job(models.Model):
 		return jobs, is_last_page, total_jobs
 		
 	@classmethod
-	def view_search_public(cls, term, job_titles_ids, locations_ids, days, page, limit):
+	def view_search_public(cls, term, job_titles_ids, cities_ids, days, page, limit):
 		now = datetime.now()
 		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
 		
@@ -723,8 +661,8 @@ class Job(models.Model):
 		if job_titles_ids:
 			query = query & Q(job_title__in=(job_titles_ids))
 			
-		if locations_ids:
-			query = query & Q(location__in=(locations_ids))
+		if cities_ids:
+			query = query & Q(city__in=(cities_ids))
 		
 		list = Job.objects.filter(
 			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
@@ -744,63 +682,30 @@ class Job(models.Model):
 
 		#print >> sys.stderr, "page: %r" % page
 		return jobs, is_last_page, total_jobs
-		
-	def save(self, *args, **kwargs):
-		
-		job_title = None
-		try:
-			# segment and jobtitle exist, none created
-			job_title = JobTitle.objects.get(name=self.job_title_name.strip(), segment__name=self.segment_name.strip())
-		except:
-			try:
-				# only segment exists, job_title created
-				segment = Segment.objects.get(name=self.segment_name.strip())
-				job_title = JobTitle(name=self.job_title_name, segment=segment)
-				job_title.save()
-			except:
-				# none exists, both created
-				segment = Segment(name=self.segment_name)
-				segment.save()
-				job_title = JobTitle(name=self.job_title_name, segment=segment)
-				job_title.save()
-		
-		self.job_title = job_title
-		self.job_title_name = job_title.name
-		self.segment_name = self.job_title.segment.name
-		
-		self.location = PoliticalLocation.try_parse(self.country, self.region, self.city)
-		if self.location is not None:
-			self.country = self.location.country_code 
-			self.region = self.location.region_code
-			self.city = self.location.city_name
-		else:
-			pass
-		
-		try:
-			self.company = Company.objects.get(name=self.company_name.strip())
-			self.company_name = self.company.name
-		except:
-			company = Company(name=self.company_name)
-			company.save()
-			self.company = company
-			self.company_name = company.name
-
-		super(Job, self).save(*args, **kwargs)
 	
-	def __unicode__(self):
-		return self.job_title_name
 	
 	@classmethod
-	def getCountriesForSearchFilter(cls):
-		query = """	select distinct l.* 
-					from colabre_web_politicallocation l 
-						inner join colabre_web_job j on j.location_id = l.id
-					where j.active = 1
-					order by l.country_code, l.region_code, l.city_name """
-		return PoliticalLocation.getCountriesByQuery(query)
+	def get_countries_for_search_filter(cls):
+		query = """select
+					co.id		country_id		,	
+					co.code		country_code	,	
+					co.name		country_name	,
+					r.id		region_id		,
+					r.code		region_code		,
+					r.name		region_name		,
+					ci.id		city_id			,
+					ci.name		city_name
+				from colabre_web_country co
+					inner join colabre_web_region r on co.id = r.country_id
+					inner join colabre_web_city ci	on r.id = ci.region_id
+				order by
+					co.name,
+					r.name,
+					ci.name """ 
+		return Country.get_full_countries_by_sql_query(query)
 	
 	@classmethod
-	def getSegmentsForSearchFilter(cls):
+	def get_segments_for_search_filter(cls):
 		query = """			
 				select  
 					jt.id							, 
@@ -822,7 +727,7 @@ class Job(models.Model):
 				 order by
 				 	se.name	,
 				 	jt.name	; """
-		return Segment.getSegmentsByQuery(query)
+		return Segment.get_segments_by_sql_query(query)
 		
 class UserProfileVerification(models.Model):
 

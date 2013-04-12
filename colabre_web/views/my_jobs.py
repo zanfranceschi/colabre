@@ -38,8 +38,8 @@ def get_template_path(template):
 
 def _index_data(request):
 	profile = request.user.get_profile()
-	segments = UserProfile.getSegmentsForSearchFilter(profile)
-	countries = UserProfile.getCountriesForSearchFilter(profile)
+	segments = UserProfile.get_segments_for_search_filter(profile)
+	countries = UserProfile.get_countries_for_search_filter(profile)
 	days = [3, 7, 15, 30, 60, 90, 120, 150]
 	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
 	
@@ -64,7 +64,7 @@ def partial_html_search(request):
 	if request.method == 'POST':
 		
 		job_titles = request.POST['job_titles']
-		locations = request.POST['locations']
+		cities = request.POST['cities']
 		term = request.POST['term']
 		days = request.POST['days']
 		page = request.POST['page']
@@ -73,11 +73,11 @@ def partial_html_search(request):
 		if job_titles:
 			job_titles_ids = [int(n) for n in job_titles.split("-")]
 		
-		locations_ids = None
-		if locations:
-			locations_ids = [int(n) for n in locations.split("-")]
+		cities_ids = None
+		if cities:
+			cities_ids = [int(n) for n in cities.split("-")]
 		
-		jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, locations_ids, int(days), page, 30)
+		jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, cities_ids, int(days), page, 30)
 		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	else:
 		return HttpResponse('')
@@ -107,7 +107,7 @@ def partial_json_search_segment(request, q):
 @login_required
 @handle_exception
 def partial_json_search_city(request, q):
-	list = serializers.serialize("json", PoliticalLocation.objects.filter(city_name__istartswith=q).order_by("city_name")[:50], extras=('name',))
+	list = serializers.serialize("json", City.objects.filter(city_name__istartswith=q).order_by("name")[:50], extras=('name',))
 	return HttpResponse(list, mimetype="application/json")
 	
 @login_required
@@ -160,7 +160,7 @@ def edit(request, job_id):
 	context = {}
 	if job.is_editable:
 		if request.method == 'POST':
-			form = JobForm(request.POST, instance=job, profile=profile)
+			form = JobForm(request.POST, job_id=job.id, profile=profile)
 			if form.is_valid():
 				form.save()
 				template = get_template_path('index.html')
@@ -171,7 +171,7 @@ def edit(request, job_id):
 				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
 		else:
 			template = get_template_path('edit.html')
-			form = JobForm(profile=profile, instance=job)
+			form = JobForm(profile=profile, job_id=job.id)
 		context.update({'form' : form, 'action' : '/minhas-vagas/editar/' + job_id + '/'})
 		return render(request, template, context)
 	else:

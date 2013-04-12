@@ -80,11 +80,22 @@ class UserProfileFormOAuth(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.user = kwargs.pop('user', None)
 		super(UserProfileFormOAuth, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['political_location_name', 'profile_type', 'birthday', 'gender']
+		self.fields.keyOrder = ['country', 'region', 'city', 'profile_type', 'birthday', 'gender']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
+			
+			country = None
+			if profile.city and profile.city.region:
+				country = profile.city.region.country
+				
+			region = None
+			if profile.city:
+				region = profile.city.region
+			
 			data = {
-				'political_location_name' : profile.political_location_name,
+				'country' : country,
+				'region' :  region,
+				'city' : profile.city,
 				'profile_type' : profile.profile_type or 'JS',
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
@@ -93,13 +104,23 @@ class UserProfileFormOAuth(BaseForm):
 
 	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
 
+	country = forms.CharField(
+		required=True,
+		max_length=60,
+		label='País'
+	)
+		
+	region = forms.CharField(
+		required=True,
+		max_length=60,
+		label='Estado/Região'
+	) 
 
-	political_location_name = forms.CharField(
-		required=False,
-		max_length=120,
-		label='Cidade',
-		help_text='Ao informar sua cidade, os resultados das buscas irão considerar sua localização.',
-		)
+	city = forms.CharField(
+		required=True,
+		max_length=60,
+		label='Cidade'
+	)
 
 	profile_type = forms.ChoiceField(
 		required=True,
@@ -127,18 +148,18 @@ class UserProfileFormOAuth(BaseForm):
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
-			self.cleaned_data['political_location_name']
+			self.cleaned_data['country'],
+			self.cleaned_data['region'],
+			self.cleaned_data['city']
 		)
 
 class UserProfileFormColabre(UserProfileFormOAuth):
 	def __init__(self, *args, **kwargs):
 		super(UserProfileFormColabre, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['first_name', 'last_name', 'political_location_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
+		self.fields.keyOrder = ['first_name', 'last_name', 'country', 'region', 'city', 'email', 'profile_type', 'birthday', 'gender', 'password']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
-
 			data = {
-				'political_location_name' : profile.political_location_name,
 				'email' : profile.user.email,
 				'profile_type' : profile.profile_type or 'JS',
 				'first_name' : profile.user.first_name,
@@ -146,7 +167,7 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
 			}
-			self.initial = data
+			self.initial.update(data)
 	
 
 	first_name = forms.CharField(max_length=20, label='Primeiro Nome')
@@ -168,7 +189,7 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 		if self.is_valid():
 			password = self.cleaned_data['password']
 			username = self.user.username
-			email = self.cleaned_data['email']
+			#email = self.cleaned_data['email']
 			
 			_user = authenticate(username=username, password=password)
 			if _user is None:
@@ -190,7 +211,9 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
-			self.cleaned_data['political_location_name']
+			self.cleaned_data['country'],
+			self.cleaned_data['region'],
+			self.cleaned_data['city']
 		)
 
 class ContactForm(BaseForm):
@@ -250,118 +273,164 @@ class LoginForm(BaseForm):
 	)
 	next = forms.CharField(widget=forms.HiddenInput, required=False)
 
-class LocationSelect(forms.Widget):
-	
-	def render(self, name, value, attrs=None):
-		from string import Template
-		from django.utils.safestring import mark_safe
-		tpl = Template(u"""<h1>There would be a colour widget here, for value $colour</h1>""")
-		return mark_safe(tpl.substitute(colour=value))
 
-class JobForm(ModelForm):
+class JobForm(BaseForm):
 	profile = None
+	job_id = None
 	
-	'''
-		profile
-		title
-		workplace_political_location
-		workplace_political_location_name
-		workplace_location
-		description
-		segment_name
-		company
-		company_name
-		contact_email
-		contact_phone
-		contact_name
-		creation_date						
-		published
-	'''
-
-	class Meta:
-		model = Job
-		exclude = ('job_title', 'profile', 'company', 'location', 'date_creation')
-		fields = (
-			'job_title_name', 
-			'segment_name',
-			'description',
-			'country',
-			'region',
-			'city', 
-			'address',
-			'contact_name',
-			'company_name', 
-			'contact_email', 
-			'contact_phone'
-			)
-		widgets = {
-			#'workplace_political_location_name': LocationSelect(),
-        }
+	job_title_name = forms.CharField(
+		max_length=50, 
+		required=True,
+		label='Cargo',
+		help_text=u'Exemplos: Analista de Sistemas, Enfermeiro, Auxiliar de Expedição, etc.'
+	)
 	
-	def save(self, commit=True):
-		self.instance.profile = self.profile
-		self.instance.save()
+	segment_name = forms.CharField(
+		max_length=50,
+		required=True, 
+		label='Segmento',
+		help_text=u'Segmento da vaga. Ex.: Finanças, Tecnologia da Informação, Medicina, etc.' 
+	)
+	
+	description = forms.CharField(
+		max_length=120, 
+		required=True,
+		label=u'Descrição da Vaga',
+		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
+		help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
+	)
+	
+	address = forms.CharField(
+		max_length=120,
+		required=False,
+		label='Endereço',
+		help_text=u'Coloque o endereço completo ou parcial, apenas bairro, região, ou outra informação relevante.',
+		widget=forms.TextInput(attrs={'class' : 'large'})
+	)
+	
+	country_name = forms.CharField(
+		max_length=60, 
+		label=u'País',
+		required=True
+	)
+	
+	region_name = forms.CharField(
+		max_length=60, 
+		label=u'Estado/Região',
+		required=True
+	)
+	
+	city_name = forms.CharField(
+		max_length=60, 
+		label='Cidade',
+		required=True
+	)
+	
+	company_name = forms.CharField(
+		max_length=50, 
+		label=u'Empresa',
+		help_text=u'Empresa para a qual o contratado irá trabalhar ou ficar alocado.',
+		required=False
+	)
+	
+	contact_name = forms.CharField(
+		max_length=60,
+		required=True,
+		label='Nome do Contato',
+	)
+	
+	contact_email = forms.CharField(
+		max_length=254,
+		required=True,
+		label='Email para Contato',
+	)
+	
+	contact_phone = forms.CharField(
+		max_length=25,
+		required=False,
+		label='Telefone para Contato',
+	)
+	
+	def save(self):
+		
+		job = None 
+		
+		if self.job_id:
+			job = Job.objects.get(id=self.job_id)
+		else:
+			job = Job()
+			job.profile = self.profile
+			
+		job.address = self.cleaned_data['address']
+		job.description = self.cleaned_data['description']
+		job.contact_name = self.cleaned_data['contact_name']
+		job.contact_email = self.cleaned_data['contact_email']
+		job.contact_phone = self.cleaned_data['contact_phone']
+			
+		job.set_associations_by_name(
+			self.cleaned_data['segment_name'],
+			self.cleaned_data['job_title_name'],
+			self.cleaned_data['country_name'],
+			self.cleaned_data['region_name'],
+			self.cleaned_data['city_name'],
+			self.cleaned_data['company_name']
+		)
+		job.save()
 	
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
+		self.job_id = kwargs.pop('job_id', None)
 		super(JobForm, self).__init__(*args, **kwargs)
 		self.fields.keyOrder = [
 							'segment_name', 
 							'job_title_name', 
 							'description', 
-							'country',
-							'region',
-							'city',
+							'country_name',
+							'region_name',
+							'city_name',
 							'address',
 							'company_name', 
+							'contact_name',
 							'contact_email', 
 							'contact_phone']
-		self.fields['job_title_name'].label = u'Cargo'
-		self.fields['job_title_name'].help_text = u'Exemplos: Analista de Sistemas, Enfermeiro, Auxiliar de Expedição, etc.'
-		self.fields['segment_name'].label = u'Segmento'
-		self.fields['segment_name'].help_text = u'Segmento da vaga. Ex.: Finanças, Tecnologia da Informação, Medicina, etc..'
-		
-		self.fields['country'].label = u'País'
-		self.fields['region'].label = u'Estado / Região'
-		self.fields['city'].label = u'Cidade'
-		
-		#self.fields['address'].label = u'Endereço'
-		
-		self.fields['description'].label = u'Descrição da Vaga'
-		self.fields['description'].help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
-		self.fields['description'].widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70})
-		self.fields['company_name'].label = u'Empresa'
-		self.fields['company_name'].help_text = u'Empresa para a qual o contratado irá trabalhar ou ficar alocado.'
-		self.fields['company_name'].required = False
-		self.fields['contact_name'].label = u'Nome do contato'
-		self.fields['contact_name'].required = False
-		self.fields['contact_email'].label = u'Email para contato'
-		self.fields['contact_email'].required = True
-		self.fields['contact_phone'].label = u'Telefone para contato'
-		self.fields['contact_phone'].required = False
-		self.fields['address'].label = u'Endereço'
-		self.fields['address'].help_text = u'Coloque o endereço completo ou parcial, apenas bairro, região, ou outra informação relevante.'
-		self.fields['address'].required = False
-		self.fields['address'].widget = forms.TextInput(attrs={'class' : 'large'})
-		#self.fields['published'].label = u'Visível publicamente'
-		#self.fields['published'].help_text = u'Se este controle estiver desmarcado, esta vaga não ficará visível publicamente -- útil para quando desejar pré-cadastrar vagas.'
-		if not self.instance.id:
+				
+		if not self.job_id: # new job
 			self.initial = {
-				'contact_email' : self.profile.user.email or None
+					'contact_email' : self.profile.user.email or None,
+					'contact_name' : self.profile.user.first_name + ' ' + self.profile.user.last_name,
 			}
 			last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
-			if len(last_posted_jobs) > 0:
-				last_posted_job = last_posted_jobs[0]
+			last_posted_job = last_posted_jobs[0] if last_posted_jobs else None
+			if last_posted_job:
 				self.initial.update({
-					'contact_name' 	: last_posted_job.contact_name,
-					'company_name' 	: last_posted_job.company_name,
-					'segment_name' 	: last_posted_job.segment_name,
-					'country' 		: last_posted_job.country,
-					'region' 		: last_posted_job.region,
-					'city' 			: last_posted_job.city,
-					'contact_phone' : last_posted_job.contact_phone
+					#'job_title_name' 	: last_posted_job.job_title,
+					'segment_name' 		: last_posted_job.job_title.segment,
+					#'description' 		: last_posted_job.description,
+					#'address' 			: last_posted_job.address,
+					#'country_name' 		: last_posted_job.city.region.country,
+					#'region_name' 		: last_posted_job.city.region,
+					#'city_name' 		: last_posted_job.city,
+					'company_name' 		: last_posted_job.company,
+					'contact_name' 		: last_posted_job.contact_name,
+					'contact_email'		: last_posted_job.contact_email,
+					'contact_phone' 	: last_posted_job.contact_phone
 				})
-		custom_init(self)
+		else:
+			job = Job.objects.get(id=self.job_id)
+			self.initial = {
+				'job_title_name' 	: job.job_title,
+				'segment_name' 		: job.job_title.segment,
+				'description' 		: job.description,
+				'address' 			: job.address,
+				'country_name' 		: job.city.region.country,
+				'region_name' 		: job.city.region,
+				'city_name' 		: job.city,
+				'company_name' 		: job.company,
+				'contact_name' 		: job.contact_name,
+				'contact_email' 	: job.contact_email,
+				'contact_phone' 	: job.contact_phone
+			}
+
 
 class ResumeForm(BaseForm):
 
@@ -427,7 +496,8 @@ class ResumeForm(BaseForm):
 class RetrieveAccessForm(BaseForm):
 	username_or_email = forms.CharField(
 		label='Usuário ou Email', 
-		help_text='Por favor, coloque seu usuário ou email tentarmos para recuperar seu acesso ao Colabre.')
+		help_text='Por favor, coloque seu usuário ou email tentarmos para recuperar seu acesso ao Colabre.'
+	)
 
 class ChangePasswordForm(BaseForm):
 	user = None

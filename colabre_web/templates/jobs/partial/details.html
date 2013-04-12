@@ -1,7 +1,7 @@
 ﻿<div job-details-id="{{ job.id }}">
 <fieldset>
 	<legend>Descrição da vaga</legend>
-	{% if job.company_name %}<h4 style="margin: 3px;">{{ job.company_name }}</h4>{% endif %}
+	{% if job.company_name %}<h4 style="margin: 3px;">{{ job.company }}</h4>{% endif %}
 	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
 	
 	{% if job.contact_email or job.contact_phone %}

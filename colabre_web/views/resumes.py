@@ -65,6 +65,6 @@ def partial_html_search(request):
 
 @handle_exception
 def index(request):
-	segments = Resume.getSegmentsForSearchFilter()
-	countries = Resume.getCountriesForSearchFilter()
+	segments = Resume.get_segments_for_search_filter()
+	countries = Resume.get_countries_for_search_filter()
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'segments' :  segments })
