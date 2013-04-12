@@ -12841,12 +12841,12 @@ class Command(BaseCommand):
 		u"Web Design",
 	)
 
-	bra_locations = PoliticalLocation.objects.filter(country_code='BRA')
+	bra_cities = City.objects.filter(region__country__name='Brasil')
 	#usa_locations = PoliticalLocation.objects.filter(country_code='USA')
 	#oth_locations = PoliticalLocation.objects.filter(country_code__in=('CHL', 'DEU', 'FRA', 'JPN'))
-	locations = bra_locations #list(chain(bra_locations, usa_locations, oth_locations))
+	cities = bra_cities #list(chain(bra_locations, usa_locations, oth_locations))
 
-	def generateRandomParagraphs(self, max_paragraphs = 6, min_paragraph_words = 20, max_paragraph_words = 100):
+	def generate_random_paragraphs(self, max_paragraphs = 6, min_paragraph_words = 20, max_paragraph_words = 100):
 		if max_paragraphs == 1:
 			max_paragraphs = 2
 
@@ -12861,7 +12861,7 @@ class Command(BaseCommand):
 			
 		return paragraph
 
-	def generateRandomUserProfile(self):
+	def generate_random_userprofile(self):
 		username = random.choice(self.names)
 		self.names.remove(username)
 		email = username + "@" + random.choice(self.domains)
@@ -12870,13 +12870,11 @@ class Command(BaseCommand):
 			username,
 			email,
 			password)
-		political_location = random.choice(self.locations)
-		profile.political_location_name = political_location.__unicode__()
-		profile.political_location = political_location
+		profile.city = random.choice(self.cities)
 		profile.save()
 		return profile
 	
-	def generateRandomDateTime(self):
+	def generate_random_datetime(self):
 		max_year = datetime.now().year
 		year = random.randint(2011, max_year)
 		month = random.randint(1, 12)
@@ -12921,11 +12919,10 @@ class Command(BaseCommand):
 			Segment,
 			JobTitle,
 			Company,
-			#PoliticalLocation,
 			UserProfileVerification, 
 			UserProfile, 
 			User, 
-			]
+		]
 		for clazz in classes:
 			clazz.objects.all().delete()
 		
@@ -12935,9 +12932,9 @@ class Command(BaseCommand):
 		self.stdout.write("Creating %i profiles and their resumes...\n" % num_resumes)
 		percentage = -1
 		for i in xrange(num_profiles):
-			profile = self.generateRandomUserProfile()
-			short_description = self.generateRandomParagraphs(max_paragraphs = 1)
-			full_description = self.generateRandomParagraphs(max_paragraphs = 6)
+			profile = self.generate_random_userprofile()
+			short_description = self.generate_random_paragraphs(max_paragraphs = 1)
+			full_description = self.generate_random_paragraphs(max_paragraphs = 6)
 			Resume.save_(
 						profile,
 						random.choice(self.field_names),
@@ -12958,19 +12955,21 @@ class Command(BaseCommand):
 		self.stdout.write("\n\nCreating %i jobs...\n" % num_jobs)
 		percentage = -1
 		for i in xrange(num_jobs):
-			profile = random.choice(generated_profiles)
-			job = Job(
-				job_title_name = random.choice(self.job_titles),
-				workplace_political_location_name = random.choice(self.locations).__unicode__(),
-				description = self.generateRandomParagraphs(),
-				segment_name = random.choice(self.field_names),
-				company_name = random.choice(self.company_names),
-				profile = profile,
-				contact_email = profile.user.email,
-				contact_name = profile.user.first_name + ' ' + profile.user.last_name,
-				contact_phone = "(%r) %r-%r" % (random.randint(11, 80), random.randint(1000, 9999), random.randint(1000, 9999)),
-				creation_date = self.generateRandomDateTime()
-			)
+			
+			job = Job()
+			job.profile = random.choice(generated_profiles)
+			
+			job.description = self.generate_random_paragraphs(),
+			job.contact_name = profile.user.first_name + ' ' + profile.user.last_name
+			job.contact_email = profile.user.email
+			job.contact_phone = "(%r) %r-%r" % (random.randint(11, 80), random.randint(1000, 9999), random.randint(1000, 9999))
+			
+			job.segment_name = random.choice(self.field_names)
+			job.job_title_name = random.choice(self.job_titles)
+			job.city = random.choice(self.cities)
+			job.company_name = random.choice(self.company_names)
+			job.creation_date = self.generate_random_datetime()
+			
 			job.save()
 			
 			current_percentage = round(Decimal(i) / Decimal(num_jobs), 2) * 100
@@ -12978,13 +12977,6 @@ class Command(BaseCommand):
 			if current_percentage > percentage:
 				percentage = current_percentage
 				self.stdout.write("jobs progress\t" + str(int(percentage)) + "%\t(" + str(i+1) + " jobs)\n")
-		
-		self.stdout.write('Updating resumes segments...')
-		
-		resumes = Resume.objects.all()
-		for resume in resumes:
-			resume.segment = Segment.try_parse(resume.segment_name)
-			resume.save()
 		
 		end = datetime.now()
 		load_time = end - start

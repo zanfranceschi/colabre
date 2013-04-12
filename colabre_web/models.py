@@ -609,19 +609,28 @@ class Job(models.Model):
 	published = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
 
-	def set_associations_by_name(self,
-								segment_name, 
-								job_title_name,
-								country_name,
-								region_name, 
-								city_name, 
-								company_name):
-		self.job_title = JobTitle.get_existing_or_create(segment_name, job_title_name)
-		self.city = City.get_existing_or_create(country_name, region_name, city_name)
+	segment_name = None 
+	job_title_name = None
+	country_name = None
+	region_name = None
+	city_name = None
+	company_name = None
+
+
+	def save(self, *args, **kwargs):
 		
-		if company_name:
-			self.company = Company.get_existing_or_create(company_name)
+		if self.job_title_name:
+			self.job_title = JobTitle.get_existing_or_create(self.segment_name, self.job_title_name)
 		
+		if self.city_name and self.region_name and self.country_name:
+			self.city = City.get_existing_or_create(self.country_name, self.region_name, self.city_name)
+			
+		if self.company_name:
+			self.company = Company.get_existing_or_create(self.company_name)
+		
+		super(Job, self).save(*args, **kwargs)
+
+
 	def __unicode__(self):
 		return self.job_title
 
@@ -706,7 +715,8 @@ class Job(models.Model):
 				from colabre_web_country co
 					inner join colabre_web_region r on co.id = r.country_id
 					inner join colabre_web_city ci	on r.id = ci.region_id
-				where ci.active = 1
+					inner join colabre_web_job j	on ci.id = j.city_id
+				where j.active = 1
 				order by
 					co.name,
 					r.name,

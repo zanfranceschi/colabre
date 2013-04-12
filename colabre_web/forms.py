@@ -211,9 +211,9 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
-			self.cleaned_data['country'],
-			self.cleaned_data['region'],
-			self.cleaned_data['city']
+			self.cleaned_data['country_name'],
+			self.cleaned_data['region_name'],
+			self.cleaned_data['city_name']
 		)
 
 class ContactForm(BaseForm):
@@ -352,7 +352,6 @@ class JobForm(BaseForm):
 	)
 	
 	def save(self):
-		
 		job = None 
 		
 		if self.job_id:
@@ -366,15 +365,14 @@ class JobForm(BaseForm):
 		job.contact_name = self.cleaned_data['contact_name']
 		job.contact_email = self.cleaned_data['contact_email']
 		job.contact_phone = self.cleaned_data['contact_phone']
-			
-		job.set_associations_by_name(
-			self.cleaned_data['segment_name'],
-			self.cleaned_data['job_title_name'],
-			self.cleaned_data['country_name'],
-			self.cleaned_data['region_name'],
-			self.cleaned_data['city_name'],
-			self.cleaned_data['company_name']
-		)
+		
+		job.segment_name = self.cleaned_data['segment_name']
+		job.job_title_name = self.cleaned_data['job_title_name']
+		job.country_name = self.cleaned_data['country_name']
+		job.region_name = self.cleaned_data['region_name']
+		job.city_name = self.cleaned_data['city_name']
+		job.company_name = self.cleaned_data['company_name']
+		
 		job.save()
 	
 	def __init__(self, *args, **kwargs):
