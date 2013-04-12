@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from colabre_web.models import *
-from colabre_web.views.my_jobs import partial_json_search_city as my_jobs_partial_json_search_city  
 from colabre_web.forms import *
 from helpers import *
 from django.conf.urls import patterns, url
@@ -17,21 +16,18 @@ urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^verificar-email/([\w\d\-]+)/$', 'verify_email', name='my_profile_verify_email'),
 	url(r'^solicitar-verificacao/$', 'demand_verification', name='my_profile_demand_verification'),
 	url(r'^recuperar-acesso/$', 'retrieve_access', name='my_profile_retrieve_access'),
-	url(r'^parcial/buscar-cidade/(.+)/$', 'partial_json_search_city', name= 'my_profile_partial_json_search_city'),
 )
 
 def get_template_path(template):
 	return 'my-profile/%s' % template
 
 @login_required
-@handle_exception
 def demand_verification(request):
 	if request.user.get_profile().is_verified:
 		return render(request, 'index.html')	
 	return render(request, get_template_path('demand-verification.html'))
 	
 @login_required
-@handle_exception
 def index(request):
 	if request.method == 'POST':
 		form = get_user_profile_form(request.POST, user=request.user)
@@ -45,7 +41,6 @@ def index(request):
 	return render(request, get_template_path('index.html'), {'form' : form })
 
 @login_required
-@handle_exception
 def partial_resend_verification_email(request):
 	try:
 		UserProfileVerification.resend_verification_email(request.user)
@@ -53,7 +48,6 @@ def partial_resend_verification_email(request):
 	except Exception:
 		return HttpResponse('0')
 	
-@handle_exception
 def verify_email(request, uuid):
 	try:
 		profile = UserProfileVerification.verify(uuid)
@@ -67,7 +61,6 @@ def verify_email(request, uuid):
 	return render(request, 'index.html')
 
 @login_required
-@handle_exception
 def change_password(request):
 	if request.method == 'POST':
 		form = ChangePasswordForm(request.POST, user=request.user)
@@ -101,8 +94,3 @@ def retrieve_access(request):
 	else:
 		form = RetrieveAccessForm()
 	return render(request, get_template_path('retrieve-access.html'), {'form' : form})
-
-@login_required
-@handle_exception
-def partial_json_search_city(request, q):
-	return my_jobs_partial_json_search_city(request, q)

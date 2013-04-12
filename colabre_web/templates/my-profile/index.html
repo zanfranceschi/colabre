@@ -37,7 +37,7 @@ li label
 
 	<form action="{% url my_profile_index %}" method="post">
 		{% csrf_token %}
-		
+
 		<!-- form -->
 		{% for field in form.visible_fields %}
 		{% if field.html_name != 'password' %}
@@ -63,7 +63,7 @@ li label
 					{% endif %}
 					</small>
 				</div>
-		
+
 			</div>
 		{% elif field.html_name == 'password' %}
 			<div id="password-id" class="form-row">
@@ -78,7 +78,7 @@ li label
 					{% endif %}
 					</small>
 				</div>
-		
+
 			</div>
 		{% endif%}
 		{% endfor %}
@@ -89,30 +89,84 @@ li label
 
 	<script type="text/javascript">
 		$(function(){
-			
-			$("#id_political_location_name").autocomplete({
+
+			// Autocompletes de país, estado, cidade
+			$("#id_city_name").autocomplete({
 				minLength: 1,
-				source: function(request, response) 
+				source: function(request, response)
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/meu-perfil/parcial/buscar-cidade/' + term,
-						type: 'get',
+						url: '/auxiliares/parcial/buscar-cidade/',
+						data: {
+							q : term,
+							country : $("#id_country_name").val(),
+							region : $("#id_region_name").val(),
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
 						success: function(data)
 						{
 							response($.map(data, function(item)
-							{ 
-								return item.extras['name'];
+							{
+								return item.fields['name'];
 							}));
 						}
 					});
 				}
 			});
-			
+
+			$("#id_region_name").autocomplete({
+				minLength: 1,
+				source: function(request, response)
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/auxiliares/parcial/buscar-estado/',
+						data: {
+							q : term,
+							country : $("#id_country_name").val(),
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+
+			$("#id_country_name").autocomplete({
+				minLength: 1,
+				source: function(request, response)
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/auxiliares/parcial/buscar-pais/',
+						data: {
+							q : term,
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+
 			$("#resend-verification-email").click(function(){
-				
+
 				error_message = 'Nos desculpe! Fizemos alguma coisa errado. Tente novamente mais tarde, por favor.';
-				
+
 				$.ajax({
 					type: 'get',
 					url: '{% url my_profile_resend_verification_email %}',

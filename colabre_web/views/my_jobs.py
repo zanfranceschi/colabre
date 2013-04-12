@@ -25,12 +25,6 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 	
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='my_jobs_partial_details'),
 	url(r'^parcial/buscar/$', 'partial_html_search'),
-	#url(r'^parcial/alternar-ativacao/([\d]+)/$', 'partial_toggle_published'),
-	
-	url(r'^parcial/buscar-cargo/$', 'partial_json_search_job_title', name= 'my_jobs_partial_json_search_job_title'),
-	url(r'^parcial/buscar-segmento/(.+)/$', 'partial_json_search_segment', name= 'my_jobs_partial_json_search_segment'),
-	url(r'^parcial/buscar-cidade/(.+)/$', 'partial_json_search_city', name= 'my_jobs_partial_json_search_city'),
-	url(r'^parcial/buscar-empresa/(.+)/$', 'partial_json_search_company', name= 'my_jobs_partial_json_search_company'),
 )
 
 def get_template_path(template):
@@ -44,22 +38,18 @@ def _index_data(request):
 	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
 	
 @login_required
-@handle_exception
 def index(request):
 	context = _index_data(request)
 	return render(request, get_template_path('index.html'), context)
 
 @login_required
-@handle_exception
 def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
-	#JobViewLogger.log(request, search_term, job)
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
 	response['job-id'] = id
 	return response
 
 @login_required
-@handle_exception
 def partial_html_search(request):
 	if request.method == 'POST':
 		
@@ -82,43 +72,9 @@ def partial_html_search(request):
 	else:
 		return HttpResponse('')
 	
-@login_required
-@handle_exception
-def partial_json_search_job_title(request):
-	if request.method == 'POST':
-		q = request.POST['q']
-		segment = request.POST['segment']
-		titles = None
-		if (segment != None):
-			titles = JobTitle.objects.filter(name__icontains=q, segment__name=segment)
-		else:
-			titles = JobTitle.objects.filter(name__icontains=q)
-		
-		list = serializers.serialize("json", titles.order_by('name')[:10])
-		return HttpResponse(list, mimetype="application/json")
 
-
-@login_required
-@handle_exception
-def partial_json_search_segment(request, q):
-	list = serializers.serialize("json", Segment.objects.filter(name__icontains=q).order_by("name")[:10])
-	return HttpResponse(list, mimetype="application/json")
-
-@login_required
-@handle_exception
-def partial_json_search_city(request, q):
-	list = serializers.serialize("json", City.objects.filter(city_name__istartswith=q).order_by("name")[:50], extras=('name',))
-	return HttpResponse(list, mimetype="application/json")
-	
-@login_required
-@handle_exception
-def partial_json_search_company(request, q):
-	list = serializers.serialize("json", Company.objects.filter(name__icontains=q).order_by("name")[:10])
-	return HttpResponse(list, mimetype="application/json")
-	
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-@handle_exception
 def partial_toggle_published(request, job_id):
 	job = Job.objects.get(id=job_id)
 	job.published = not job.published
@@ -128,7 +84,6 @@ def partial_toggle_published(request, job_id):
 
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-@handle_exception
 def create(request):	
 	template = None
 	profile = request.user.get_profile()
@@ -152,7 +107,6 @@ def create(request):
 
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-@handle_exception
 def edit(request, job_id):
 	template = None
 	profile=request.user.get_profile()
@@ -181,7 +135,6 @@ def edit(request, job_id):
 	
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-@handle_exception
 def confirm_del(request, job_id):
 	try:	
 		job = Job.objects.get(id=job_id)
@@ -192,7 +145,6 @@ def confirm_del(request, job_id):
 
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-@handle_exception
 def delete(request, job_id):
 	context = {}
 	try:

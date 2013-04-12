@@ -1,15 +1,12 @@
 ﻿from django.shortcuts import render
 from django.http import HttpResponse
 from colabre_web.models import *
-#from colabre_web.statistics.models import log_request as statisctics_log_request
 import traceback
 import logging
 from django.contrib import messages
 import time
 from datetime import datetime
-#from django.core.signals import request_started, request_finished
 from django.dispatch import receiver
-#from gadjo.requestprovider.signals import get_request
 import sys
 
 is_not_verified_url = '/meu-perfil/solicitar-verificacao/'

@@ -132,7 +132,8 @@ class Region(models.Model):
 class City(models.Model):
 	name = models.CharField(max_length=60)
 	region = models.ForeignKey(Region)
-	
+	active = models.BooleanField(default=True)
+
 	def __unicode__(self):
 		return self.name
 	
@@ -333,6 +334,7 @@ class UserProfile(models.Model):
 					inner join colabre_web_city ci	on r.id = ci.region_id
 					inner join colabre_web_job j	on ci.id = j.city_id
 				where j.active = 1
+					and ci.active = 1
 					and j.profile_id = {0}
 				order by
 					co.name,
@@ -486,15 +488,15 @@ class Resume(models.Model):
 		return self.segments[index-1:index]
 	
 	@classmethod
-	def view_search_public(cls, term, segments_ids, locations_ids, page, limit):
+	def view_search_public(cls, term, segments_ids, cities_ids, page, limit):
 		
 		query = Q(visible=True)
 		
 		if segments_ids:
 			query = query & Q(segment__in=(segments_ids))
 			
-		if locations_ids:
-			query = query & Q(profile__political_location__in=(locations_ids))
+		if cities_ids:
+			query = query & Q(profile__city__in=(cities_ids))
 		
 		list = cls.objects.filter(
 			Q(Q(short_description__icontains=term) | Q(full_description__icontains=term)), 
@@ -546,8 +548,14 @@ class Resume(models.Model):
 					ci.id		city_id			,
 					ci.name		city_name
 				from colabre_web_country co
-					inner join colabre_web_region r on co.id = r.country_id
-					inner join colabre_web_city ci	on r.id = ci.region_id
+					inner join colabre_web_region r 		on co.id = r.country_id
+					inner join colabre_web_city ci			on r.id = ci.region_id
+					inner join colabre_web_userprofile p	on ci.id = p.city_id 
+					inner join colabre_web_resume re		on p.id = re.profile_id
+				where re.active = 1 
+					and re.visible = 1
+					and p.active = 1
+					and p.excluded = 0
 				order by
 					co.name,
 					r.name,
@@ -698,6 +706,7 @@ class Job(models.Model):
 				from colabre_web_country co
 					inner join colabre_web_region r on co.id = r.country_id
 					inner join colabre_web_city ci	on r.id = ci.region_id
+				where ci.active = 1
 				order by
 					co.name,
 					r.name,

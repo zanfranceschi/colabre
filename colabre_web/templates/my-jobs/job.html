@@ -14,23 +14,23 @@
 
 {% block body %}
 	<h1>Cadastro de Vaga</h1>
-	
+
 	<form action="{{ action }}" method="post">
 		{% csrf_token %}
 		{% include '_form.html' %}
 		<input type="submit" id="btn" value="salvar" class="btn-info" />
-		
+
 	</form>
 	<script type="text/javascript">
 		$(function() {
-		
+
 			$("#id_job_title_name").autocomplete({
 				minLength: 1,
-				source: function(request, response) 
+				source: function(request, response)
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/minhas-vagas/parcial/buscar-cargo/',
+						url: '/auxiliares/parcial/buscar-cargo/',
 						data: {
 							q : term,
 							segment : $("#id_segment_name").val(),
@@ -40,64 +40,119 @@
 						success: function(data)
 						{
 							response($.map(data, function(item)
-							{ 
+							{
 								return item.fields['name'];
 							}));
 						}
 					});
 				}
 			});
-		
+
 			$("#id_segment_name").autocomplete({
 				minLength: 1,
-				source: function(request, response) 
+				source: function(request, response)
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/minhas-vagas/parcial/buscar-segmento/' + term,
+						url: '/auxiliares/parcial/buscar-segmento/' + term,
 						type: 'get',
 						success: function(data)
 						{
 							response($.map(data, function(item)
-							{ 
+							{
 								return item.fields['name'];
 							}));
 						}
 					});
 				}
 			});
-		
-			$("#id_workplace_political_location_name").autocomplete({
+
+			// Autocompletes de país, estado, cidade
+			$("#id_city_name").autocomplete({
 				minLength: 1,
-				source: function(request, response) 
+				source: function(request, response)
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/minhas-vagas/parcial/buscar-cidade/' + term,
-						type: 'get',
+						url: '/auxiliares/parcial/buscar-cidade/',
+						data: {
+							q : term,
+							country : $("#id_country_name").val(),
+							region : $("#id_region_name").val(),
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
 						success: function(data)
 						{
 							response($.map(data, function(item)
-							{ 
-								return item.extras['name'];
+							{
+								return item.fields['name'];
 							}));
 						}
 					});
 				}
 			});
-			
-			$("#id_company_name").autocomplete({
+
+			$("#id_region_name").autocomplete({
 				minLength: 1,
-				source: function(request, response) 
+				source: function(request, response)
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/minhas-vagas/parcial/buscar-empresa/' + term,
+						url: '/auxiliares/parcial/buscar-estado/',
+						data: {
+							q : term,
+							country : $("#id_country_name").val(),
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+
+			$("#id_country_name").autocomplete({
+				minLength: 1,
+				source: function(request, response)
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/auxiliares/parcial/buscar-pais/',
+						data: {
+							q : term,
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
+						success: function(data)
+						{
+							response($.map(data, function(item)
+							{
+								return item.fields['name'];
+							}));
+						}
+					});
+				}
+			});
+
+
+			$("#id_company_name").autocomplete({
+				minLength: 1,
+				source: function(request, response)
+				{
+					var term = request.term;
+					$.ajax({
+						url: '/auxiliares/parcial/buscar-empresa/' + term,
 						type: 'get',
 						success: function(data)
 						{
 							response($.map(data, function(item)
-							{ 
+							{
 								return item.fields['name'];
 							}));
 						}

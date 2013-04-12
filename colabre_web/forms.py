@@ -80,7 +80,7 @@ class UserProfileFormOAuth(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.user = kwargs.pop('user', None)
 		super(UserProfileFormOAuth, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['country', 'region', 'city', 'profile_type', 'birthday', 'gender']
+		self.fields.keyOrder = ['country_name', 'region_name', 'city_name', 'profile_type', 'birthday', 'gender']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
 			
@@ -93,9 +93,9 @@ class UserProfileFormOAuth(BaseForm):
 				region = profile.city.region
 			
 			data = {
-				'country' : country,
-				'region' :  region,
-				'city' : profile.city,
+				'country_name' : country,
+				'region_name' :  region,
+				'city_name' : profile.city,
 				'profile_type' : profile.profile_type or 'JS',
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
@@ -104,19 +104,19 @@ class UserProfileFormOAuth(BaseForm):
 
 	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
 
-	country = forms.CharField(
+	country_name = forms.CharField(
 		required=True,
 		max_length=60,
 		label='País'
 	)
 		
-	region = forms.CharField(
+	region_name = forms.CharField(
 		required=True,
 		max_length=60,
 		label='Estado/Região'
 	) 
 
-	city = forms.CharField(
+	city_name = forms.CharField(
 		required=True,
 		max_length=60,
 		label='Cidade'
@@ -148,15 +148,15 @@ class UserProfileFormOAuth(BaseForm):
 			self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
-			self.cleaned_data['country'],
-			self.cleaned_data['region'],
-			self.cleaned_data['city']
+			self.cleaned_data['country_name'],
+			self.cleaned_data['region_name'],
+			self.cleaned_data['city_name']
 		)
 
 class UserProfileFormColabre(UserProfileFormOAuth):
 	def __init__(self, *args, **kwargs):
 		super(UserProfileFormColabre, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['first_name', 'last_name', 'country', 'region', 'city', 'email', 'profile_type', 'birthday', 'gender', 'password']
+		self.fields.keyOrder = ['first_name', 'last_name', 'country_name', 'region_name', 'city_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
 			data = {
@@ -293,7 +293,7 @@ class JobForm(BaseForm):
 	)
 	
 	description = forms.CharField(
-		max_length=120, 
+		max_length=5000, 
 		required=True,
 		label=u'Descrição da Vaga',
 		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
@@ -415,7 +415,7 @@ class JobForm(BaseForm):
 					'contact_email'		: last_posted_job.contact_email,
 					'contact_phone' 	: last_posted_job.contact_phone
 				})
-		else:
+		else: # existing job
 			job = Job.objects.get(id=self.job_id)
 			self.initial = {
 				'job_title_name' 	: job.job_title,
