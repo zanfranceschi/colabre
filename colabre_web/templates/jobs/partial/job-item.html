@@ -1,6 +1,6 @@
 <div class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job job-wrapper-summary wrapper-summary" job-id="{{ job.id }}">
 	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
-	<h3>{{ job.job_title.full_name }}</h3>
+	<h3>{{ job.job_title }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>
 	<div class="job-details"></div>
 </div>
