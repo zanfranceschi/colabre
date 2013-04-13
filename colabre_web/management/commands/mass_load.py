@@ -12841,7 +12841,7 @@ class Command(BaseCommand):
 		u"Web Design",
 	)
 
-	bra_cities = City.objects.filter(region__country__name='Brasil')
+	bra_cities = City.objects.filter(region__country__name='Brazil', region__code__in=('SP', 'RJ', 'RS', 'DF'))
 	#usa_locations = PoliticalLocation.objects.filter(country_code='USA')
 	#oth_locations = PoliticalLocation.objects.filter(country_code__in=('CHL', 'DEU', 'FRA', 'JPN'))
 	cities = bra_cities #list(chain(bra_locations, usa_locations, oth_locations))
@@ -12875,34 +12875,37 @@ class Command(BaseCommand):
 		return profile
 	
 	def generate_random_datetime(self):
-		max_year = datetime.now().year
-		year = random.randint(2011, max_year)
-		month = random.randint(1, 12)
+		while True:
+			try:
+				max_year = datetime.now().year
+				max_month = datetime.now().month
+				year = random.randint(2013, max_year)
+				month = random.randint(1, 12)
 
-		month_30_days = [4, 6, 9, 11]
-		max_day = 30 if month in month_30_days else 31
-		if month == 2:
-			max_day = 28
-			if calendar.isleap(year):
-				max_day = 29
-		
-		if year == max_year:
-			max_month = datetime.now().month
-			month = random.randint(1, max_month)
-			if month == max_month:
-				max_day = datetime.now().day
+				month_30_days = [4, 6, 9, 11]
+				max_day = 30 if month in month_30_days else 31
+				if month == 2:
+					max_day = 28
+					if calendar.isleap(year):
+						max_day = 29
+				
+				if year == max_year:
+					month = random.randint(1, max_month)
+					if month == max_month:
+						max_day = datetime.now().day
 
-		day =  random.randint(1, max_day)
-		
-		hours = random.randint(0, 23)
-		minutes = random.randint(0, 59)
-		
-		result = datetime(year, month, day, hours, minutes)
+				day =  random.randint(1, max_day)
+				hours = random.randint(0, 23)
+				minutes = random.randint(0, 59)
+				
+				result = datetime(year, month, day, hours, minutes)
 
-		if result > datetime.now():
-			result = datetime.now()
-		
-		return str(result.replace(tzinfo=utc))
+				if result > datetime.now():
+					result = datetime.now()
+				
+				return str(result.replace(tzinfo=utc))
+			except:
+				pass
 		
 	def handle(self, *args, **options):
 		num_profiles = num_resumes = int(args[0])
