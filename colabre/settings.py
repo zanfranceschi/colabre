@@ -13,6 +13,11 @@ def abs_path(_dir, forwardslash=True):
 
 HOST = gethostname()
 
+
+DATABASE_ROUTERS = [
+	'colabre_web.db_routers.StatisticsRouter',
+]
+
 if HOST != 'http7' and HOST != 'ssh': # localhost
 	DATABASES = {
 		'backup': {
@@ -26,6 +31,14 @@ if HOST != 'http7' and HOST != 'ssh': # localhost
 		'default': {
 			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 			'NAME': 'colabre',                      # Or path to database file if using sqlite3.
+			'USER': 'root',                      # Not used with sqlite3.
+			'PASSWORD': 'root',                  # Not used with sqlite3.
+			'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
+			'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+		},
+		'stats': {
+			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+			'NAME': 'colabre_stats',                      # Or path to database file if using sqlite3.
 			'USER': 'root',                      # Not used with sqlite3.
 			'PASSWORD': 'root',                  # Not used with sqlite3.
 			'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
