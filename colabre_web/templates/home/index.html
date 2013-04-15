@@ -1,11 +1,58 @@
 {% extends "_base.html" %}
 {% load bbcode %}
 {% block title %}Início{% endblock %}
-
+{% block extra_head %}
+	<style type="text/css">
+		.home-column
+		{
+			width: 30%;
+			margin: 2px;
+			float: left;
+			padding: 10px;
+			border: 0px solid #ddd;
+		}
+		.home-column h1, .home-column h2
+		{
+			color: #4672c1;
+			font-weight: bold;
+			margin: 2px;
+		}
+		.home-column p
+		{
+			margin: 4px;
+		}
+	</style>
+{% endblock %}
 {% block body %}
 
+<div style="text-align: center;">
+	<img src="{{ STATIC_URL }}img/home/banner.png" alt="Colabre" style="margin: 0 auto; display: block;" />
+</div>
+
+
+<div id="home-quick-about" class="home-column">
+	<h1>Projeto Colabre</h1>
+	<p>
+		O Projeto Colabre tem uma proposta diferente para serviços relacionados ao mercado de trabalho -- buscas de
+		oportunidades de empregos e candidatos.
+	</p>
+</div>
+
+<div id="home-jobs" class="home-column">
+	<h2>Oportunidades de Empregos</h2>
+	<p>
+		Encontre facilmente o emprego ideal para você.
+	</p>
+</div>
+
+
+<br style="clear: both;" />
+
+
+
 <div style="text-align: center; margin: 30px 0 20px 0;">
-	<img src="{{ STATIC_URL }}img/banner.png" alt="banner Colabre">
+	
+	
 </div>
 
 {% endblock body %}
