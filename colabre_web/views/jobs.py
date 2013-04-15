@@ -43,7 +43,7 @@ def partial_details(request, id, search_term = None):
 
 def detail(request, id):
 	job = Job.objects.get(id=id)
-	return render(request, get_template_path("detail.html"), { 'job' : job })
+	return render(request, get_template_path("detail.html"), { 'job' : job, 'num_views' : 10 })
 
 
 def partial_html_search(request):

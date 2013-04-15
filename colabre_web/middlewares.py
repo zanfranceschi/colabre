@@ -5,16 +5,29 @@ import traceback
 import logging
 from django.shortcuts import render
 from django.http import HttpResponse
-from statistics.models import RequestLog
-from django.core.urlresolvers import reverse
+from statistics.models import RequestLog, JobPublicNumViews
+from django.core.urlresolvers import reverse, resolve
 
 
 class ColabreMiddleware:
 	def process_request(self, request):
-		thread.start_new_thread(self.test, (request,))
+		thread.start_new_thread(self.compute_statistics, (request,))
 		return None
 	
-	def test(self, request):
+	def compute_statistics(self, request):
+		self.log_request(request)
+		self.log_job_public_view_request(request)
+		
+		
+	def log_job_public_view_request(self, request):
+		if (resolve(request.path).func.__name__ == 'partial_details'):
+			job_id = resolve(request.path).args[0]
+			obj = JobPublicNumViews()
+			obj.job_id = int(job_id)
+			obj.request = request
+			obj.save()
+	
+	def log_request(self, request):
 		log = RequestLog()
 		log.request = request
 		log.save()

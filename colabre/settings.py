@@ -1,9 +1,4 @@
 import os
-from socket import gethostname
-
-# Custom apps location
-# PROJECT_ROOT = os.path.dirname(__file__)
-# sys.path.insert(0, os.path.join(PROJECT_ROOT, "apps"))
 
 _PROJECT_DIR = os.path.dirname(os.path.abspath(__file__)).replace('colabre', 'colabre_web').replace('\\', '/')
 
@@ -11,63 +6,40 @@ def abs_path(_dir, forwardslash=True):
 	result = os.path.join(_PROJECT_DIR, _dir)
 	return result
 
-HOST = gethostname()
-
-
 DATABASE_ROUTERS = [
 	'colabre_web.db_routers.StatisticsRouter',
 ]
 
-if HOST != 'http7' and HOST != 'ssh': # localhost
-	DATABASES = {
-		'backup': {
-			'ENGINE': 'django.db.backends.sqlite3', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'colabre.db',                      # Or path to database file if using sqlite3.
-			'USER': 'root',                      # Not used with sqlite3.
-			'PASSWORD': 'root',                  # Not used with sqlite3.
-			'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-			'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-		},
-		'default': {
-			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'colabre',                      # Or path to database file if using sqlite3.
-			'USER': 'root',                      # Not used with sqlite3.
-			'PASSWORD': 'root',                  # Not used with sqlite3.
-			'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
-			'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-		},
-		'stats': {
-			'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': 'colabre_stats',                      # Or path to database file if using sqlite3.
-			'USER': 'root',                      # Not used with sqlite3.
-			'PASSWORD': 'root',                  # Not used with sqlite3.
-			'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
-			'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
-		}
-	}
-	STATIC_URL = '/static/'
-	EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-	HOST_ROOT_URL = 'http://127.0.0.1:8000'
-	EMAIL_HOST = 'smtp.gmail.com'
-	EMAIL_HOST_USER = 'zzzz'
-	EMAIL_HOST_PASSWORD = 'zzzz'
-	EMAIL_PORT = 587
-	EMAIL_USE_TLS = True
 
-else: #alwaysdata
-	DATABASES = {
-		'default': {
-			'ENGINE': 'django.db.backends.sqlite3', 			# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-			'NAME': ' /home/zanfranceschi/www/colabre.db',      # Or path to database file if using sqlite3.
-			'USER': '',                      # Not used with sqlite3.
-			'PASSWORD': '',                  # Not used with sqlite3.
-			'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-			'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-		}
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+		'NAME': 'colabre',                      # Or path to database file if using sqlite3.
+		'USER': 'root',                      # Not used with sqlite3.
+		'PASSWORD': 'root',                  # Not used with sqlite3.
+		'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
+		'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
+	},
+	'stats': {
+		'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+		'NAME': 'colabre_stats',                      # Or path to database file if using sqlite3.
+		'USER': 'root',                      # Not used with sqlite3.
+		'PASSWORD': 'root',                  # Not used with sqlite3.
+		'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
+		'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
 	}
-	
-	STATIC_URL = '/'
-	HOST_ROOT_URL = 'http://www.colabre.org'
+}
+
+STATIC_URL = '/static/'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+HOST_ROOT_URL = 'http://127.0.0.1:8000'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'zzzz'
+EMAIL_HOST_PASSWORD = 'zzzz'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+
 
 EMAIL_FROM = 'no-reply@colabre.org'
 
@@ -196,4 +168,3 @@ LOGGING = {
 }
 
 from colabre_web.oauth.settings import *
-#from colabre_web.statistics.settings import *

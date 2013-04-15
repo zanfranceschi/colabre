@@ -37,7 +37,7 @@ class RequestLog(models.Model, Statistics):
 		self.query_string = self.request.META['QUERY_STRING']
 		self.http_user_agent = self.request.META['HTTP_USER_AGENT']
 		self.remote_addr = self.request.META['REMOTE_ADDR']
-		self.session_id = self.request.session.session_key
+		self.session_id = self.request.session.session_key or '--'
 		self.path_info = self.request.META['PATH_INFO']
 		self.access_datetime = datetime.datetime.now()
 
@@ -51,16 +51,34 @@ class JobStatistics(models.Model, Statistics):
 	views = models.IntegerField()
 
 
-class JobView(models.Model, Statistics):
+class JobPublicNumViews(models.Model, Statistics):
+	"""
+		Number of public views per session of a Job
+	"""
 	class Meta:
 		app_label = 'colabre_web'
-		
-	job_id = models.IntegerField()
-	user_viewer = models.CharField(max_length=30)
-	view_datetime = models.DateTimeField(auto_now_add=True)
-	http_cookie	= models.CharField(max_length=300)
-
 	
+	request = None
+	job_id = models.IntegerField()
+	num_views = models.IntegerField()
+	
+	def save(self, *args, **kwargs):
+		if self.request is None:
+			raise Exception('self.request cannot be None')
+		
+		if self.job_id is None:
+			raise Exception('self.job_id cannot be None')
+		
+		session_name = 'job-' + str(self.job_id) + '-viewed'
+		
+		if (session_name not in self.request.session):
+			try:
+				obj = JobPublicNumViews.objects.get(job_id=self.job_id)
+				self.num_views = obj.num_views + 1
+				super(JobPublicNumViews, self).save(*args, **kwargs)
+				self.request.session[session_name] = True
+			except JobPublicNumViews.DoesNotExist:
+				pass
 
 class LogObjectFactory:
 	@classmethod
