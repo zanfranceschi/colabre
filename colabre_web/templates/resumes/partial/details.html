@@ -10,6 +10,6 @@
 		<a user-id="{{ resume.profile.user.id }}" class="profile-contact-form contact-form-opener">Entre em contato com <b>{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}</b> ◄</a>
 	</div>
 	<div class="contact-form-wrapper" id="contact-form-{{ resume.profile.user.id }}">
-		<iframe src="{% url 'contact' %}?user_id={{ resume.profile.user.id }}&amp;subject=r" class="contact-form"></iframe>
+		<iframe frameborder="0" border="0" src="{% url 'contact' %}?user_id={{ resume.profile.user.id }}&amp;subject=r" class="contact-form"></iframe>
 	</div>
 </div>
