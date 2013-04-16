@@ -29,7 +29,7 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^contato/', include('colabre_web.views.contact')),
 	
 	url(r'^$', 'home.index', name='home_index'),
-	url(r'^legal/$', 'home.legal'),
+	url(r'^legal/$', 'home.legal', name='home_legal'),
 	
 	url(r'^admin/', include(admin.site.urls)),
 	

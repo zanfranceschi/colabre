@@ -16,7 +16,7 @@
 		width: 30%;
 		text-align: center;
 	}
-	.table td.or, .table td.oauth 
+	.table td.or, .table td.oauth
 	{
 		vertical-align: middle;
 	}
@@ -24,10 +24,5 @@
 {% endblock %}
 {% block content %}
 	<h1>Faça o login</h1>
-	<form action="/autenticar/" method="post">
-		{% csrf_token %}
-		{% include '_form.html' %}
-		<input type="submit" value="entrar" class="btn-info" /> 
-		<a style="margin-left: 53px;" href="{% url 'my_profile_retrieve_access' %}">esqueci minha senha</a>
-	</form>
+	{% include "auth/login-form.html" %}
 {% endblock %}

@@ -21,7 +21,8 @@ def get_template_path(template):
 
 @handle_exception
 def index(request):
-	return render(request, get_template_path("index.html"))
+	form = LoginForm()
+	return render(request, get_template_path("index.html"), {'form' : form})
 
 def legal(request):
 	return render(request, get_template_path("legal.html"))
