@@ -52,7 +52,7 @@
 	<link href="{{ STATIC_URL }}css/fx.css" rel="stylesheet" />
 </head>
 <body>
-{% include "_menu.html" %}
+{% block menu %}{% include "_menu.html" %}{% endblock menu %}
 <div id="content">
 	{% include "_message.html" %}
 	{% block body %}{% endblock body %}

@@ -1,14 +1,14 @@
 {% extends "_base.html" %}
+{% load url from future %}
 {% load bbcode %}
 {% block title %}Início{% endblock %}
 {% block extra_head %}
 	<style type="text/css">
 		.home-column
 		{
-			width: 30%;
-			margin: 2px;
+			width: 45%;
 			float: left;
-			padding: 10px;
+			padding: 0px;
 			border: 0px solid #ddd;
 		}
 		.home-column h1, .home-column h2
@@ -16,6 +16,11 @@
 			color: #4672c1;
 			font-weight: bold;
 			margin: 2px;
+			text-align: center;
+		}
+		.home-column h1 a, .home-column h2 a
+		{
+			text-decoration: none;
 		}
 		.home-column p
 		{
@@ -23,36 +28,31 @@
 		}
 	</style>
 {% endblock %}
+{% block menu %}{% endblock menu %}
 {% block body %}
 
-<div style="text-align: center;">
-	<img src="{{ STATIC_URL }}img/home/banner.png" alt="Colabre" style="margin: 0 auto; display: block;" />
+<div style="text-align: center; margin-top: -50px;">
+
+	<img src="{{ STATIC_URL }}img/logo-home.png" alt="Colabre" style="margin: 0 auto; display: block;" />
+	
+	<img src="{{ STATIC_URL }}img/home/banner.jpg"
+		alt="Colabre" 
+		style="
+			margin: 20px auto; 
+			display: block;
+			border: 15px solid #eee;"
+			/>
 </div>
 
-
-<div id="home-quick-about" class="home-column">
-	<h1>Projeto Colabre</h1>
-	<p>
-		O Projeto Colabre tem uma proposta diferente para serviços relacionados ao mercado de trabalho -- buscas de
-		oportunidades de empregos e candidatos.
-	</p>
-</div>
 
 <div id="home-jobs" class="home-column">
-	<h2>Oportunidades de Empregos</h2>
-	<p>
-		Encontre facilmente o emprego ideal para você.
-	</p>
+	<h1><a href="{% url 'jobs_index' %}">Busca de Vagas</a></h1>
 </div>
 
+<div id="home-resumes" class="home-column">
+	<h1><a href="{% url 'resumes_index' %}">Busca de Profissionais</a></h1>
+</div>
 
 <br style="clear: both;" />
-
-
-
-<div style="text-align: center; margin: 30px 0 20px 0;">
-	
-	
-</div>
 
 {% endblock body %}
