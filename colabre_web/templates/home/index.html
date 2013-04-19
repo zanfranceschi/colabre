@@ -33,16 +33,36 @@
 			text-decoration: none;
 			margin: 30px;
 		}
+		#logout
+		{
+
+		}
+		#logout-wrapper, #form
+		{
+			position: fixed;
+		}
+		#logout-wrapper
+		{
+			top: 10px;
+			right: 10px;
+		}
 		#form
 		{
 			border: 1px solid #ccc;
 			background: #eee;
 			padding: 10px;
-			width: 300px;
+			width: 200px;
+			text-align: left;
+			top: 25%;
+			right: 0;
 		}
-		#form *
+		#form *, #logout-wrapper
 		{
 			font-size: 90%;
+		}
+		#form a
+		{
+			margin-left: 4px;
 		}
 		#form input[type=text], #form input[type=password]
 		{
@@ -52,6 +72,12 @@
 		{
 			padding: 0;
 			margin: 0;
+		}
+		hr
+		{
+			border: 0;
+		    height: 1px;
+		    background: #ccc;
 		}
 	</style>
 {% endblock %}
@@ -75,9 +101,21 @@
 	<a class="large-link" href="{% url 'jobs_index' %}">Busca de Vagas</a>
 	<a class="large-link" href="{% url 'resumes_index' %}">Busca de Profissionais</a>
 </div>
-<div id="form" style="text-align: left;">
+
+{% if not user.is_authenticated %}
+<div id="form">
+	<h1>Login</h1>
 	{% include "auth/login-form.html" %}
+	<hr />
+	<img style="border: 0; vertical-align: middle; display: block; margin-bottom: 5px; margin-top: 15px;" src="{{ STATIC_URL }}img/linkedin-logo-small.png" alt="linkedin" />
+	<a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn.</a>
 </div>
+{% else %}
+<div id="logout-wrapper">
+	Você está logado como <b>{{ user.first_name }}</b> - <a id="logout" href="{% url 'logout' %}" id="logout">sair</a>
+</div>
+
+{% endif %}
 
 
 <br style="clear: both;" />

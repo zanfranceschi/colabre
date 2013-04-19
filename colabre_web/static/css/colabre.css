@@ -19,7 +19,7 @@ body
 
 h1, h2, h3
 {
-	
+
 }
 p
 {
@@ -104,7 +104,7 @@ img
 	text-decoration: underline;
 }
 
-#profile-header #logout
+#profile-header #logout, #logout
 {
 	color: #FF5721;
 }
@@ -183,7 +183,7 @@ form ul.errorlist *
 
 .form-row > div
 {
-	
+
 }
 
 .error
@@ -197,12 +197,12 @@ input[type=password], input[type=text], textarea, select, .tagit
 	font-size: 105%;
 	border: 1.5px solid #888;
 	background: #9db1da; /* azul */
-	
+
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	
+
 }
 .tagit
 {
@@ -234,9 +234,9 @@ input.large
 input[type=text],
 input[type=password]
 {
-	
+
 	padding: 3px;
-	
+
 }
 
 input[type=button],
@@ -246,12 +246,12 @@ input[type=submit]
 	padding: 10px;
 	border: 1px solid #ddd;
 	font-size: 105%;
-	
+
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	
+
 	font-weight: bold;
 }
 
@@ -275,12 +275,12 @@ a.btn
 	padding: 10px;
 	margin: 10px;
 	border: 1px solid #ddd;
-	
+
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px;
 	border-radius: 5px;
-	
+
 	font-weight: bold;
 }
 
@@ -317,22 +317,22 @@ a.btn
 
 .message-close-btn
 {
-	font-size: 150%; 
-	position: absolute; 
-	top: 5px; 
+	font-size: 150%;
+	position: absolute;
+	top: 5px;
 	right: 10px;
 	text-decoration: none;
 	cursor: pointer;
 }
 
-.alert 
+.alert
 {
 	border-width: 1px;
 	border-style: solid;
 	padding: 0 10px 0 10px;
 	font-size: 90%;
 	margin-bottom: 20px;
-	
+
 }
 
 .alert-info
@@ -393,7 +393,7 @@ a.btn
 	font-size: 120%;
 }
 
-.tooltip 
+.tooltip
 {
 	background-color: #000;
 	border: 1px solid #fff;
@@ -438,13 +438,18 @@ a.btn
 
 div.contact-form-wrapper
 {
-	display: none; 
-	padding: 0; 
+	display: none;
+	padding: 0;
 	height: 320px;
 }
 iframe.contact-form
 {
-	width: 100%; 
-	border: 0; 
+	width: 100%;
+	border: 0;
 	height: 100%;
+}
+
+.link-forgot-password
+{
+	margin-left: 53px;
 }
