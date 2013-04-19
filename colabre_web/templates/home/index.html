@@ -112,7 +112,7 @@
 </div>
 {% else %}
 <div id="logout-wrapper">
-	Você está logado como <b>{{ user.first_name }}</b> - <a id="logout" href="{% url 'logout' %}" id="logout">sair</a>
+	Você está logado como <b><a href="{% url 'my_profile_index' %}">{{ user.first_name }}</a></b> - <a id="logout" href="{% url 'logout' %}" id="logout">sair</a>
 </div>
 
 {% endif %}
