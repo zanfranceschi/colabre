@@ -138,7 +138,7 @@ class UserProfileFormOAuth(BaseForm):
 	gender = forms.ChoiceField(
 		required=True,
 		label='Sexo',
-		choices=(('F', 'Feminino'), ('M', 'Masculino'), ('U', 'Outro')),
+		choices=(('F', 'Feminino'), ('M', 'Masculino')),
 		widget=forms.RadioSelect()
 	)
 	

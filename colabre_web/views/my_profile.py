@@ -58,7 +58,7 @@ def verify_email(request, uuid):
 			return render(request, get_template_path('index.html'), {'form' : form})
 	except Exception:
 		pass
-	return render(request, 'index.html')
+	return redirect('/')
 
 @login_required
 def change_password(request):
