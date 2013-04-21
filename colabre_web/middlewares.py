@@ -9,6 +9,64 @@ from statistics.models import RequestLog, JobPublicNumViews
 from django.core.urlresolvers import reverse, resolve
 
 
+class StatisticsMiddleware:
+
+	def process_request(self, request):
+		self.start_computing_statistics(request)
+		
+	def ensure_session_key(self, request):
+		"""
+			Workaround to make sure there's a session_key
+		"""
+		if (request.session.session_key is None):
+			pages = ['jobs_index', 'resumes_index', 'login', 'registration_index', 'home_index', 'home_legal']
+			current_page = resolve(request.path).func.__name__
+			if (any(current_page in page for page in pages)):
+				request.session['ensured_session_key'] = True
+				
+	def start_computing_statistics(self, request):
+		"""
+			Simple delegate method to start the statistics collection
+		"""
+		self.ensure_session_key(request)
+		self.compute_statistics(request)
+		
+	def compute_statistics(self, request):
+		thread.start_new_thread(self.log_request, (request,))
+		thread.start_new_thread(self.log_job_public_view_request, (request,))
+	
+	
+	def should_log(self, key, request):
+		key_exists_in_session = (key in request.session)
+		if (not key_exists_in_session):
+			request.session[key] = True
+		return not key_exists_in_session
+	
+	def log_request(self, request):
+		"""
+			Simple request log
+		"""
+		try:
+			log = RequestLog()
+			log.request = request
+			log.save()
+		except:
+			pass
+		
+	def log_job_public_view_request(self, request):
+		"""
+			Log public view of a jog (job details)
+		"""
+		try:
+			if (resolve(request.path).func.__name__ == 'partial_details'):
+				job_id = resolve(request.path).args[0]
+				
+				if self.should_log('job_view-' + job_id, request):
+					JobPublicNumViews.log(request, int(job_id))
+		except Exception, ex:
+			raise ex
+		
+
 class ColabreMiddleware:
 	def process_request(self, request):
 		thread.start_new_thread(self.compute_statistics, (request,))
@@ -36,13 +94,7 @@ class ColabreMiddleware:
 			print >> sys.stderr, ex.message
 		
 		
-	def log_job_public_view_request(self, request):
-		if (resolve(request.path).func.__name__ == 'partial_details'):
-			job_id = resolve(request.path).args[0]
-			obj = JobPublicNumViews()
-			obj.job_id = int(job_id)
-			obj.request = request
-			obj.save()
+	
 	
 	def log_request(self, request):
 		log = RequestLog()

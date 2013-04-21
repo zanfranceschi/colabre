@@ -93,7 +93,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'colabre_web.middlewares.ColabreMiddleware',
+    #'colabre_web.middlewares.ColabreMiddleware',
+    'colabre_web.middlewares.StatisticsMiddleware',
     'colabre_web.middlewares.HandleErrorMiddleware',
 	#'gadjo.requestprovider.middleware.RequestProvider',
     # Uncomment the next line for simple clickjacking protection:

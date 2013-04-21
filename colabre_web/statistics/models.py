@@ -59,26 +59,22 @@ class JobPublicNumViews(models.Model, Statistics):
 		app_label = 'colabre_web'
 	
 	request = None
-	job_id = models.IntegerField()
+	job_id = models.IntegerField(primary_key=True)
 	num_views = models.IntegerField()
 	
-	def save(self, *args, **kwargs):
-		if self.request is None:
+	@classmethod
+	def log(cls, request, job_id):
+		if request is None:
 			raise Exception('self.request cannot be None')
 		
-		if self.job_id is None:
+		if job_id is None:
 			raise Exception('self.job_id cannot be None')
 		
-		session_name = 'job-' + str(self.job_id) + '-viewed'
-		
-		if (session_name not in self.request.session):
-			try:
-				obj = JobPublicNumViews.objects.get(job_id=self.job_id)
-				self.num_views = obj.num_views + 1
-				super(JobPublicNumViews, self).save(*args, **kwargs)
-				self.request.session[session_name] = True
-			except JobPublicNumViews.DoesNotExist:
-				pass
+		logs = JobPublicNumViews.objects.filter(job_id=job_id)
+		log = logs[0] if logs else JobPublicNumViews(job_id=job_id, num_views=0)
+		log.num_views = log.num_views + 1
+		log.save()
+
 
 class LogObjectFactory:
 	@classmethod
