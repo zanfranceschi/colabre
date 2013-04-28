@@ -1,0 +1,28 @@
+{% load chartit %}
+{{ weatherchart|load_charts:"container" }}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Colabre | {% block title %}{% endblock title %}</title>
+	
+	<link rel="icon" type="image/png" href="{{ STATIC_URL }}img/favicon.png" />
+	
+	<!-- jquery 1.7.2 + jquery tools  -->
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tools.min.js"></script>
+	<!-- /jquery 1.7.2 + jquery tools  -->
+	
+	<script type="text/javascript" src="{{ STATIC_URL }}highcharts/highcharts.js"></script>
+	
+	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
+	
+	<link href="{{ STATIC_URL }}css/colabre.css" rel="stylesheet" />
+	<link href="{{ STATIC_URL }}css/search.css" rel="stylesheet" />
+	<link href="{{ STATIC_URL }}css/fx.css" rel="stylesheet" />
+</head>
+<body>
+<div id="content">
+	<div id="chart"></div>
+</div>
+</body>
+</html>

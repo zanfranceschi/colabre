@@ -10,6 +10,8 @@ from colabre_web.models import *
 import time
 from colabre_web.forms import *
 from helpers import *
+from chartit import DataPool, Chart
+
 
 @handle_exception
 def handle_uploaded_file(f):
@@ -20,3 +22,7 @@ def handle_uploaded_file(f):
 @handle_exception
 def legal(request):
 	return render(request, 'legal.html')
+
+
+def chart_test(request):
+	pass
