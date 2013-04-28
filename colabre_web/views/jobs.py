@@ -12,6 +12,7 @@ from datetime import *
 from colabre_web.models import *
 from colabre_web.aux_models import *
 from colabre_web.forms import *
+from colabre_web.statistics.models import *
 #from colabre_web.statistics.models import *
 
 import time
@@ -33,9 +34,9 @@ def get_template_path(template):
 
 def partial_details(request, id, search_term = None):
 	job = Job.objects.get(id=id)
-	#log_job_request(request, search_term, job)
-	#db = get_mongo_db()
-	job_view_count = 1 #db.jobs_date.find({'jid': int(id)}).count()
+	logs = JobPublicNumViews.objects.filter(job_id=id)
+	log = logs[0] if logs else JobPublicNumViews()
+	job_view_count = log.num_views_total #db.jobs_date.find({'jid': int(id)}).count()
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response

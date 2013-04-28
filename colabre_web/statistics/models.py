@@ -1,9 +1,32 @@
 #from django.core import serializers
 from django.db import models
 import datetime
+from time import strptime
 import pygeoip
 
 GEOIP_DATAFILE_PATH = 'C:/Users/zanfranceschi/Projects/Colabre/svn/data/GeoLiteCity.dat'
+
+def get_time_range():
+	now = datetime.datetime.now().time()
+	frmt = "%H:%M"
+	now_string = "{0}:{1}".format(now.hour, now.minute)
+	now = strptime(now_string, frmt)
+	
+	range_06_00__09_59 = strptime("06:00", frmt) < now < strptime("09:59", frmt)  
+	range_10_00__13_59 = strptime("10:00", frmt) < now < strptime("13:59", frmt) 
+	range_14_00__17_59 = strptime("14:00", frmt) < now < strptime("17:59", frmt)
+	range_18_00__21_59 = strptime("18:00", frmt) < now < strptime("21:59", frmt)
+	
+	if range_06_00__09_59:
+		return 1
+	elif range_10_00__13_59:
+		return 2
+	elif range_14_00__17_59:
+		return 3
+	elif range_18_00__21_59:
+		return 4
+	else:
+		return 5
 
 class Statistics(object):
 	is_statistics = True
@@ -43,13 +66,6 @@ class RequestLog(models.Model, Statistics):
 
 		super(RequestLog, self).save(*args, **kwargs)
 		
-class JobStatistics(models.Model, Statistics):
-	class Meta:
-		app_label = 'colabre_web'
-		
-	job_id = models.IntegerField()
-	views = models.IntegerField()
-
 
 class JobPublicNumViews(models.Model, Statistics):
 	"""
@@ -58,21 +74,59 @@ class JobPublicNumViews(models.Model, Statistics):
 	class Meta:
 		app_label = 'colabre_web'
 	
-	request = None
 	job_id = models.IntegerField(primary_key=True)
-	num_views = models.IntegerField()
+	num_views_total = models.IntegerField(default=0)
+	num_views_06_00__09_59 = models.IntegerField(default=0)
+	num_views_10_00__13_59 = models.IntegerField(default=0)
+	num_views_14_00__17_59 = models.IntegerField(default=0)
+	num_views_18_00__21_59 = models.IntegerField(default=0)
+	num_views_22_00__05_59 = models.IntegerField(default=0)
 	
 	@classmethod
-	def log(cls, request, job_id):
-		if request is None:
-			raise Exception('self.request cannot be None')
-		
+	def log(cls, job_id):
 		if job_id is None:
-			raise Exception('self.job_id cannot be None')
+			raise Exception('job_id cannot be None')
 		
 		logs = JobPublicNumViews.objects.filter(job_id=job_id)
-		log = logs[0] if logs else JobPublicNumViews(job_id=job_id, num_views=0)
-		log.num_views = log.num_views + 1
+		log = logs[0] if logs else JobPublicNumViews(job_id=job_id)
+		log.num_views_total += 1
+		
+		time_range = get_time_range()
+		
+		if (time_range == 1):
+			log.num_views_06_00__09_59 += 1
+		elif (time_range == 2):
+			log.num_views_10_00__13_59 += 1
+		elif (time_range == 3):
+			log.num_views_14_00__17_59 += 1
+		elif (time_range == 4):
+			log.num_views_18_00__21_59 += 1
+		elif (time_range == 5):
+			log.num_views_22_00__05_59 += 1
+		log.save()
+
+
+class JobTermPublicNumViews(models.Model, Statistics):
+	class Meta:
+		app_label = 'colabre_web'
+		
+	job_id = models.IntegerField()
+	num_views = models.IntegerField(default=0)
+	search_term = models.CharField(max_length=50, blank=True, null=True)
+	
+	@classmethod
+	def log(cls, job_id, term):
+		if job_id is None:
+			raise Exception('job_id cannot be None')
+		
+		if not term:
+			term = ''
+		else:
+			term = term.strip().title()[:50]
+		
+		logs = JobTermPublicNumViews.objects.filter(job_id=job_id, search_term=term)
+		log = logs[0] if logs else JobTermPublicNumViews(job_id=job_id, search_term=term)
+		log.num_views += 1
 		log.save()
 
 
