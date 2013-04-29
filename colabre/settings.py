@@ -133,6 +133,7 @@ INSTALLED_APPS = (
 	'colabre_web',
     'django.contrib.admin',
 	'social_auth',
+	'chartit',
 )
 
 SERIALIZATION_MODULES = {

@@ -1,5 +1,6 @@
 #from django.core import serializers
 from django.db import models
+from colabre_web.models import Job, JobTitle
 import datetime
 from time import strptime
 import pygeoip
@@ -12,18 +13,18 @@ def get_time_range():
 	now_string = "{0}:{1}".format(now.hour, now.minute)
 	now = strptime(now_string, frmt)
 	
-	range_06_00__09_59 = strptime("06:00", frmt) < now < strptime("09:59", frmt)  
-	range_10_00__13_59 = strptime("10:00", frmt) < now < strptime("13:59", frmt) 
-	range_14_00__17_59 = strptime("14:00", frmt) < now < strptime("17:59", frmt)
-	range_18_00__21_59 = strptime("18:00", frmt) < now < strptime("21:59", frmt)
+	range_0600_0959 = strptime("06:00", frmt) < now < strptime("09:59", frmt)  
+	range_1000_1359 = strptime("10:00", frmt) < now < strptime("13:59", frmt) 
+	range_1400_1759 = strptime("14:00", frmt) < now < strptime("17:59", frmt)
+	range_1800_2159 = strptime("18:00", frmt) < now < strptime("21:59", frmt)
 	
-	if range_06_00__09_59:
+	if range_0600_0959:
 		return 1
-	elif range_10_00__13_59:
+	elif range_1000_1359:
 		return 2
-	elif range_14_00__17_59:
+	elif range_1400_1759:
 		return 3
-	elif range_18_00__21_59:
+	elif range_1800_2159:
 		return 4
 	else:
 		return 5
@@ -75,12 +76,13 @@ class JobPublicNumViews(models.Model, Statistics):
 		app_label = 'colabre_web'
 	
 	job_id = models.IntegerField(primary_key=True)
+	job_title_name = models.CharField(max_length=60, null=True)
 	num_views_total = models.IntegerField(default=0)
-	num_views_06_00__09_59 = models.IntegerField(default=0)
-	num_views_10_00__13_59 = models.IntegerField(default=0)
-	num_views_14_00__17_59 = models.IntegerField(default=0)
-	num_views_18_00__21_59 = models.IntegerField(default=0)
-	num_views_22_00__05_59 = models.IntegerField(default=0)
+	num_views_0600_0959 = models.IntegerField(default=0)
+	num_views_1000_1359 = models.IntegerField(default=0)
+	num_views_1400_1759 = models.IntegerField(default=0)
+	num_views_1800_2159 = models.IntegerField(default=0)
+	num_views_2200_0559 = models.IntegerField(default=0)
 	
 	@classmethod
 	def log(cls, job_id):
@@ -91,18 +93,23 @@ class JobPublicNumViews(models.Model, Statistics):
 		log = logs[0] if logs else JobPublicNumViews(job_id=job_id)
 		log.num_views_total += 1
 		
+		job = Job.objects.get(id=job_id)
+		job_title = job.job_title
+		
+		log.job_title_name = job_title.name
+		
 		time_range = get_time_range()
 		
 		if (time_range == 1):
-			log.num_views_06_00__09_59 += 1
+			log.num_views_0600_0959 += 1
 		elif (time_range == 2):
-			log.num_views_10_00__13_59 += 1
+			log.num_views_1000_1359 += 1
 		elif (time_range == 3):
-			log.num_views_14_00__17_59 += 1
+			log.num_views_1400_1759 += 1
 		elif (time_range == 4):
-			log.num_views_18_00__21_59 += 1
+			log.num_views_1800_2159 += 1
 		elif (time_range == 5):
-			log.num_views_22_00__05_59 += 1
+			log.num_views_2200_0559 += 1
 		log.save()
 
 
