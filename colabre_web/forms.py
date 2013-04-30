@@ -113,7 +113,7 @@ class UserProfileFormOAuth(BaseForm):
 	region_name = forms.CharField(
 		required=True,
 		max_length=60,
-		label='Estado/Região'
+		label='Região'
 	) 
 
 	city_name = forms.CharField(
@@ -316,7 +316,7 @@ class JobForm(BaseForm):
 	
 	region_name = forms.CharField(
 		max_length=60, 
-		label=u'Estado/Região',
+		label=u'Estado',
 		required=True
 	)
 	

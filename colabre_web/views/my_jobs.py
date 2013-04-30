@@ -14,6 +14,8 @@ from colabre_web.forms import *
 from helpers import * 
 from django.core import serializers
 from django.conf.urls import patterns, include, url
+from chartit import DataPool, Chart
+from colabre_web.statistics.models import *
 
 urlpatterns = patterns('colabre_web.views.my_jobs',
 	
@@ -44,8 +46,53 @@ def index(request):
 
 @login_required
 def partial_details(request, id, search_term=None):
+	data = DataPool(
+           series=
+            [{'options': {
+               'source': JobPublicNumViews.objects.filter(job_id=id)},
+              'terms': [
+				'job_title_name',
+                	{
+						'Total' : 'num_views_total',
+		                '06 às 10' : 'num_views_0600_0959',
+		                '10 às 14' : 'num_views_1000_1359',
+		                '14 às 18' : 'num_views_1400_1759',
+		                '18 às 22' : 'num_views_1800_2159',
+		                '22 às 06' : 'num_views_2200_0559',
+					}
+				]}
+			])
+	chart = Chart(
+            datasource = data,
+            series_options =
+              [{'options':{
+                  'type': 'column',
+                  'stacking': False},
+                'terms': {
+                  'job_title_name' : 
+					[
+	                    'Total',
+	                    '06 às 10',
+	                    '10 às 14',
+	                    '14 às 18',
+	                    '18 às 22',
+	                    '22 às 06'
+                    ]
+                  }}],
+            chart_options = {
+					'title': { 'text': 'Visualizações por faixa horária'},
+					'xAxis': { 
+							'title': { 'text': ' ' }, 
+					},
+					'yAxis': { 
+							'title' : { 'text' : 'Quantidade de Visualizações'},
+							'minTickInterval' : 1,
+
+					},
+				}
+			)
 	job = Job.objects.get(id=id)
-	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'chart' : chart, 'container' : 'container' + str(job.id) })
 	response['job-id'] = id
 	return response
 

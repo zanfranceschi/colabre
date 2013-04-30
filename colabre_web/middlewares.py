@@ -1,4 +1,5 @@
 import thread
+import sys
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 import traceback
@@ -8,6 +9,8 @@ from django.http import HttpResponse
 from statistics.models import RequestLog, JobPublicNumViews, JobTermPublicNumViews
 from django.core.urlresolvers import resolve
 import datetime
+
+from django.utils import simplejson as json
 
 logger = logging.getLogger('app')
 
@@ -46,6 +49,17 @@ class StatisticsMiddleware:
 			Log every single request...
 		"""
 		try:
+			print >> sys.stderr, "-" * 60
+			if (request.method == 'POST'):
+				for key, value in request.POST.iteritems():
+					print >> sys.stderr, "{0}: {1}".format(key, value)
+				print >> sys.stderr, json.dumps(request.POST)
+			elif (request.method == 'GET'):
+				for key, value in request.GET.iteritems():
+					print >> sys.stderr, "{0}: {1}".format(key, value)
+				print >> sys.stderr, json.dumps(request.GET) 
+			print >> sys.stderr, "-" * 60
+					
 			log = RequestLog()
 			log.request = request
 			log.save()

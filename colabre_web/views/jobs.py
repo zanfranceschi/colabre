@@ -32,7 +32,7 @@ def get_template_path(template):
 	return 'jobs/%s' % template
 
 
-def partial_details(request, id, search_term = None):
+def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
 	logs = JobPublicNumViews.objects.filter(job_id=id)
 	log = logs[0] if logs else JobPublicNumViews()
