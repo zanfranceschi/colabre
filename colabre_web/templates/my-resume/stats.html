@@ -1,0 +1,65 @@
+﻿{% extends "_base.html" %}
+{% load bbcode %}
+{% block title %}Estatísticas do Meu Currículo{% endblock %}
+
+{% block extra_head %}
+<style>
+	.stats, #chart
+	{
+		width: 48%;
+		float: left;
+	}
+	#chart
+	{
+		float: right;
+		height: 250px;
+	}
+	.stats-row td
+	{
+		border-bottom: 1px solid #ddd;
+		padding: 20px 0 20px 0;
+	}
+	.stats-label
+	{
+		
+	}
+	.stats-value
+	{
+		text-align: right;
+	}
+</style>
+
+{% load chartit %}
+{{ chart|load_charts:"chart" }}
+
+{% endblock %}
+
+{% block body %}
+	<h1>Estatísticas do Meu Currículo</h1>
+	
+	<p><small>Currículo criado em <b>{{ resume.created }}</b> e atualizado em <b>{{ resume.last_update }}</b>.</small></p>
+	
+	<table class="stats" cellpadding="0" cellspacing="0">
+		<tr class="stats-row">
+			<td class="stats-label">Visualizações hoje</td>
+			<td class="stats-value">{{ stats_count_today }}</td>
+		</tr>
+		<tr class="stats-row">
+			<td class="stats-label">Visualizações ontem</td>
+			<td class="stats-value">{{ stats_count_yesterday }}</td>
+		</tr>
+		<tr class="stats-row">
+			<td class="stats-label">Visualizações mês passado</td>
+			<td class="stats-value">{{ stats_count_last_month }}</td>
+		</tr>
+		<tr class="stats-row">
+			<td class="stats-label">Total de visualizações</td>
+			<td class="stats-value">{{ stats_count_total }}</td>
+		</tr>
+	</table>
+	
+	<div id="chart"> </div>
+
+<br style="clear: both;" />
+
+{% endblock %}

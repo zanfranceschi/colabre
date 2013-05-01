@@ -481,7 +481,7 @@ class Resume(models.Model):
 	full_description = models.TextField()
 	visible = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
-	
+	created = models.DateField(auto_now_add=True)
 	last_update = models.DateField(auto_now=True)
 	
 	def try_get_job_title(self, index):

@@ -32,6 +32,16 @@ def get_time_range():
 class Statistics(object):
 	is_statistics = True
 
+class MyResumeStatistics(models.Model, Statistics):
+	class Meta:
+		app_label = 'colabre_web'
+		
+	resume_id = models.IntegerField()
+	access_date = models.DateField(auto_now_add=True)
+	access_datetime = models.DateTimeField(auto_now_add=True)
+	search_term = models.CharField(max_length=50, null=True)
+
+
 class RequestLog(models.Model, Statistics):
 	class Meta:
 		app_label = 'colabre_web'

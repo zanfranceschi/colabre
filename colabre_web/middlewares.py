@@ -6,7 +6,7 @@ import traceback
 import logging
 from django.shortcuts import render
 from django.http import HttpResponse
-from statistics.models import RequestLog, JobPublicNumViews, JobTermPublicNumViews
+from statistics.models import RequestLog, JobPublicNumViews, JobTermPublicNumViews, MyResumeStatistics
 from django.core.urlresolvers import resolve
 import datetime
 
@@ -26,7 +26,20 @@ class StatisticsMiddleware:
 		self.log_request(request)
 		self.log_job_public_view_request(request)
 		self.log_job_public_search_request(request)
+		self.log_resume_request(request)
 		
+	def log_resume_request(self, request):
+		try:
+			resolved = resolve(request.path)
+			if (resolved.url_name == 'resumes_partial_details'):
+				resume_id = resolved.args[0]
+				search_term = resolved.args[1]
+				log = MyResumeStatistics(resume_id=resume_id, search_term=search_term)
+				log.save()
+		except Exception, ex:
+			logger.exception(ex.message)
+			
+
 	def has_not_been_logged(self, key, request):
 		"""
 			Checks if certain key has been added to the users session

@@ -3,6 +3,8 @@
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
 	<h1>Meu Currículo</h1>
+	
+	<p><i>Atualização em {{ form.resume.last_update }}.</i></p>
 
 	<form action="{% url my_resume_index %}" method="post">
 		{% csrf_token %}

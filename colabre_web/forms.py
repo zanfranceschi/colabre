@@ -432,8 +432,6 @@ class JobForm(BaseForm):
 
 class ResumeForm(BaseForm):
 
-	profile = None
-
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
 		super(ResumeForm, self).__init__(*args, **kwargs)
@@ -445,17 +443,17 @@ class ResumeForm(BaseForm):
 							]
 		set_bbcode(self.fields['full_description'])
 		if self.profile:
-			resume = None
+			self.resume = None
 			try:
-				resume = Resume.objects.get(profile=self.profile)
+				self.resume = Resume.objects.get(profile=self.profile)
 			except Resume.DoesNotExist:
 				self.initial = { 'visible' : True }
-			if resume:
+			if self.resume:
 				data = {
-					'segment_name' : resume.segment_name,
-					'short_description' : resume.short_description,
-					'full_description' : resume.full_description,
-					'visible' : resume.visible
+					'segment_name' : self.resume.segment_name,
+					'short_description' : self.resume.short_description,
+					'full_description' : self.resume.full_description,
+					'visible' : self.resume.visible
 				}
 				self.initial = data
 	
