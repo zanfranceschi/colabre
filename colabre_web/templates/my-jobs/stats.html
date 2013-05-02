@@ -20,7 +20,7 @@
 	}
 	.stats-label
 	{
-		
+
 	}
 	.stats-value
 	{
@@ -41,47 +41,43 @@
 
 {% block body %}
 	<h1>Estatísticas das Minhas Vagas</h1>
-	
-	
+
+
 	<div style="overflow: auto; border: 0px solid #333; padding: 0px;">
-		
+
 		<div id="filter-segments" class="filter-wrapper">
 			{% for segment in segments %}
 				<input type="checkbox" value="{{ segment.id }}" id="segment-{{ segment.id }}" /> <label for="segment-{{ segment.id }}">{{ segment.name }}</label> <br />
 			{% endfor %}
 		</div>
-		
+
 		<div id="filter-job_titles" class="filter-wrapper">
 			{% for job_title in job_titles %}
 				<input type="checkbox" value="{{ job_title.id }}" segment-id="segment-{{ segment.id }}" id="job_title-{{ job_title.id }}" /> <label for="job_title-{{ job_title.id }}">{{ job_title.name }}</label> <br />
 			{% endfor %}
 		</div>
-		
+
 		<div id="filter-jobs" class="filter-wrapper">
 			{% for job in jobs %}
 				<input type="checkbox" value="{{ job.id }}" id="job-{{ job.id }}" /> <label for="job-{{ job.id }}">{{ job }}</label> <br />
 			{% endfor %}
 		</div>
-		
+
 	</div>
-	
-	
+
+
 	{{ charts|load_charts:"chart1, chart2" }}
 	<div id="chart1"></div>
 	<div id="chart2"></div>
-	
+
 	<div id="container"></div>
-	
+
 	<script type="text/javascript">
-	
-	x = [
-		{% for stat in stats %}
-			'{{ stat.access_datetime|date:"Y/m/d" }}'{% if not forloop.last %},{% endif %}
-		{% endfor %}
-		]
-		
+
+		categories = [{% for stat in stats %}'{{ stat.access_datetime|date:"Y/m/d" }}'{% if not forloop.last %},{% endif %}{% endfor %}]
+
 	//	alert(x);
-	
+
 		$(function () {
         $('#container').highcharts({
             chart: {
@@ -98,8 +94,7 @@
                 x: -20
             },
             xAxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                categories: categories
             },
             yAxis: {
                 title: {
@@ -138,7 +133,7 @@
         });
     });
 	</script>
-	
+
 
 <br style="clear: both;" />
 

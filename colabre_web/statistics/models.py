@@ -37,6 +37,7 @@ class JobSegmentCountStatistics(models.Model, Statistics):
 		app_label = 'colabre_web'
 		managed=False
 		
+	profile_id = models.IntegerField()
 	total = models.IntegerField()
 	segment_name = models.CharField(max_length=50)
 	date = models.CharField(max_length=7)

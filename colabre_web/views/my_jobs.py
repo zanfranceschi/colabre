@@ -152,7 +152,7 @@ def stats(request):
 	)
 	
 	
-	categories = JobSegmentCountStatistics.objects.values('date')
+	categories = JobSegmentCountStatistics.objects.values('date').distinct()
 	
 	return render(request, get_template_path('stats.html'), 
 				{ 
