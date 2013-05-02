@@ -6,7 +6,7 @@ import traceback
 import logging
 from django.shortcuts import render
 from django.http import HttpResponse
-from statistics.models import RequestLog, JobPublicNumViews, JobTermPublicNumViews, MyResumeStatistics
+from statistics.models import RequestLog, JobPublicNumViews, JobTermPublicNumViews, ResumeStatistics, JobStatistics
 from django.core.urlresolvers import resolve
 import datetime
 
@@ -27,6 +27,7 @@ class StatisticsMiddleware:
 		self.log_job_public_view_request(request)
 		self.log_job_public_search_request(request)
 		self.log_resume_request(request)
+		self.log_job_request(request)
 		
 	def log_resume_request(self, request):
 		try:
@@ -34,7 +35,19 @@ class StatisticsMiddleware:
 			if (resolved.url_name == 'resumes_partial_details'):
 				resume_id = resolved.args[0]
 				search_term = resolved.args[1]
-				log = MyResumeStatistics(resume_id=resume_id, search_term=search_term)
+				log = ResumeStatistics(resume_id=resume_id, search_term=search_term)
+				log.save()
+		except Exception, ex:
+			logger.exception(ex.message)
+			
+			
+	def log_job_request(self, request):
+		try:
+			resolved = resolve(request.path)
+			if (resolved.url_name == 'jobs_partial_details'):
+				job_id = resolved.args[0]
+				search_term = resolved.args[1]
+				log = JobStatistics(job_id=job_id, search_term=search_term)
 				log.save()
 		except Exception, ex:
 			logger.exception(ex.message)

@@ -48,4 +48,4 @@ def authenticate_(request):
 @handle_exception
 def logout_(request):
 	logout(request)
-	return redirect(request.path)
+	return redirect('/')

@@ -16,10 +16,13 @@ from django.core import serializers
 from django.conf.urls import patterns, include, url
 from chartit import DataPool, Chart
 from colabre_web.statistics.models import *
+from chartit import *
+from django.db.models import *
 
 urlpatterns = patterns('colabre_web.views.my_jobs',
 	
 	url(r'^$', 'index', name='my_jobs_index'),
+	url(r'^estatisticas/$', 'stats', name='my_jobs_stats'),
 	url(r'^criar/$', 'create', name='my_jobs_create'),
 	url(r'^editar/([\d]+)/$', 'edit', name='my_jobs_edit'),
 	url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='my_jobs_confirm_del'),
@@ -43,6 +46,123 @@ def _index_data(request):
 def index(request):
 	context = _index_data(request)
 	return render(request, get_template_path('index.html'), context)
+
+@login_required
+def stats(request):
+
+	profile = request.user.get_profile()
+	
+	stats = JobStatistics.objects.filter(profile_id=profile.id)
+	
+	jobs = Job.objects.filter(profile=profile)
+	job_titles = JobTitle.objects.filter(id__in=[job.job_title.id for job in jobs])
+	segments = Segment.objects.filter(id__in=[job_title.segment.id for job_title in job_titles])
+	
+	queryset = stats
+	
+	#test = JobStatistics.objects.annotate(total=Count('job_title')).filter(profile_id=profile.id)
+	
+	ds = PivotDataPool(
+		series = [{
+			'options' : 
+			{
+				'source': queryset,
+				'categories' : 'search_term'
+			},
+			'terms' : 
+			{
+				'Quantidade': Count('search_term'),
+			}
+		}],
+		top_n_term = 'Quantidade',
+		top_n = 6
+	)
+	chart1 = PivotChart(
+		datasource = ds, 
+		series_options = [{
+			'options':
+			{
+				'type': 'column',
+				'color' : 'rgba(70, 114, 193, 1)'
+			},
+			'terms': 
+			[	
+				'Quantidade', 
+			],
+		}], chart_options = {
+				'chart' : 
+				{
+					'backgroundColor' : 'rgba(255, 255, 255, 0.0)'		
+				},
+				'yAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'legend' :
+				{
+					'enabled' : False
+				},
+				'xAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'title' : 
+				{
+					'text' : 'Os 6 termos de busca que mais levaram a seu currículo'
+				}
+			}
+	)
+	
+	
+	
+	data = DataPool(
+       series=
+        [{'options': {
+            'source': JobSegmentCountStatistics.objects.all()},
+          'terms': [
+            'date',
+            'segment_name', 
+            'total']}
+         ]
+		)
+
+	chart2 = Chart(
+        datasource = data, 
+        series_options = 
+          [{'options':{
+              'type': 'spline',
+              'stacking': False},
+            'terms':{
+              'date': [ 'total', ]
+              }}],
+        chart_options = 
+          {'title': {
+               'text': 'Weather Data of Boston and Houston'},
+           'xAxis': {
+                'title': {
+                   'text': 'Month number'}}},
+		x_sortf_mapf_mts = (lambda m: m, lambda m: "-{0}-".format(m), True)
+		
+	)
+	
+	
+	categories = JobSegmentCountStatistics.objects.values('date')
+	
+	return render(request, get_template_path('stats.html'), 
+				{ 
+					'segments' : segments, 
+					'job_titles' : job_titles,
+					'stats' : stats,
+					'jobs' : jobs,
+					'charts' : [chart1, chart2],
+					'chart' : { 'categories' : categories }
+				})
 
 @login_required
 def partial_details(request, id, search_term=None):

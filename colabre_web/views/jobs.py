@@ -34,9 +34,7 @@ def get_template_path(template):
 
 def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
-	logs = JobPublicNumViews.objects.filter(job_id=id)
-	log = logs[0] if logs else JobPublicNumViews()
-	job_view_count = log.num_views_total #db.jobs_date.find({'jid': int(id)}).count()
+	job_view_count = JobStatistics.objects.filter(job_id=id).count()
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response

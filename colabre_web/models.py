@@ -632,7 +632,7 @@ class Job(models.Model):
 
 
 	def __unicode__(self):
-		return self.job_title
+		return u"{0} - {1} ({2})".format(self.creation_date.date().strftime("%Y/%m/%d"), self.job_title.name, self.city)
 
 	@classmethod
 	def view_search_my_jobs(cls, profile, term, job_titles_ids, cities_ids, days, page, limit):

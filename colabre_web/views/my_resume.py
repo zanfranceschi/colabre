@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db.models import *
 from colabre_web.forms import ResumeForm
 from colabre_web.models import Resume
-from colabre_web.statistics.models import MyResumeStatistics
+from colabre_web.statistics.models import ResumeStatistics
 from helpers import is_verified, is_not_verified_url
 from django.conf.urls import patterns, url
 from datetime import datetime
@@ -13,7 +13,7 @@ from dateutil.relativedelta import relativedelta
 from chartit import *
 
 urlpatterns = patterns('colabre_web.views.my_resume',
-	url(r'^$', 'index', name='my_resume_index'),
+	url(r'^$', 'index', name='my_resume_index'),      
 	url(r'^estatisticas/$', 'stats', name='my_resume_stats'),
 )
 
@@ -52,26 +52,26 @@ def stats(request):
 	last_month = today - relativedelta(months=1)
 	yesterday = today - relativedelta(days=1)
 	
-	stats_count_total = MyResumeStatistics.objects.filter(resume_id=resume.id).count()
+	stats_count_total = ResumeStatistics.objects.filter(resume_id=resume.id).count()
 	
-	stats_count_last_month = MyResumeStatistics.objects.filter(
+	stats_count_last_month = ResumeStatistics.objects.filter(
 															resume_id=resume.id, 
 															access_date__year=last_month.year, 
 															access_date__month=last_month.month
 															).count()
 															
-	stats_count_yesterday = MyResumeStatistics.objects.filter(
+	stats_count_yesterday = ResumeStatistics.objects.filter(
 															resume_id=resume.id, 
 															access_date=yesterday, 
 															).count()
 															
-	stats_count_today = MyResumeStatistics.objects.filter(
+	stats_count_today = ResumeStatistics.objects.filter(
 															resume_id=resume.id, 
 															access_date=today 
 															).count()
 	
 	
-	queryset = MyResumeStatistics.objects.filter(
+	queryset = ResumeStatistics.objects.filter(
 												resume_id=resume.id, 
 												search_term__regex=r'^.+'
 												)
