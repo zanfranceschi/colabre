@@ -15,10 +15,31 @@
 	{% endif %}
 </fieldset>
 
-<div id="{{ container }}" style="margin: 15px; height: 250px;"> </div>
-
-
+<div id="{{ container }}" style="width: 600px; height: 180px;"> </div>
 {% load chartit %}
 {{ chart|load_charts:container }}
 
+<table class="my-job-stats" cellpadding="0" cellspacing="0" style="width: 40%;">
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações hoje</td>
+		<td class="stats-value">{{ stats_count_today }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações ontem</td>
+		<td class="stats-value">{{ stats_count_yesterday }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações semana passada</td>
+		<td class="stats-value">{{ stats_count_last_week }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações mês passado</td>
+		<td class="stats-value">{{ stats_count_last_month }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Total de visualizações</td>
+		<td class="stats-value">{{ stats_count_total }}</td>
+	</tr>
+</table>
+	
 </div>

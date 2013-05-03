@@ -11,6 +11,7 @@ from django.conf.urls import patterns, url
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from chartit import *
+from colabre_web.utils import get_week_days_range
 
 urlpatterns = patterns('colabre_web.views.my_resume',
 	url(r'^$', 'index', name='my_resume_index'),      
@@ -51,6 +52,8 @@ def stats(request):
 	today = datetime.now().date()
 	last_month = today - relativedelta(months=1)
 	yesterday = today - relativedelta(days=1)
+	last_week_date = today - relativedelta(weeks=1)
+	last_week = get_week_days_range(last_week_date.year, last_week_date.isocalendar()[1])
 	
 	stats_count_total = ResumeStatistics.objects.filter(resume_id=resume.id).count()
 	
@@ -60,6 +63,11 @@ def stats(request):
 															access_date__month=last_month.month
 															).count()
 															
+	stats_count_last_week = ResumeStatistics.objects.filter(
+															resume_id=resume.id,
+															access_date__range=[last_week[0], last_week[1]]
+															).count()
+	
 	stats_count_yesterday = ResumeStatistics.objects.filter(
 															resume_id=resume.id, 
 															access_date=yesterday, 
@@ -139,6 +147,7 @@ def stats(request):
 															'resume' : resume, 
 															'stats_count_total' : stats_count_total,
 															'stats_count_last_month' : stats_count_last_month,
+															'stats_count_last_week' : stats_count_last_week,
 															'stats_count_yesterday' : stats_count_yesterday,
 															'stats_count_today' : stats_count_today,
 															})

@@ -18,6 +18,8 @@ from chartit import DataPool, Chart
 from colabre_web.statistics.models import *
 from chartit import *
 from django.db.models import *
+from dateutil.relativedelta import relativedelta
+from colabre_web.utils import get_week_days_range
 
 urlpatterns = patterns('colabre_web.views.my_jobs',
 	
@@ -49,46 +51,39 @@ def index(request):
 
 @login_required
 def stats(request):
-
 	profile = request.user.get_profile()
-	
-	stats = JobStatistics.objects.filter(profile_id=profile.id)
-	
 	jobs = Job.objects.filter(profile=profile)
 	job_titles = JobTitle.objects.filter(id__in=[job.job_title.id for job in jobs])
 	segments = Segment.objects.filter(id__in=[job_title.segment.id for job_title in job_titles])
 	
-	queryset = stats
-	
-	#test = JobStatistics.objects.annotate(total=Count('job_title')).filter(profile_id=profile.id)
-	
-	ds = PivotDataPool(
+	queryset = JobTitleCountStatistics.objects.filter(profile_id=profile.id)
+
+	ds = DataPool(
 		series = [{
 			'options' : 
 			{
 				'source': queryset,
-				'categories' : 'search_term'
 			},
 			'terms' : 
-			{
-				'Quantidade': Count('search_term'),
-			}
-		}],
-		top_n_term = 'Quantidade',
-		top_n = 6
+			[
+				'total',
+				'job_title_name'
+			]
+		}]
 	)
-	chart1 = PivotChart(
+	chart = Chart(
 		datasource = ds, 
 		series_options = [{
 			'options':
 			{
 				'type': 'column',
+				'stacking'
 				'color' : 'rgba(70, 114, 193, 1)'
 			},
 			'terms': 
-			[	
-				'Quantidade', 
-			],
+			{
+				'job_title_name' : [ 'total' ]
+			},
 		}], chart_options = {
 				'chart' : 
 				{
@@ -114,58 +109,21 @@ def stats(request):
 				},
 				'title' : 
 				{
-					'text' : 'Os 6 termos de busca que mais levaram a seu currículo'
+					'text' : 'Os 6 termos de busca que mais levaram às suas vagas'
 				}
 			}
 	)
-	
-	
-	
-	data = DataPool(
-       series=
-        [{'options': {
-            'source': JobSegmentCountStatistics.objects.all()},
-          'terms': [
-            'date',
-            'segment_name', 
-            'total']}
-         ]
-		)
 
-	chart2 = Chart(
-        datasource = data, 
-        series_options = 
-          [{'options':{
-              'type': 'spline',
-              'stacking': False},
-            'terms':{
-              'date': [ 'total', ]
-              }}],
-        chart_options = 
-          {'title': {
-               'text': 'Weather Data of Boston and Houston'},
-           'xAxis': {
-                'title': {
-                   'text': 'Month number'}}},
-		x_sortf_mapf_mts = (lambda m: m, lambda m: "-{0}-".format(m), True)
-		
-	)
-	
-	
-	categories = JobSegmentCountStatistics.objects.values('date').distinct()
-	
-	return render(request, get_template_path('stats.html'), 
-				{ 
-					'segments' : segments, 
-					'job_titles' : job_titles,
-					'stats' : stats,
-					'jobs' : jobs,
-					'charts' : [chart1, chart2],
-					'chart' : { 'categories' : categories }
-				})
+	return render(request, get_template_path('stats.html'), {
+															'charts' : chart,
+															'jobs' : jobs, 
+															'segments' : segments,
+															'job_titles' : job_titles
+															})
 
 @login_required
 def partial_details(request, id, search_term=None):
+	"""
 	data = DataPool(
            series=
             [{'options': {
@@ -211,9 +169,113 @@ def partial_details(request, id, search_term=None):
 					},
 				}
 			)
+	"""
+	
+	queryset = JobStatistics.objects.filter(
+												job_id=id, 
+												search_term__regex=r'^.+'
+												)
+	ds = PivotDataPool(
+		series = [{
+			'options' : 
+			{
+				'source': queryset,
+				'categories' : 'search_term'
+			},
+			'terms' : 
+			{
+				'Quantidade': Count('search_term'),
+			}
+		}],
+		top_n_term = 'Quantidade',
+		top_n = 8
+	)
+	
+	chart = PivotChart(
+		datasource = ds, 
+		series_options = [{
+			'options':
+			{
+				'type': 'column',
+				'color' : 'rgba(70, 114, 193, 1)'
+			},
+			'terms': 
+			[	
+				'Quantidade', 
+			],
+		}], chart_options = {
+				'chart' : 
+				{
+					'backgroundColor' : 'rgba(255, 255, 255, 0.0)'		
+				},
+				'yAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'legend' :
+				{
+					'enabled' : False
+				},
+				'xAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'title' : 
+				{
+					'text' : 'Os termos de busca que mais levaram a sua vaga'
+				}
+			}
+	)
+	
+	today = datetime.datetime.now().date()
+	last_month = today - relativedelta(months=1)
+	yesterday = today - relativedelta(days=1)
+	last_week_date = today - relativedelta(weeks=1)
+	last_week = get_week_days_range(last_week_date.year, last_week_date.isocalendar()[1])
+	
+	stats_count_total = JobStatistics.objects.filter(job_id=id,).count()
+	
+	stats_count_last_month = JobStatistics.objects.filter(
+															job_id=id, 
+															access_date__year=last_month.year, 
+															access_date__month=last_month.month
+															).count()
+															
+	stats_count_last_week = JobStatistics.objects.filter(
+															job_id=id, 
+															access_date__range=[last_week[0], last_week[1]]
+															).count()
+	
+	stats_count_yesterday = JobStatistics.objects.filter(
+															job_id=id, 
+															access_date=yesterday, 
+															).count()
+															
+	stats_count_today = JobStatistics.objects.filter(
+															job_id=id,
+															access_date=today 
+															).count()
 	job = Job.objects.get(id=id)
-	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'chart' : chart, 'container' : 'container' + str(job.id) })
+	response = render(request, get_template_path("partial/details.html"), 
+					{ 
+						'job' : job, 
+						'chart' : chart, 
+						'container' : 'container' + str(job.id),
+						'stats_count_total' : stats_count_total,
+						'stats_count_last_week' : stats_count_last_week,
+						'stats_count_last_month' : stats_count_last_month,
+						'stats_count_yesterday' : stats_count_yesterday,
+						'stats_count_today' : stats_count_today
+						
+					})
 	response['job-id'] = id
+	
 	return response
 
 @login_required

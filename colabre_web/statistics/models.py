@@ -32,6 +32,19 @@ def get_time_range():
 class Statistics(object):
 	is_statistics = True
 
+class JobTitleCountStatistics(models.Model, Statistics):
+	class Meta:
+		app_label = 'colabre_web'
+		managed = False
+		
+	profile_id = models.IntegerField()
+	total = models.IntegerField()
+	segment_id = models.IntegerField()
+	segment_name = models.CharField(max_length=50)
+	job_title_id = models.IntegerField()
+	job_title_name = models.CharField(max_length=50)
+	search_term = models.CharField(max_length=50, null=True)
+
 class JobSegmentCountStatistics(models.Model, Statistics):
 	class Meta:
 		app_label = 'colabre_web'
@@ -47,17 +60,12 @@ class JobStatistics(models.Model, Statistics):
 		app_label = 'colabre_web'
 		
 	job_id = models.IntegerField()
-
 	profile_id = models.IntegerField()
-	
 	job_creation_date = models.DateTimeField()
-	
 	segment_id = models.IntegerField()
 	segment_name = models.CharField(max_length=50)
-	
 	job_title_id = models.IntegerField()
 	job_title_name = models.CharField(max_length=50)
-	
 	access_date = models.DateField(auto_now_add=True)
 	access_datetime = models.DateTimeField(auto_now_add=True)
 	search_term = models.CharField(max_length=50, null=True)
