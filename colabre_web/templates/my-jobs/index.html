@@ -13,22 +13,22 @@
 			<div class="content-header-aligner">
 				<h2>Buscar minhas vagas</h2>
 			</div>
-			
+
 			<!-- filters -->
 			{#% cache 300 jobs_search_filters user.username %#}
 			{% include "my-jobs/_filters.html" %}
 			{#% endcache %#}
 			<!-- /filters -->
 		</div>
-		
+
 		<!-- right column -->
 		<div class="content-right">
-			
+
 			<!-- search input -->
 			<div class="content-header-aligner">
-				<input class="search-field" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />	
+				<input class="search-field" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />
 			</div>
-			
+
 			<!-- search result -->
 			<div class="loading-search" id="jobs-loading-img">
 				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
@@ -40,12 +40,12 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<script type="text/javascript">
 		$(function(){
-			
+
 			var q = $("#search-jobs").val();
-			
+
 			$("#filter-period-all").change(function(){
 				checked = $(this).attr("checked");
 				if (checked)
@@ -59,32 +59,32 @@
 					period_days = $("#period-days").val();
 				}
 			});
-			
+
 			// load content and toggle visiblity
 			$(".job-show-details").live('click', function(){
-			
+
 				jobId = $(this).attr("job-id");
-				
+
 				var req = $.ajax({
 					url: '/minhas-vagas/parcial/detalhar/' + jobId + '/' + q + '/',
 					type: 'get',
 					complete: function()
 					{
-						
+
 					},
 					success: function(data)
 					{
 						$("#job-details-" + jobId)
 							.html(data)
 							.show('fast');
-						
+
 						$("#job-" + jobId)
 							.removeClass("job-show-details")
 							.addClass("job-toggle-details wrapper-expanded");
 					}
-				});				
+				});
 			});
-			
+
 			// toggle visibility after content is loaded...
 			$(".job-toggle-details").live('click', function() {
 				_this = $(this);
@@ -93,15 +93,15 @@
 					_this.toggleClass("wrapper-expanded wrapper-contracted");
 				});
 			});
-			
+
 			$(".job-wrapper-summary a").live('click', function(e) {
 				e.stopPropagation();
 			});
-		
+
 			$(".filter-toggler").click(function(){
-				
+
 				target = $("#" + $(this).attr("target"));
-				
+
 				if (target.is(":visible"))
 				{
 					$(this).text("◄");
@@ -113,29 +113,29 @@
 					target.show();
 				}
 			});
-		
+
 			$(".country, .region").change(function(){
 				id = $(this).attr("id");
 				checked = $(this).attr("checked") ? true : false;
 				$("." + id).attr("checked", checked);
 			});
-		
+
 			$(".segment-item").change(function(){
 				checked = $(this).attr("checked") ? true : false;
 				$("[job-title-segmentid=" + $(this).val() + "]").attr("checked", checked);
 			});
-			
+
 			$(".jot-title-item").change(function(){
 				segmentId = $(this).attr("job-title-segmentid");
 				checked = $(".jot-title-item:checked[job-title-segmentid=" + segmentId + "]").size() > 0;
 				$("#segment-" + segmentId).attr("checked", checked);
 			});
-		
+
 			var page = 1;
-			
+
 			// avoid resending the same request twice when page is scrolled all the way down
 			var lock = false;
-			
+
 			var display_result = function(result)
 			{
 				$("#jobs-loading-img").hide();
@@ -144,7 +144,7 @@
 				$("#jobs").html(result);
 				page++;
 			};
-			
+
 			var display_result_append = function(result)
 			{
 				$("#jobs-loading-img").hide();
@@ -154,13 +154,13 @@
 				page++;
 				lock = false;
 			};
-			
+
 			var period_days = $("#period-days").val();
-			
+
 			$("#period-days").change(function(){
 				period_days = $(this).val();
 			});
-			
+
 			var send_search = function(callback)
 			{
 				job_titles = [];
@@ -184,12 +184,12 @@
 				$("#jobs-search-info").hide();
 				search('/minhas-vagas/parcial/buscar/', 'post', data, callback);
 			};
-			
-			$(".filter-control").bind('change select', function() { 
-				page = 1; 
-				send_search(display_result); 
+
+			$(".filter-control").bind('change select', function() {
+				page = 1;
+				send_search(display_result);
 			});
-			
+
 			$("#btn-search").click(function(){
 				q = $("#search-jobs").val();
 				page = 1;
@@ -211,17 +211,17 @@
 				{
 					if ($("#stop_request_on_scroll").size() > 0)
 						return;
-						
+
 					lock = true;
 					$("#jobs-loading").show();
 					send_search(display_result_append);
 				}
 			});
-			
+
 			$("#search-jobs").focus();
-			
-			send_search(display_result); 
+
+			send_search(display_result);
 		});
 	</script>
-	
+
 {% endblock %}

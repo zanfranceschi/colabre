@@ -2,6 +2,7 @@
 	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
 	<h3>{{ job.job_title }}</h3>
 	<div class="job-date">publicada em {{ job.creation_date }}</div>
+	<a alt="estatísticas" title="estatísticas" class="job-stats" href="{% url my_jobs_individualstats job.id %}"><img src="{{ STATIC_URL }}img/stats.png" /></a>
 	{% if job.is_editable %}<a alt="edição" title="editar" class="job-edit" href="{% url my_jobs_edit job.id %}"><img src="{{ STATIC_URL }}img/page_white_edit.png" /></a>{% endif %}
 	<a href="{% url my_jobs_confirm_del job.id %}" class="job-del">
 		<img src="{{ STATIC_URL }}img/delete.png" alt="exclusão" title="excluir" />

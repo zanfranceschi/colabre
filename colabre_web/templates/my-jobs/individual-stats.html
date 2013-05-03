@@ -1,0 +1,72 @@
+﻿{% extends "_base.html" %}
+{% load bbcode %}
+{% load chartit %}
+{% block title %}Estatísticas das Minhas Vagas{% endblock %}
+
+{% block extra_head %}
+<style>
+	.stats
+	{
+		width: 48%;
+	}
+	#chart
+	{
+		height: 250px;
+	}
+	.stats-row td
+	{
+		border-bottom: 1px solid #ddd;
+		padding: 20px 0 20px 0;
+	}
+	.stats-label
+	{
+
+	}
+	.stats-value
+	{
+		text-align: right;
+	}
+	.filter-wrapper
+	{
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin-right: 10px;
+		float: left;
+	}
+</style>
+
+{% endblock %}
+
+{% block body %}
+<h1>Estatísticas: {{ job.job_title }} em {{ job.city.full_name }}</h1>
+<p>Publicada em {{ job.creation_date }}</p>
+
+<div id="chart1" class="my-job-chart" style=""> </div>
+{{ chart|load_charts:"chart1" }}
+
+<table class="my-job-stats" cellpadding="0" cellspacing="0" style="width: 40%;">
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações hoje</td>
+		<td class="stats-value">{{ stats_count_today }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações ontem</td>
+		<td class="stats-value">{{ stats_count_yesterday }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações semana passada</td>
+		<td class="stats-value">{{ stats_count_last_week }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações mês passado</td>
+		<td class="stats-value">{{ stats_count_last_month }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Total de visualizações</td>
+		<td class="stats-value">{{ stats_count_total }}</td>
+	</tr>
+</table>
+
+<br style="clear: both;" />
+
+{% endblock %}

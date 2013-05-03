@@ -25,8 +25,10 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
 	
 	url(r'^$', 'index', name='my_jobs_index'),
 	url(r'^estatisticas/$', 'stats', name='my_jobs_stats'),
+    url(r'^estatisticas/([\d]+)/$', 'individual_stats', name='my_jobs_individualstats'),
 	url(r'^criar/$', 'create', name='my_jobs_create'),
 	url(r'^editar/([\d]+)/$', 'edit', name='my_jobs_edit'),
+    
 	url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='my_jobs_confirm_del'),
 	url(r'^excluir/([\d]+)/$', 'delete', name='my_jobs_delete'),
 	
@@ -48,6 +50,112 @@ def _index_data(request):
 def index(request):
 	context = _index_data(request)
 	return render(request, get_template_path('index.html'), context)
+
+@login_required
+def individual_stats(request, id):
+	queryset = JobStatistics.objects.filter(
+	                                            job_id=id, 
+	                                            search_term__regex=r'^.+'
+	                                            )
+	ds = PivotDataPool(
+	    series = [{
+	        'options' : 
+	        {
+	            'source': queryset,
+	            'categories' : 'search_term'
+	        },
+	        'terms' : 
+	        {
+	            'Quantidade': Count('search_term'),
+	        }
+	    }],
+	    top_n_term = 'Quantidade',
+	    top_n = 8
+	)
+	
+	chart = PivotChart(
+	    datasource = ds, 
+	    series_options = [{
+	        'options':
+	        {
+	            'type': 'column',
+	            'color' : 'rgba(70, 114, 193, 1)'
+	        },
+	        'terms': 
+	        [    
+	            'Quantidade', 
+	        ],
+	    }], chart_options = {
+	            'chart' : 
+	            {
+	                'backgroundColor' : 'rgba(255, 255, 255, 0.0)'        
+	            },
+	            'yAxis' : 
+	            {
+	                'title' :
+	                {
+	                    'text' : ' '
+	                }
+	            },
+	            'legend' :
+	            {
+	                'enabled' : False
+	            },
+	            'xAxis' : 
+	            {
+	                'title' :
+	                {
+	                    'text' : ' '
+	                }
+	            },
+	            'title' : 
+	            {
+	                'text' : 'Os termos de busca que mais levaram a sua vaga'
+	            }
+	        }
+	)
+	
+	today = datetime.datetime.now().date()
+	last_month = today - relativedelta(months=1)
+	yesterday = today - relativedelta(days=1)
+	last_week_date = today - relativedelta(weeks=1)
+	last_week = get_week_days_range(last_week_date.year, last_week_date.isocalendar()[1])
+	
+	stats_count_total = JobStatistics.objects.filter(job_id=id).count()
+	
+	stats_count_last_month = JobStatistics.objects.filter(
+	                                                        job_id=id, 
+	                                                        access_date__year=last_month.year, 
+	                                                        access_date__month=last_month.month
+	                                                        ).count()
+
+	stats_count_last_week = JobStatistics.objects.filter(
+	                                                        job_id=id, 
+	                                                        access_date__range=[last_week[0], last_week[1]]
+	                                                        ).count()
+	
+	stats_count_yesterday = JobStatistics.objects.filter(
+	                                                        job_id=id, 
+	                                                        access_date=yesterday, 
+	                                                        ).count()
+
+	stats_count_today = JobStatistics.objects.filter(
+	                                                        job_id=id,
+	                                                        access_date=today 
+	                                                        ).count()
+	job = Job.objects.get(id=id)
+	return render(request, get_template_path("individual-stats.html"), 
+	                { 
+	                    'job' : job, 
+	                    'chart' : chart, 
+	                    'stats_count_total' : stats_count_total,
+	                    'stats_count_last_week' : stats_count_last_week,
+	                    'stats_count_last_month' : stats_count_last_month,
+	                    'stats_count_yesterday' : stats_count_yesterday,
+	                    'stats_count_today' : stats_count_today
+	                    
+	                })
+	
 
 @login_required
 def stats(request):
