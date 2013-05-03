@@ -114,6 +114,68 @@ def individual_stats(request, id):
 	            }
 	        }
 	)
+	job_title_id = queryset[0].job_title_id if queryset else 0
+	queryset_all = JobStatistics.objects.filter(
+	                                            job_title_id=job_title_id,
+	                                            search_term__regex=r'^.+'
+	                                            ).exclude(job_id=id)
+	ds_all = PivotDataPool(
+	    series = [{
+	        'options' : 
+	        {
+	            'source': queryset_all,
+	            'categories' : 'search_term'
+	        },
+	        'terms' : 
+	        {
+	            'Quantidade': Count('search_term'),
+	        }
+	    }],
+	    top_n_term = 'Quantidade',
+	    top_n = 8
+	)
+	
+	chart_all = PivotChart(
+	    datasource = ds_all, 
+	    series_options = [{
+	        'options':
+	        {
+	            'type': 'column',
+	            'color' : 'rgba(70, 114, 193, 1)'
+	        },
+	        'terms': 
+	        [    
+	            'Quantidade', 
+	        ],
+	    }], chart_options = {
+	            'chart' : 
+	            {
+	                'backgroundColor' : 'rgba(255, 255, 255, 0.0)'        
+	            },
+	            'yAxis' : 
+	            {
+	                'title' :
+	                {
+	                    'text' : ' '
+	                }
+	            },
+	            'legend' :
+	            {
+	                'enabled' : False
+	            },
+	            'xAxis' : 
+	            {
+	                'title' :
+	                {
+	                    'text' : ' '
+	                }
+	            },
+	            'title' : 
+	            {
+	                'text' : 'Os termos de busca que mais levaram a vagas similares a esta'
+	            }
+	        }
+	)
 	
 	today = datetime.datetime.now().date()
 	last_month = today - relativedelta(months=1)
@@ -147,7 +209,7 @@ def individual_stats(request, id):
 	return render(request, get_template_path("individual-stats.html"), 
 	                { 
 	                    'job' : job, 
-	                    'chart' : chart, 
+	                    'charts' : [chart, chart_all],
 	                    'stats_count_total' : stats_count_total,
 	                    'stats_count_last_week' : stats_count_last_week,
 	                    'stats_count_last_month' : stats_count_last_month,

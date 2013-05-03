@@ -2,49 +2,15 @@
 {% load bbcode %}
 {% load chartit %}
 {% block title %}Estatísticas das Minhas Vagas{% endblock %}
-
-{% block extra_head %}
-<style>
-	.stats
-	{
-		width: 48%;
-	}
-	#chart
-	{
-		height: 250px;
-	}
-	.stats-row td
-	{
-		border-bottom: 1px solid #ddd;
-		padding: 20px 0 20px 0;
-	}
-	.stats-label
-	{
-
-	}
-	.stats-value
-	{
-		text-align: right;
-	}
-	.filter-wrapper
-	{
-		border: 1px solid #ccc;
-		padding: 10px;
-		margin-right: 10px;
-		float: left;
-	}
-</style>
-
-{% endblock %}
-
 {% block body %}
-<h1>Estatísticas: {{ job.job_title }} em {{ job.city.full_name }}</h1>
-<p>Publicada em {{ job.creation_date }}</p>
 
-<div id="chart1" class="my-job-chart" style=""> </div>
-{{ chart|load_charts:"chart1" }}
+<h1>Estatísticas</h1>
 
-<table class="my-job-stats" cellpadding="0" cellspacing="0" style="width: 40%;">
+<p><b>{{ job.job_title }} ({{ job.job_title.segment.name }})</b> - {{ job.city.full_name }} - publicada em <b>{{ job.creation_date }}</b> e atualizado em <b>{{ resume.last_update }}</b>.</p>
+
+<hr style="border: 0; height: 1px; background: #ccc; margin: 20px; clear: both;" />
+
+<table class="stats-element stats-element-left" cellpadding="0" cellspacing="0">
 	<tr class="stats-row">
 		<td class="stats-label">Visualizações hoje</td>
 		<td class="stats-value">{{ stats_count_today }}</td>
@@ -66,6 +32,14 @@
 		<td class="stats-value">{{ stats_count_total }}</td>
 	</tr>
 </table>
+
+<div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
+
+<br style="clear: both;" />
+
+<div id="chart_all" class="stats-element-chart" style="margin-top: 20px;"> </div>
+
+{{ charts|load_charts:"chart,chart_all" }}
 
 <br style="clear: both;" />
 

@@ -460,24 +460,26 @@ iframe.contact-form
 	padding: 20px 0 20px 0;
 }
 
-.my-job-stats
+.stats-element
 {
-	font-size: 80%;
-	margin: 10px;
+	width: 48%;
 }
-.my-job-stats .stats-row td
+.stats-element-left
 {
-	border-bottom: 1px solid #ddd;
-	padding: 10px 0 10px 0;
+	float: left;
 }
-.stats
+.stats-element-right
 {
-	
+	float: right;
 }
 
+.stats-element-chart
+{
+	height: 300px;
+}
 .stats-label
 {
-	
+
 }
 
 .stats-value

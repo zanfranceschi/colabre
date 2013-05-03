@@ -3,35 +3,37 @@
 {% load chartit %}
 {% block title %}Estatísticas do Meu Currículo{% endblock %}
 {% block body %}
-	<h1>Estatísticas do Meu Currículo</h1>
-	
-	<p><small>Currículo criado em <b>{{ resume.created }}</b> e atualizado em <b>{{ resume.last_update }}</b>.</small></p>
-	
-	<table class="stats" style="float: left; width: 48%;" cellpadding="0" cellspacing="0">
-		<tr class="stats-row">
-			<td class="stats-label">Visualizações hoje</td>
-			<td class="stats-value">{{ stats_count_today }}</td>
-		</tr>
-		<tr class="stats-row">
-			<td class="stats-label">Visualizações ontem</td>
-			<td class="stats-value">{{ stats_count_yesterday }}</td>
-		</tr>
-		<tr class="stats-row">
-			<td class="stats-label">Visualizações semana passada</td>
-			<td class="stats-value">{{ stats_count_last_week }}</td>
-		</tr>
-		<tr class="stats-row">
-			<td class="stats-label">Visualizações mês passado</td>
-			<td class="stats-value">{{ stats_count_last_month }}</td>
-		</tr>
-		<tr class="stats-row">
-			<td class="stats-label">Total de visualizações</td>
-			<td class="stats-value">{{ stats_count_total }}</td>
-		</tr>
-	</table>
-	
-	<div id="chart" style="float: right; width: 48%; height: 300px;"> </div>
-	{{ chart|load_charts:"chart" }}
+<h1>Estatísticas do Meu Currículo</h1>
+
+<p>Currículo criado em <b>{{ resume.created }}</b> e atualizado em <b>{{ resume.last_update }}</b>.</p>
+
+<hr style="border: 0; height: 1px; background: #ccc; margin: 20px; clear: both;" />
+
+<table class="stats-element stats-element-left" cellpadding="0" cellspacing="0">
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações hoje</td>
+		<td class="stats-value">{{ stats_count_today }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações ontem</td>
+		<td class="stats-value">{{ stats_count_yesterday }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações semana passada</td>
+		<td class="stats-value">{{ stats_count_last_week }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações mês passado</td>
+		<td class="stats-value">{{ stats_count_last_month }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Total de visualizações</td>
+		<td class="stats-value">{{ stats_count_total }}</td>
+	</tr>
+</table>
+
+<div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
+{{ chart|load_charts:"chart" }}
 
 <br style="clear: both;" />
 {% endblock %}
