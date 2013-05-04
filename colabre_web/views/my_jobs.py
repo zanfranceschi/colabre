@@ -141,7 +141,7 @@ def individual_stats(request, id):
 	        'options':
 	        {
 	            'type': 'column',
-	            'color' : 'rgba(70, 114, 193, 1)'
+	            'color' : 'rgba(150, 150, 150, 0.5)'
 	        },
 	        'terms': 
 	        [    

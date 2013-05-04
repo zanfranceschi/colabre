@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from colabre_web.models import UserProfile, UserProfileVerification
-import sys
 from datetime import datetime
 from colabre_web.oauth.settings import SOCIAL_AUTH_EMAIL_ALREAY_EXISTS_TEMPLATE_PATH
 import traceback
@@ -23,8 +22,6 @@ def check_oauth_email_existence(request, *args, **kwargs):
 
 def bind_to_profile(request, *args, **kwargs):
 	try:
-		print >> sys.stderr, "\n\n", args, "\n\n" 
-		print >> sys.stderr, "\n\n", kwargs, "\n\n"
 		user = None
 		if kwargs.get('user'):
 			user = kwargs['user']
