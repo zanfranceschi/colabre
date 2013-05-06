@@ -83,7 +83,6 @@ def stats(request):
 												resume_id=resume.id, 
 												search_term__regex=r'^.+'
 												)
-	#queryset.query.having = ['COUNT(resume_id) > 1']
 	
 	ds = PivotDataPool(
 		series = [{
@@ -137,13 +136,77 @@ def stats(request):
 				},
 				'title' : 
 				{
-					'text' : 'Os 6 termos de busca que mais levaram a seu currículo'
+					'text' : 'Os termos de busca que mais levaram a seu currículo'
+				}
+			}
+	)
+	
+	queryset_all = ResumeStatistics.objects.filter(
+												segment_id=resume.segment.id,
+												search_term__regex=r'^.+'
+												).exclude(resume_id=resume.id)
+	
+	ds_all = PivotDataPool(
+		series = [{
+			'options' : 
+			{
+				'source': queryset_all,
+				'categories' : 'search_term'
+			},
+			'terms' : 
+			{
+				'Quantidade': Count('search_term'),
+			}
+		}],
+		top_n_term = 'Quantidade',
+		top_n = 6
+	)
+	chart_all = PivotChart(
+		datasource = ds_all, 
+		series_options = [{
+			'options':
+			{
+				'type': 'column',
+				'color' : 'rgba(150, 150, 150, 0.5)'
+			},
+			'terms': 
+			[	
+				'Quantidade', 
+			],
+		}], chart_options = {
+				'chart' : 
+				{
+					'backgroundColor' : 'rgba(255, 255, 255, 0.0)'		
+				},
+				'yAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'legend' :
+				{
+					'enabled' : False
+				},
+				'xAxis' : 
+				{
+					'title' :
+					{
+						'text' : ' '
+					}
+				},
+				'title' : 
+				{
+					'text' : 'Os termos de busca que mais levaram a currículos similares'
 				}
 			}
 	)
 
 	return render(request, get_template_path('stats.html'), {
-															'chart' : chart,
+															'charts' : [chart, chart_all],
+															'chart_chart' : len(queryset) > 1,
+	                    									'chart_chart_all' : len(queryset_all) > 1,
 															'resume' : resume, 
 															'stats_count_total' : stats_count_total,
 															'stats_count_last_month' : stats_count_last_month,

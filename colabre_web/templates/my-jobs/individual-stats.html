@@ -33,11 +33,14 @@
 	</tr>
 </table>
 
+{% if chart_chart %}
 <div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
-
 <br style="clear: both;" />
+{% endif %}
 
+{% if chart_chart_all %}
 <div id="chart_all" class="stats-element-chart" style="margin-top: 20px;"> </div>
+{% endif %}
 
 {{ charts|load_charts:"chart,chart_all" }}
 

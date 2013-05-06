@@ -1,5 +1,5 @@
 from django.db import models
-from colabre_web.models import Job
+from colabre_web.models import Job, Resume
 from colabre_web.utils import strip_specialchars
 
 class Statistics(object):
@@ -43,6 +43,8 @@ class ResumeStatistics(models.Model, Statistics):
 		app_label = 'colabre_web'
 		
 	resume_id = models.IntegerField()
+	segment_id = models.IntegerField()
+	segment_name = models.CharField(max_length=50)
 	access_date = models.DateField(auto_now_add=True)
 	access_datetime = models.DateTimeField(auto_now_add=True)
 	search_term = models.CharField(max_length=50, null=True)
@@ -51,6 +53,10 @@ class ResumeStatistics(models.Model, Statistics):
 		if (not self.resume_id):
 			raise Exception("resume_id cannot be null")
 		
+		resume = Resume.objects.get(id=self.resume_id)
+	
+		self.segment_id = resume.segment.id
+		self.segment_name = resume.segment.name
 		self.search_term = strip_specialchars(self.search_term)
 
 		super(ResumeStatistics, self).save(*args, **kwargs)

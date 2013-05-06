@@ -119,6 +119,7 @@ def individual_stats(request, id):
 	                                            job_title_id=job_title_id,
 	                                            search_term__regex=r'^.+'
 	                                            ).exclude(job_id=id)
+	
 	ds_all = PivotDataPool(
 	    series = [{
 	        'options' : 
@@ -210,6 +211,8 @@ def individual_stats(request, id):
 	                { 
 	                    'job' : job, 
 	                    'charts' : [chart, chart_all],
+	                    'chart_chart' : len(queryset) > 1,
+	                    'chart_chart_all' : len(queryset_all) > 1,
 	                    'stats_count_total' : stats_count_total,
 	                    'stats_count_last_week' : stats_count_last_week,
 	                    'stats_count_last_month' : stats_count_last_month,
@@ -221,75 +224,7 @@ def individual_stats(request, id):
 
 @login_required
 def stats(request):
-	profile = request.user.get_profile()
-	jobs = Job.objects.filter(profile=profile)
-	job_titles = JobTitle.objects.filter(id__in=[job.job_title.id for job in jobs])
-	segments = Segment.objects.filter(id__in=[job_title.segment.id for job_title in job_titles])
-	
-	queryset = JobTitleCountStatistics.objects.filter(profile_id=profile.id)
-
-	ds = DataPool(
-		series = [{
-			'options' : 
-			{
-				'source': queryset,
-			},
-			'terms' : 
-			[
-				'total',
-				'job_title_name'
-			]
-		}]
-	)
-	chart = Chart(
-		datasource = ds, 
-		series_options = [{
-			'options':
-			{
-				'type': 'column',
-				'stacking'
-				'color' : 'rgba(70, 114, 193, 1)'
-			},
-			'terms': 
-			{
-				'job_title_name' : [ 'total' ]
-			},
-		}], chart_options = {
-				'chart' : 
-				{
-					'backgroundColor' : 'rgba(255, 255, 255, 0.0)'		
-				},
-				'yAxis' : 
-				{
-					'title' :
-					{
-						'text' : ' '
-					}
-				},
-				'legend' :
-				{
-					'enabled' : False
-				},
-				'xAxis' : 
-				{
-					'title' :
-					{
-						'text' : ' '
-					}
-				},
-				'title' : 
-				{
-					'text' : 'Os 6 termos de busca que mais levaram às suas vagas'
-				}
-			}
-	)
-
-	return render(request, get_template_path('stats.html'), {
-															'charts' : chart,
-															'jobs' : jobs, 
-															'segments' : segments,
-															'job_titles' : job_titles
-															})
+	pass
 
 @login_required
 def partial_details(request, id, search_term=None):
