@@ -79,45 +79,33 @@
 		    height: 1px;
 		    background: #ccc;
 		}
+		#highlight
+		{
+			font-size: 300%;
+			font-weight: bold;
+			padding: 50px;
+			color: #333;
+		}
+		blockquote {
+			font-family: Georgia, serif;
+			font-size: 200%;
+			font-style: italic;
+			width: 60%;
+			line-height: 1.45;
+			color: #333;
+			display: block;
+			margin-left: 20%;
+			background-color: #eee;
+			padding: 20px;
+		}
 	</style>
 {% endblock %}
-{% block menu %}{% endblock menu %}
 {% block body %}
 
-<div style="text-align: center; margin-top: -50px;">
+<blockquote>
+	O Colabre é e sempre será um serviço gratuito de busca e publicação de vagas e profissionais.
+</blockquote>
+ 
 
-	<img src="{{ STATIC_URL }}img/logo-home.png" alt="Colabre" style="margin: 0 auto; display: block;" />
-
-	<img src="{{ STATIC_URL }}img/home/banner.jpg"
-		alt="Colabre"
-		style="
-			margin: 20px auto;
-			display: block;
-			border: 15px solid #eee;"
-			/>
-</div>
-
-<div style="text-align: center;">
-	<a class="large-link" href="{% url 'jobs_index' %}">Busca de Vagas</a>
-	<a class="large-link" href="{% url 'resumes_index' %}">Busca de Profissionais</a>
-</div>
-
-{% if not user.is_authenticated %}
-<div id="form">
-	<h1>Login</h1>
-	{% include "auth/login-form.html" %}
-	<hr />
-	<img style="border: 0; vertical-align: middle; display: block; margin-bottom: 5px; margin-top: 15px;" src="{{ STATIC_URL }}img/linkedin-logo-small.png" alt="linkedin" />
-	<a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn.</a>
-</div>
-{% else %}
-<div id="logout-wrapper">
-	Você está logado como <b><a href="{% url 'my_profile_index' %}">{{ user.first_name }}</a></b> - <a id="logout" href="{% url 'logout' %}" id="logout">sair</a>
-</div>
-
-{% endif %}
-
-
-<br style="clear: both;" />
 
 {% endblock body %}
