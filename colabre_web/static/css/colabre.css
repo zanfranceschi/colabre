@@ -140,6 +140,7 @@ img
 	border-top: 1px solid #ddd;
 	color: #888;
 	margin-top: 20px;
+	clear: both;
 }
 
 td.label

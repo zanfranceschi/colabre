@@ -4,87 +4,12 @@
 {% block title %}Início{% endblock %}
 {% block extra_head %}
 	<style type="text/css">
-		.home-column
-		{
-			width: 45%;
-			float: left;
-			padding: 0px;
-			border: 0px solid #ddd;
-		}
-		.home-column h1, .home-column h2
-		{
-			color: #4672c1;
-			font-weight: bold;
-			margin: 2px;
-			text-align: center;
-		}
-		.home-column h1 a, .home-column h2 a
-		{
-			text-decoration: none;
-		}
-		.home-column p
-		{
-			margin: 4px;
-		}
-		.large-link
-		{
-			font-size: 180%;
-			font-weight: bold;
-			text-decoration: none;
-			margin: 30px;
-		}
-		#logout
-		{
-
-		}
-		#logout-wrapper, #form
-		{
-			position: fixed;
-		}
-		#logout-wrapper
-		{
-			top: 10px;
-			right: 10px;
-		}
-		#form
-		{
-			border: 1px solid #ccc;
-			background: #eee;
-			padding: 10px;
-			width: 200px;
-			text-align: left;
-			top: 25%;
-			right: 0;
-		}
-		#form *, #logout-wrapper
-		{
-			font-size: 90%;
-		}
-		#form a
-		{
-			margin-left: 4px;
-		}
-		#form input[type=text], #form input[type=password]
-		{
-			width: 95%;
-		}
-		div.form-row
-		{
-			padding: 0;
-			margin: 0;
-		}
+		
 		hr
 		{
 			border: 0;
 		    height: 1px;
 		    background: #ccc;
-		}
-		#highlight
-		{
-			font-size: 300%;
-			font-weight: bold;
-			padding: 50px;
-			color: #333;
 		}
 		blockquote {
 			font-family: Georgia, serif;
@@ -95,8 +20,13 @@
 			color: #333;
 			display: block;
 			margin-left: 20%;
-			background-color: #eee;
-			padding: 20px;
+			clear: both;
+		}
+		.column
+		{
+			float: left;
+			width: 48%;
+			padding: 10px;
 		}
 	</style>
 {% endblock %}
@@ -105,7 +35,26 @@
 <blockquote>
 	O Colabre é e sempre será um serviço gratuito de busca e publicação de vagas e profissionais.
 </blockquote>
- 
+
+<div class="column column01">
+	<h1>Análise com Gráficos</h1>
+	<p>
+		Seja você um(a) recrutador(a) ou alguém que busque uma nova oportunidade de emprego,
+		o Colabre oferece gráficos para...
+	</p>	
+</div>
+
+<div class="column column02">
+	<h1>Análise</h1>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas eleifend, lacus consequat
+		gravida molestie, turpis sapien tempus metus, nec blandit elit mi nec neque. Praesent id 
+		tellus a massa suscipit commodo. Pellentesque felis orci, auctor eget aliquam non, posuere 
+		aliquam ligula. Ut interdum aliquam feugiat. Suspendisse interdum augue ut nisi aliquet at 
+		fringilla enim rutrum. Nunc at tortor nec sem fringilla vestibulum. Sed sit amet nulla sed 
+		massa commodo gravida.
+	</p>
+</div>
 
 
 {% endblock body %}
