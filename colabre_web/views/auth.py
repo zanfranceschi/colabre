@@ -29,7 +29,7 @@ def authenticate_(request):
 			password = form.cleaned_data['password']
 			next = form.cleaned_data['next']
 			user = authenticate(username=username, password=password)
-			if user:
+			if user and user.is_active:
 				login(request, user)
 				try:
 					return redirect(next)

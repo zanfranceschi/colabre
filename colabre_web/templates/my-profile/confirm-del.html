@@ -1,0 +1,22 @@
+{% extends "_base.html" %}
+
+{% block title %}Exclusão de Vaga{% endblock %}
+
+
+{% block body %}
+
+	<h1>Cancelamento de Cadastro</h1>
+
+	<p>
+		{{ profile.user.first_name }}, é uma pena que queira cancelar sua conta no Colabre.
+		Se não se importar, lhe pedimos que nos diga o porquê do cancelamento no campo abaixo.
+	</p>
+
+	<div style="text-align: center;">
+		<a href="{% url my_profile_cancel %}" class="btn btn-cancel">Confirmar</a>
+	</div>
+	<div style="text-align: right; margin-top: 15px;">
+		<a href="{% url my_profile_index %}" class="btn btn-info">Voltar</a>
+	</div>
+
+{% endblock %}

@@ -19,6 +19,7 @@ class JobStatistics(models.Model, Statistics):
 	access_date = models.DateField(auto_now_add=True)
 	access_datetime = models.DateTimeField(auto_now_add=True)
 	search_term = models.CharField(max_length=50, null=True)
+	session_key = models.CharField(max_length=32)
 	
 	def save(self, *args, **kwargs):
 		if (not self.job_id):
@@ -48,6 +49,7 @@ class ResumeStatistics(models.Model, Statistics):
 	access_date = models.DateField(auto_now_add=True)
 	access_datetime = models.DateTimeField(auto_now_add=True)
 	search_term = models.CharField(max_length=50, null=True)
+	session_key = models.CharField(max_length=32)
 	
 	def save(self, *args, **kwargs):
 		if (not self.resume_id):

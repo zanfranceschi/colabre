@@ -29,8 +29,9 @@ class StatisticsMiddleware:
 			if (resolved.url_name == 'resumes_partial_details'):
 				resume_id = resolved.args[0]
 				search_term = resolved.args[1]
-				log = ResumeStatistics(resume_id=resume_id, search_term=search_term)
-				log.save()
+				if (self.has_not_been_logged('resume' + resume_id + search_term, request)):
+					log = ResumeStatistics(resume_id=resume_id, search_term=search_term, session_key=request.session.session_key)
+					log.save()
 		except Exception, ex:
 			logger.exception(ex.message)
 			
@@ -41,8 +42,9 @@ class StatisticsMiddleware:
 			if (resolved.url_name == 'jobs_partial_details'):
 				job_id = resolved.args[0]
 				search_term = resolved.args[1]
-				log = JobStatistics(job_id=job_id, search_term=search_term)
-				log.save()
+				if (self.has_not_been_logged('job' + job_id + search_term, request)):
+					log = JobStatistics(job_id=job_id, search_term=search_term, session_key=request.session.session_key)
+					log.save()
 		except Exception, ex:
 			logger.exception(ex.message)
 			
@@ -52,15 +54,10 @@ class StatisticsMiddleware:
 			Checks if certain key has been added to the users session
 			Prevents duplicated
 		"""
-		session_key = request.session.session_key
-		session = Session.objects.get(pk=session_key)
-		decoded_session = session.get_decoded()
 		key += '-' + get_date_str()
-		key_exists_in_session = (key in decoded_session.keys())
+		key_exists_in_session = (key in request.session)
 		if (not key_exists_in_session):
-			decoded_session[key] = True
-			session.session_data = Session.objects.encode(decoded_session)
-			session.save()
+			request.session[key] = True
 		return not key_exists_in_session
 		
 		

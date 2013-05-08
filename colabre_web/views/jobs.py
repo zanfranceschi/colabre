@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Q
 from datetime import *
-
+from django.db import connections
 from colabre_web.models import *
 from colabre_web.aux_models import *
 from colabre_web.forms import *
@@ -34,7 +34,20 @@ def get_template_path(template):
 
 def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
-	job_view_count = JobStatistics.objects.filter(job_id=id).count()
+	job_view_count = 0
+	try:
+		
+		cursor = connections['stats'].cursor()
+		cursor.execute("""SELECT COUNT(DISTINCT(access_date)) AS total
+			FROM colabre_web_jobstatistics 
+			WHERE job_id = %s 
+			GROUP BY 
+				access_date, 
+				session_key""", [id])
+		row = cursor.fetchone()
+		job_view_count = row[0]
+	except:
+		pass
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response

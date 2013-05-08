@@ -16,6 +16,9 @@ urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^verificar-email/([\w\d\-]+)/$', 'verify_email', name='my_profile_verify_email'),
 	url(r'^solicitar-verificacao/$', 'demand_verification', name='my_profile_demand_verification'),
 	url(r'^recuperar-acesso/$', 'retrieve_access', name='my_profile_retrieve_access'),
+	url(r'^confirmar-exclusao/$', 'confirm_del', name='my_profile_confirm_del'),
+	url(r'^cancelar/$', 'cancel', name='my_profile_cancel'),
+	
 )
 
 def get_template_path(template):
@@ -94,3 +97,13 @@ def retrieve_access(request):
 	else:
 		form = RetrieveAccessForm()
 	return render(request, get_template_path('retrieve-access.html'), {'form' : form})
+
+
+@login_required
+def confirm_del(request):
+	return render(request, get_template_path('confirm-del.html'), { 'profile' : request.user.get_profile() })
+	
+	
+@login_required
+def cancel(request):
+	return render(request, get_template_path('confirm-del.html'), { 'profile' : request.user.get_profile() })
