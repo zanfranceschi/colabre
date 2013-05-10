@@ -3,8 +3,7 @@
 {% load bbcode %}
 {% block title %}Início{% endblock %}
 {% block extra_head %}
-	<style type="text/css">
-
+<style type="text/css">
 		hr
 		{
 			border: 0;
@@ -13,22 +12,25 @@
 		}
 		blockquote {
 			font-family: Georgia, serif;
-			font-size: 200%;
+			font-size: 300%;
 			font-style: italic;
-			width: 60%;
 			line-height: 1.45;
 			color: #333;
 			display: block;
-			margin-left: 20%;
 			clear: both;
 		}
 		.column
 		{
-			float: left;
-			width: 48%;
 			padding: 10px;
+			
+			width: 80%;
 		}
-	</style>
+		.img 
+		{
+			margin: 0 auto;	
+			display: block;
+		}
+</style>
 {% endblock %}
 {% block body %}
 
@@ -36,29 +38,13 @@
 	O Colabre é e sempre será um serviço gratuito de busca e publicação de vagas e currículos.
 </blockquote>
 
-<div class="column column01">
-	<h1>Análise com Gráficos</h1>
-	<p>
-		Seja você um(a) recrutador(a) ou alguém que busque uma nova oportunidade de emprego,
-		o Colabre oferece gráficos para...
-	</p>
+<hr />
 
-	<p>
-		Com nossos graficos, vc obtem informaçoes que te ajudam a deixar seu curriculo mais completo.
-	</p>
-</div>
+<h1>Análises com gráficos e métricas de acesso</h1>
+<img class="img" src="{{ STATIC_URL }}img/home/screenshot-resume-charts.png" alt="" />
+<p>Com nossos gráficos, você obtem informações que te ajudam a deixar seu currículo mais completo.</p>
 
-<div class="column column02">
-	<h1>Análise</h1>
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas eleifend, lacus consequat
-		gravida molestie, turpis sapien tempus metus, nec blandit elit mi nec neque. Praesent id
-		tellus a massa suscipit commodo. Pellentesque felis orci, auctor eget aliquam non, posuere
-		aliquam ligula. Ut interdum aliquam feugiat. Suspendisse interdum augue ut nisi aliquet at
-		fringilla enim rutrum. Nunc at tortor nec sem fringilla vestibulum. Sed sit amet nulla sed
-		massa commodo gravida.
-	</p>
-</div>
+
 
 
 {% endblock body %}

@@ -47,7 +47,16 @@ def index(request):
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
 def stats(request):
-	resume = Resume.objects.get(profile=request.user.get_profile())
+	resume = None
+	try:
+		resume = Resume.objects.get(profile=request.user.get_profile())
+	except Resume.DoesNotExist:
+		messages.info(request, u'Seu currículo ainda não foi criado. '  
+								u'Que tal preencher as informações abaixo e ' 
+								u'tentar visualizar as estatísticas depois?')
+
+		form = ResumeForm(profile=request.user.get_profile())
+		return render(request, get_template_path('index.html'), {'form' : form })
 	
 	today = datetime.now().date()
 	last_month = today - relativedelta(months=1)
@@ -208,11 +217,11 @@ def stats(request):
 															'chart_chart' : len(queryset) > 1,
 	                    									'chart_chart_all' : len(queryset_all) > 1,
 															'resume' : resume, 
-															'stats_count_total' : stats_count_total,
-															'stats_count_last_month' : stats_count_last_month,
-															'stats_count_last_week' : stats_count_last_week,
-															'stats_count_yesterday' : stats_count_yesterday,
-															'stats_count_today' : stats_count_today,
+															'stats_count_total' : 512, #stats_count_total,
+															'stats_count_last_month' : 23, # stats_count_last_month,
+															'stats_count_last_week' : 10, #stats_count_last_week,
+															'stats_count_yesterday' : 2, # stats_count_yesterday,
+															'stats_count_today' : 5, #stats_count_today,
 															})
 
 
