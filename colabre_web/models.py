@@ -197,7 +197,7 @@ class UserProfile(models.Model):
 			user.set_password(new_password)
 			user.save()
 			UserNotification.getNotification().notify_password_change(user, new_password)
-		return True
+		return len(profiles) > 0
 
 	@classmethod
 	def get_profile_by_user(cls, user):

@@ -5,7 +5,7 @@ from django.contrib import messages
 from colabre_web.models import *
 from colabre_web.forms import *
 from helpers import *
-
+from colabre.settings import EMAIL_SUPPORT
 
 def get_template_path(template):
 	return 'auth/%s' % template
@@ -29,12 +29,15 @@ def authenticate_(request):
 			password = form.cleaned_data['password']
 			next = form.cleaned_data['next']
 			user = authenticate(username=username, password=password)
-			if user and user.is_active:
-				login(request, user)
-				try:
-					return redirect(next)
-				except:
-					return redirect('/')
+			if user is not None:
+				if not user.is_active:
+					messages.error(request, u'Esta conta está inativa. Por favor, entre em contato com {0} e explique-nos seu problema.'.format(EMAIL_SUPPORT))
+				else:
+					login(request, user)
+					try:
+						return redirect(next)
+					except:
+						return redirect('/')
 			else:
 				messages.error(request, u'A combinação usuário/senha que você forneceu não existe.')
 				return render(

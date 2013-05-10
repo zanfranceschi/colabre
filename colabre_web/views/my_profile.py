@@ -8,6 +8,7 @@ from colabre_web.forms import *
 from helpers import *
 from django.conf.urls import patterns, url
 from django.core.cache import cache
+from colabre.settings import EMAIL_SUPPORT
 
 urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^$', 'index', name='my_profile_index'),
@@ -86,14 +87,14 @@ def retrieve_access(request):
 				messages.success(request, 
 					'Enviamos um email para você com uma nova senha.' 
 					' Se não lembrar o email que usou para cadastrar-se no Colabre,'
-					' envie um email para suporte@colabre.org nos explicando sua dificuldade'
-					' -- não esqueça de nos informar o nome do seu usuário.')
+					' envie um email para {0} nos explicando sua dificuldade'
+					' -- não esqueça de nos informar o nome do seu usuário.'.format(EMAIL_SUPPORT))
 			else:
 				messages.error(request, 
 					'Não existe um usuário ou email com os dados que nos forneceu.' 
 					' Se realmente não lembrar o email ou usuário que usou para cadastrar-se no Colabre,'
-					' envie um email para suporte@colabre.org nos explicando sua dificuldade'
-					' -- não esqueça de nos informar o nome do seu usuário.')
+					' envie um email para {0} nos explicando sua dificuldade'
+					' -- não esqueça de nos informar o nome do seu usuário.'.format(EMAIL_SUPPORT))
 	else:
 		form = RetrieveAccessForm()
 	return render(request, get_template_path('retrieve-access.html'), {'form' : form})
@@ -106,4 +107,34 @@ def confirm_del(request):
 	
 @login_required
 def cancel(request):
-	return render(request, get_template_path('confirm-del.html'), { 'profile' : request.user.get_profile() })
+	if (request.method == 'POST'):
+		reason = request.POST['reason']
+		user = request.user
+		message = u"""Motivo:
+{0}
+-----
+Usuário: {1} <{2}> (ID: {3})
+Login: {4}
+
+""".format(reason, user.get_full_name(), user.email, user.id, user.username)
+		try:
+			send_mail(
+					u'Colabre | Cancelamento de Conta',
+					message,
+					request.user.email, 
+					['zanfranceschi@gmai.com'],
+					fail_silently=False)
+		except:
+			pass
+		from django.contrib.auth import logout
+		Resume.objects.filter(profile=user.get_profile()).update(visible=False, active=False)
+		Job.objects.filter(profile=user.get_profile()).update(published=False, active=False)
+		UserProfile.objects.filter(user=user).update(excluded=True, active=False)
+		user.is_active = False
+		user.save()
+		logout(request)
+		messages.info(request, u'Obrigado por ter utilizado os serviços do Colabre. Esperamos ver você em breve.')
+		return render(request, 'home/index.html')
+	else:
+		return render(request, get_template_path('confirm-del.html'), { 'profile' : request.user.get_profile() })
+

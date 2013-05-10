@@ -1,5 +1,8 @@
 import os
 
+EMAIL_SUPPORT = 'suporte@colabre.org'
+EMAIL_CONTACT = 'contato@colabre.org'
+
 _PROJECT_DIR = os.path.dirname(os.path.abspath(__file__)).replace('colabre', 'colabre_web').replace('\\', '/')
 
 def abs_path(_dir, forwardslash=True):
