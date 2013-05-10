@@ -113,16 +113,16 @@ def cancel(request):
 		message = u"""Motivo:
 {0}
 -----
-Usuário: {1} <{2}> (ID: {3})
-Login: {4}
+Usuário: {1} (ID: {2})
+Login: {3}
 
-""".format(reason, user.get_full_name(), user.email, user.id, user.username)
+""".format(reason, user.email, user.id, user.username)
 		try:
 			send_mail(
 					u'Colabre | Cancelamento de Conta',
 					message,
 					request.user.email, 
-					['zanfranceschi@gmai.com'],
+					[EMAIL_SUPPORT],
 					fail_silently=False)
 		except:
 			pass
