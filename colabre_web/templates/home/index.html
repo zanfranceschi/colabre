@@ -1,6 +1,5 @@
 {% extends "_base.html" %}
 {% load url from future %}
-{% load bbcode %}
 {% block title %}Início{% endblock %}
 {% block extra_head %}
 <style type="text/css">
@@ -9,11 +8,11 @@
 			border: 0;
 		    height: 1px;
 		    background: #ccc;
+		    clear: both;
 		}
 		blockquote {
-			font-family: Georgia, serif;
 			font-size: 300%;
-			font-style: italic;
+			font-weight: bold;
 			line-height: 1.45;
 			color: #333;
 			display: block;
@@ -21,33 +20,61 @@
 		}
 		.feature
 		{
-			width: 48%;
+			width: 45%;
 			float: left;
 			padding: 10px;
+
+		}
+		.feature-right
+		{
+			float: right;
+		}
+		.feature img
+		{
+			display: block;
 			margin: 0 auto;
+		}
+		.feature h2
+		{
+			text-align: center;
 		}
 </style>
 {% endblock %}
 {% block body %}
 
 <blockquote>
-	O Colabre é e sempre será um serviço gratuito de busca e publicação de vagas e currículos.
+	<img src="{{ STATIC_URL }}img/home/logo2.png" alt="" style="float: left; margin: 30px 30px 0 0;" /> O Colabre é e sempre será um serviço gratuito de busca e publicação de vagas e currículos.
 </blockquote>
 
 <hr />
 
 <div class="feature">
 	<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
-	<h2>Análises com gráficos e métricas de acesso</h2>
+	<h2>Análise com gráficos e métricas de acesso</h2>
 	<p>Com nossos gráficos e métricas de acesso, você obtem informações que te ajudam a deixar seu currículo mais completo ou suas vagas mais atraentes.</p>
 </div>
 
-<div class="feature">
+<div class="feature feature-right">
 	<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
 	<h2>Serviço 100% gratuito</h2>
-	<p>No Colabre, não existe trial, período gratuito ou outra tentativa de arrecadar dinheiro de quem usa o serviço.</p>
+	<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa para fazer você pagar pelo serviço. É realmente gratuito.</p>
 </div>
 
 <hr />
+
+<div class="feature">
+	<img src="{{ STATIC_URL }}img/home/linkedin.png" alt="" />
+	<h2>Integração com LinkedIn</h2>
+	<p>Mesmo o cadastro no Colabre sendo super rápido e fácil, nós facilitamos ainda mais permitindo que crie sua conta no Colabre a partir da sua conta do LinkedIn.</p>
+	{% if not user.is_authenticated %}
+	<p><a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn para criar uma conta no Colabre.</a></p>
+	{% endif %}
+</div>
+
+<div class="feature feature-right">
+	<img src="{{ STATIC_URL }}img/home/logo.png" alt="" />
+	<h2>Comece agora</h2>
+	<p>Você não precisa se cadastrar no Colabre para buscar profissionais ou vagas. Clique <a href="{% url 'jobs_index' %}">aqui</a> se quiser procurar por ofertas de trabalho ou <a href="{% url 'resumes_index' %}">aqui</a> se desejar buscar por profissionais.</p>
+</div>
 
 {% endblock body %}
