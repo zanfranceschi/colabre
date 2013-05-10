@@ -19,16 +19,12 @@
 			display: block;
 			clear: both;
 		}
-		.column
+		.feature
 		{
+			width: 48%;
+			float: left;
 			padding: 10px;
-			
-			width: 80%;
-		}
-		.img 
-		{
-			margin: 0 auto;	
-			display: block;
+			margin: 0 auto;
 		}
 </style>
 {% endblock %}
@@ -40,11 +36,18 @@
 
 <hr />
 
-<h1>Análises com gráficos e métricas de acesso</h1>
-<img class="img" src="{{ STATIC_URL }}img/home/screenshot-resume-charts.png" alt="" />
-<p>Com nossos gráficos, você obtem informações que te ajudam a deixar seu currículo mais completo.</p>
+<div class="feature">
+	<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
+	<h2>Análises com gráficos e métricas de acesso</h2>
+	<p>Com nossos gráficos e métricas de acesso, você obtem informações que te ajudam a deixar seu currículo mais completo ou suas vagas mais atraentes.</p>
+</div>
 
+<div class="feature">
+	<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
+	<h2>Serviço 100% gratuito</h2>
+	<p>No Colabre, não existe trial, período gratuito ou outra tentativa de arrecadar dinheiro de quem usa o serviço.</p>
+</div>
 
-
+<hr />
 
 {% endblock body %}
