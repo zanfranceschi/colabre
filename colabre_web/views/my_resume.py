@@ -217,11 +217,11 @@ def stats(request):
 															'chart_chart' : len(queryset) > 1,
 	                    									'chart_chart_all' : len(queryset_all) > 1,
 															'resume' : resume, 
-															'stats_count_total' : 512, #stats_count_total,
-															'stats_count_last_month' : 23, # stats_count_last_month,
-															'stats_count_last_week' : 10, #stats_count_last_week,
-															'stats_count_yesterday' : 2, # stats_count_yesterday,
-															'stats_count_today' : 5, #stats_count_today,
+															'stats_count_total' : stats_count_total,
+															'stats_count_last_month' : stats_count_last_month,
+															'stats_count_last_week' : stats_count_last_week,
+															'stats_count_yesterday' : stats_count_yesterday,
+															'stats_count_today' : stats_count_today,
 															})
 
 
