@@ -1,6 +1,7 @@
 {% load url from future %}
 <div id="footer">
 	&copy; 2013 Colabre - Todos os direitos reservados. 
+	<a href="http://twitter.com/colabre">Twitter</a> | 
 	<a href="/legal/#politica">política de privacidade</a> | <a href="/legal/#termos">termos de uso</a>
 	{% if not user.is_authenticated %}
 	| <a href="{% url 'registration_index' %}">cadastre-se</a>
