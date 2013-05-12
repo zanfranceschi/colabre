@@ -29,9 +29,10 @@ def check_if_user_is_active(request, *args, **kwargs):
 		user = kwargs['user']
 	else:
 		username = request.session.get('saved_username')
-		user = User.objects.get(username=username)
+		users = User.objects.filter(username=username)
+		user = users[0] if users else None
 	
-	if (not user.is_active):
+	if (user is not None and not user.is_active):
 		messages.error(request, u"Seu usuário está inativado. Por favor, entre em contato com {0} nos explicando seu problema.".format(EMAIL_SUPPORT))
 		return render(request, "home/index.html")
 
