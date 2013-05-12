@@ -1,14 +1,12 @@
 ﻿from django.shortcuts import render
 from colabre_web.models import Job
 from colabre_web.forms import ContactForm
-from helpers import handle_exception
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('colabre_web.views.contact',
 	url(r'^contatar/$', 'contact', name='contact'),
 )
 
-@handle_exception
 def contact(request):
 	if request.method == 'POST':
 		contact_form = ContactForm(request.POST)

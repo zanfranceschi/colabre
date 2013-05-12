@@ -9,6 +9,10 @@ from helpers import *
 from django.conf.urls import patterns, url
 from django.core.cache import cache
 from colabre.settings import EMAIL_SUPPORT
+import logging
+
+logger = logging.getLogger('app')
+
 
 urlpatterns = patterns('colabre_web.views.my_profile',
 	url(r'^$', 'index', name='my_profile_index'),
@@ -49,7 +53,8 @@ def partial_resend_verification_email(request):
 	try:
 		UserProfileVerification.resend_verification_email(request.user)
 		return HttpResponse('1')
-	except Exception:
+	except:
+		logger.exception("-- colabre_web/views/my_profile.py, partial_resend_verification_email --")
 		return HttpResponse('0')
 	
 def verify_email(request, uuid):
@@ -60,8 +65,8 @@ def verify_email(request, uuid):
 		if request.user:
 			form = get_user_profile_form(user=request.user)
 			return render(request, get_template_path('index.html'), {'form' : form})
-	except Exception:
-		pass
+	except:
+		logger.exception("-- colabre_web/views/my_profile.py, verify_email --")
 	return redirect('/')
 
 @login_required
@@ -77,7 +82,7 @@ def change_password(request):
 		form = ChangePasswordForm()
 	return render(request, get_template_path('change-password.html'), {'form' : form})
 	
-@handle_exception
+
 def retrieve_access(request):
 	if request.method == 'POST':
 		form = RetrieveAccessForm(request.POST)
@@ -125,7 +130,8 @@ Login: {3}
 					[EMAIL_SUPPORT],
 					fail_silently=False)
 		except:
-			pass
+			logger.exception("-- colabre_web/views/my_profile.py, cancel --")
+
 		from django.contrib.auth import logout
 		Resume.objects.filter(profile=user.get_profile()).update(visible=False, active=False)
 		Job.objects.filter(profile=user.get_profile()).update(published=False, active=False)

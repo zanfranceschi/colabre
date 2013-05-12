@@ -9,6 +9,8 @@ import logging
 from django.contrib import messages
 from colabre.settings import EMAIL_SUPPORT
 
+logger = logging.getLogger('app')
+
 def check_oauth_email_existence(request, *args, **kwargs):
 	pass
 	"""
@@ -24,17 +26,20 @@ def check_oauth_email_existence(request, *args, **kwargs):
 	"""
 
 def check_if_user_is_active(request, *args, **kwargs):
-	user = None
-	if kwargs.get('user'):
-		user = kwargs['user']
-	else:
-		username = request.session.get('saved_username')
-		users = User.objects.filter(username=username)
-		user = users[0] if users else None
-	
-	if (user is not None and not user.is_active):
-		messages.error(request, u"Seu usuário está inativado. Por favor, entre em contato com {0} nos explicando seu problema.".format(EMAIL_SUPPORT))
-		return render(request, "home/index.html")
+	try:
+		user = None
+		if kwargs.get('user'):
+			user = kwargs['user']
+		else:
+			username = request.session.get('saved_username')
+			users = User.objects.filter(username=username)
+			user = users[0] if users else None
+		
+		if (user is not None and not user.is_active):
+			messages.error(request, u"Seu usuário está inativado. Por favor, entre em contato com {0} nos explicando seu problema.".format(EMAIL_SUPPORT))
+			return render(request, "home/index.html")
+	except:
+		logger.exception("-- colabre_web/oauth/pipeline.py, check_if_user_is_active --")
 
 def bind_to_profile(request, *args, **kwargs):
 	try:
@@ -67,8 +72,7 @@ def bind_to_profile(request, *args, **kwargs):
 				data.update({'resume_short_description' : response['summary']})
 					
 		UserProfile.create_oauth_if_new(user, **data)
-		
 	except:
-		logging.error(traceback.format_exc())
+		logger.exception("-- colabre_web/oauth/pipeline.py, bind_to_profile --")
 		
 		

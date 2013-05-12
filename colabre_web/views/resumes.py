@@ -29,7 +29,7 @@ urlpatterns = patterns('colabre_web.views.resumes',
 def get_template_path(template):
 	return 'resumes/%s' % template
 
-@handle_exception
+
 def partial_details(request, id, search_term = None):
 	resume = Resume.objects.get(id=id)
 	#log_resume_request(request, search_term, resume)
@@ -37,12 +37,12 @@ def partial_details(request, id, search_term = None):
 	response['resume-id'] = id
 	return response
 	
-@handle_exception
+
 def detail(request, id):
 	resume = Resume.objects.get(id=id)
 	return render(request, get_template_path("detail.html"), { 'resume' : resume })
 
-@handle_exception
+
 def partial_html_search(request):
 	if request.method == 'POST':
 		segments = request.POST['segments']
@@ -63,7 +63,7 @@ def partial_html_search(request):
 	else:
 		return HttpResponse('')
 
-@handle_exception
+
 def index(request):
 	segments = Resume.get_segments_for_search_filter()
 	countries = Resume.get_countries_for_search_filter()

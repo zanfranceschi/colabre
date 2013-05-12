@@ -9,6 +9,10 @@ from django.core import validators
 import re
 from django.forms import ModelForm, extras
 from datetime import datetime
+import logging
+
+logger = logging.getLogger('app')
+
 
 def set_bbcode(field):
 	field.widget.attrs['class'] += ' bbcode'
@@ -43,7 +47,7 @@ def custom_init(instance):
 					instance.fields[field].widget.attrs['class'] = 'required'
 				instance.fields[field].label += '*'
 		except:
-			pass
+				logger.exception("-- colabre_web/forms.py, custom_init --")
 			
 def validate_username_unique(value):
 	'''Custom validator for user uniqueness.'''

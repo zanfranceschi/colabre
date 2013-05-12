@@ -1,6 +1,5 @@
 import thread
 from django.contrib import messages
-from django.contrib.sessions.models import Session
 import traceback
 import logging
 from django.shortcuts import render
@@ -32,8 +31,8 @@ class StatisticsMiddleware:
 				if (self.has_not_been_logged('resume' + resume_id + search_term, request)):
 					log = ResumeStatistics(resume_id=resume_id, search_term=search_term, session_key=request.session.session_key)
 					log.save()
-		except Exception, ex:
-			logger.exception(ex.message)
+		except:
+			logger.exception("-- colabre_web/middlewares.py, StatisticsMiddleware.log_resume_request --")
 			
 			
 	def log_job_request(self, request):
@@ -45,8 +44,8 @@ class StatisticsMiddleware:
 				if (self.has_not_been_logged('job' + job_id + search_term, request)):
 					log = JobStatistics(job_id=job_id, search_term=search_term, session_key=request.session.session_key)
 					log.save()
-		except Exception, ex:
-			logger.exception(ex.message)
+		except:
+			logger.exception("-- colabre_web/middlewares.py, StatisticsMiddleware.log_job_request --")
 			
 
 	def has_not_been_logged(self, key, request):
@@ -63,9 +62,12 @@ class StatisticsMiddleware:
 		
 class HandleErrorMiddleware:
 	def process_exception(self, request, exception):
-		logging.error(traceback.format_exc())
-		messages.error(request, traceback.format_exc())
-		if request.is_ajax():
-			return HttpResponse('{ "error" : "%s" }' % exception.message)
-		else:
-			return render(request, 'error.html')
+		try:
+			logger.exception("-- colabre_web/middlewares.py, HandleErrorMiddleware.process_exception --")
+			messages.error(request, traceback.format_exc())
+			if request.is_ajax():
+				return HttpResponse('{ "error" : "%s" }' % exception.message)
+			else:
+				return render(request, 'error.html')
+		except:
+			logger.exception("-- colabre_web/middlewares.py, HandleErrorMiddleware.process_exception 02 --")

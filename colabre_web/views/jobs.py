@@ -13,13 +13,11 @@ from colabre_web.models import *
 from colabre_web.aux_models import *
 from colabre_web.forms import *
 from colabre_web.statistics.models import *
-#from colabre_web.statistics.models import *
+from django.conf.urls import patterns, url
+import logging
 
-import time
-from django.core import serializers
-from django.conf.urls import patterns, include, url
+logger = logging.getLogger('app')
 
-#from colabre_web.statistics.tasks import get_mongo_db
 
 urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^$', 'index', name='jobs_index'),
@@ -35,8 +33,11 @@ def get_template_path(template):
 def partial_details(request, id, search_term=None):
 	job = Job.objects.get(id=id)
 	job_view_count = 0
+	
+	"""
+		Stats stuff
+	"""
 	try:
-		
 		cursor = connections['stats'].cursor()
 		cursor.execute("""SELECT COUNT(DISTINCT(access_date)) AS total
 			FROM colabre_web_jobstatistics 
@@ -45,9 +46,10 @@ def partial_details(request, id, search_term=None):
 				access_date, 
 				session_key""", [id])
 		row = cursor.fetchone()
-		job_view_count = row[0]
+		job_view_count = row[0] if row is not None else 0
 	except:
-		pass
+		logger.exception("-- colabre_web/views/jobs.py, partial_details --")
+	
 	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
 	response['job-id'] = id
 	return response

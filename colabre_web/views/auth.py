@@ -10,7 +10,7 @@ from colabre.settings import EMAIL_SUPPORT
 def get_template_path(template):
 	return 'auth/%s' % template
 
-@handle_exception
+
 def login_(request):
 	if request.user.is_authenticated():
 		return render(request, 'index.html')
@@ -20,7 +20,7 @@ def login_(request):
 		form = LoginForm(initial={'next' : next})
 	return render(request, get_template_path('login.html'), { 'form' : form })
 
-@handle_exception
+
 def authenticate_(request):	
 	if request.method == 'POST':
 		form = LoginForm(request.POST)
@@ -48,7 +48,6 @@ def authenticate_(request):
 	return render(request, get_template_path('login.html'), {'form' : form})
 
 @login_required
-@handle_exception
 def logout_(request):
 	logout(request)
 	return redirect('/')

@@ -2,12 +2,12 @@
 from django.contrib.auth import authenticate, login
 from colabre_web.models import *
 from colabre_web.forms import *
-from helpers import handle_exception
+
 
 def get_template_path(template):
 	return 'registration/%s' % template
 
-@handle_exception
+
 def index(request):
 	if request.user.is_authenticated():
 		return redirect("/")

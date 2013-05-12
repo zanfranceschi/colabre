@@ -19,7 +19,6 @@ urlpatterns = patterns('colabre_web.views.home',
 def get_template_path(template):
 	return 'home/%s' % template
 
-@handle_exception
 def index(request):
 	form = LoginForm()
 	return render(request, get_template_path("index.html"), {'form' : form})

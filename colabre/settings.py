@@ -43,7 +43,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
-
 EMAIL_FROM = 'no-reply@colabre.org'
 
 USE_REAL_USER_NOTIFICATION = True
@@ -59,7 +58,7 @@ LOGIN_URL = '/login'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Francisco Zanfranceschi', 'zanfranceschi@gmail.com'),
 )
 MANAGERS = ADMINS
 TIME_ZONE = 'America/Sao_Paulo'
@@ -150,7 +149,6 @@ CACHES = {
     }
 }
 
-import sys
 
 LOGGING = {
     'version': 1,
@@ -171,6 +169,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+		'file':{
+				'level': 'ERROR',
+				'class': 'logging.FileHandler',
+				#'filename' : '/home/ubuntu/logs/django.log',
+				'filename' : 'C:/Users/zanfranceschi/Projects/Colabre/svn/django.log',
+		}
     },
 	
 	'formatters': {
@@ -189,8 +193,8 @@ LOGGING = {
             'propagate': True,
         },
 		'app' : {
-			'handlers' : ['console'],
-			'level' : 'DEBUG',
+			'handlers' : ['console', 'file', 'mail_admins'],
+			'level' : 'ERROR',
 			'propagate' : True,
 		}
     }
