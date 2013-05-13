@@ -17,6 +17,14 @@ body
 	background: inherit;
 }
 
+hr
+{
+	border: 0;
+    height: 1px;
+    background: #ccc;
+    clear: both;
+}
+
 h1, h2, h3
 {
 

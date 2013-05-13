@@ -1,19 +1,22 @@
 ﻿<div job-details-id="{{ job.id }}">
+{% if job.company %}<h4 style="margin: 3px 0 10px 3px;">{{ job.company.name }}</h4>{% endif %}
 <fieldset>
 	<legend>Descrição da vaga</legend>
-	{% if job.company_name %}<h4 style="margin: 3px;">{{ job.company }}</h4>{% endif %}
 	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
-	
-	{% if job.contact_email or job.contact_phone %}
+	{% if job.address %}
+	<hr />
 	<div>
-		{% if job.contact_name %}contato: <b>{{ job.contact_name }}</b> / {% endif %}
-		{{ job.contact_email|urlize }}
-		{% if job.contact_email and job.contact_phone %} / {% endif %}
-		{% if job.contact_phone %}<b>{{ job.contact_phone }}</b>{% endif %}
-		
+		{{ job.address }}
 	</div>
 	{% endif %}
+	<hr />
+	<div>
+		contato: <b>{{ job.contact_name }}</b> /
+		{{ job.contact_email|urlize }}
+		{% if job.contact_phone %} / <b>{{ job.contact_phone }}</b>{% endif %}
+	</div>
 </fieldset>
+{% block view_count %}
 {% if not job_view_count == 0 %}
 <p class="job_view_count">
 	{% if job_view_count = 1 %}
@@ -23,4 +26,5 @@
 	{% endif %}
 </p>
 {% endif %}
+{% endblock %}
 </div>
