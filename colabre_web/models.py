@@ -605,7 +605,7 @@ class Job(models.Model):
 	contact_name = models.CharField(max_length=60)
 	contact_email = models.EmailField(max_length=254)
 	contact_phone = models.CharField(max_length=25, null=True)
-	creation_date = models.DateTimeField(default=datetime.now())
+	creation_date = models.DateTimeField(auto_now_add=True)
 	published = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
 
