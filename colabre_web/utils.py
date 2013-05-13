@@ -2,7 +2,8 @@ from datetime import date, timedelta
 import unicodedata
 
 def strip_specialchars(s):
-	return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
+	return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore')
+	#return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
 
 def get_week_days_range(year, week):
 	d = date(year,1,1)

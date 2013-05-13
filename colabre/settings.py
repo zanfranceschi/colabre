@@ -193,8 +193,8 @@ LOGGING = {
             'propagate': True,
         },
 		'app' : {
-			'handlers' : ['console', 'file', 'mail_admins'],
-			'level' : 'ERROR',
+			'handlers' : ['console', 'file'],
+			'level' : 'INFO',
 			'propagate' : True,
 		}
     }

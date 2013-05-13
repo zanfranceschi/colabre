@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from statistics.models import ResumeStatistics, JobStatistics
 from django.core.urlresolvers import resolve
 import datetime
+import sys
 
 logger = logging.getLogger('app')
 

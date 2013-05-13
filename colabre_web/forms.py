@@ -21,7 +21,8 @@ def custom_init(instance):
 	for field in instance.fields:
 		try:
 			if 'address' in field:
-				instance.fields[field].widget.attrs['title'] = 'Não inclua o complemento se desejar integração com o Google Maps (futuro recurso).'
+				pass
+				#instance.fields[field].widget.attrs['title'] = 'Não inclua o complemento se desejar integração com o Google Maps (futuro recurso).'
 	
 			if 'date' in field:
 				if 'class' in instance.fields[field].widget.attrs:
@@ -45,7 +46,9 @@ def custom_init(instance):
 					instance.fields[field].widget.attrs['class'] += ' required'
 				else:
 					instance.fields[field].widget.attrs['class'] = 'required'
-				instance.fields[field].label += '*'
+				
+				if (instance.fields[field].label is not None):
+					instance.fields[field].label += u'*'
 		except:
 				logger.exception("-- colabre_web/forms.py, custom_init --")
 			
@@ -223,9 +226,10 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 class ContactForm(BaseForm):
 	user_id = forms.CharField(widget=forms.HiddenInput())
 	subject = forms.CharField(widget=forms.HiddenInput())
-	email_from = forms.EmailField(label='Seu email')
+	email_from = forms.EmailField(label='Seu email', required=True)
 	message = forms.CharField(
 		label='Mensagem',
+		required=True,
 		help_text=u'Máximo de 700 caracteres',
 		max_length=700, 
 		widget=forms.Textarea(attrs={'rows' : 5, 'cols' : 60})

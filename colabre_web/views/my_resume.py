@@ -12,6 +12,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from chartit import *
 from colabre_web.utils import get_week_days_range
+import logging
+
+logger = logging.getLogger("app")
 
 urlpatterns = patterns('colabre_web.views.my_resume',
 	url(r'^$', 'index', name='my_resume_index'),      
@@ -211,7 +214,6 @@ def stats(request):
 				}
 			}
 	)
-
 	return render(request, get_template_path('stats.html'), {
 															'charts' : [chart, chart_all],
 															'chart_chart' : len(queryset) > 1,
