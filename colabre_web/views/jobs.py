@@ -39,12 +39,16 @@ def partial_details(request, id, search_term=None):
 	"""
 	try:
 		cursor = connections['stats'].cursor()
-		cursor.execute("""SELECT COUNT(DISTINCT(access_date)) AS total
-			FROM colabre_web_jobstatistics 
-			WHERE job_id = %s 
-			GROUP BY 
-				access_date, 
-				session_key""", [id])
+		cursor.execute("""select sum(count) total from 
+							(
+								select 
+									1 as count, 
+									session_key,
+									access_date
+								from colabre_web_jobstatistics 
+								where job_id = %s 
+								group by session_key, access_date
+							) t""", [id])
 		row = cursor.fetchone()
 		job_view_count = row[0] if row is not None else 0
 	except:
