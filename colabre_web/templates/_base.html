@@ -10,12 +10,12 @@
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tools.min.js"></script>
 	<!-- /jquery 1.7.2 + jquery tools  -->
 
-	
+
 	<!-- jquery ui -->
 	<link href="{{ STATIC_URL }}jquery-ui/css/colabre/jquery-ui-1.8.22.custom.css" rel="stylesheet" />
 	<script type="text/javascript" src="{{ STATIC_URL }}jquery-ui/js/jquery-ui-1.8.22.custom.min.js"></script>
 	<!-- /jquery ui -->
-	
+
 	<!-- highcharts -->
 	<script type="text/javascript" src="{{ STATIC_URL }}highcharts/highcharts.js"></script>
 	<!-- /highcharts -->
@@ -45,6 +45,7 @@
 </head>
 <body>
 {% block menu %}{% include "_menu.html" %}{% endblock menu %}
+{% block feedback %}{% include "_feedback.html" %}{% endblock %}
 <div id="content">
 	{% include "_message.html" %}
 	{% block body %}{% endblock body %}

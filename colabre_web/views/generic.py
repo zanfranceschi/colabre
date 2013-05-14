@@ -1,9 +1,14 @@
+# -*- coding: UTF-8 -*-
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from colabre_web.models import *
 from django.db.models import Q
 from django.core import serializers
 from django.conf.urls import patterns, url
+import logging
+
+logger = logging.getLogger("app")
+
 
 urlpatterns = patterns('colabre_web.views.generic',
     
@@ -13,7 +18,34 @@ urlpatterns = patterns('colabre_web.views.generic',
     url(r'^parcial/buscar-estado/$', 'partial_json_search_region', name= 'generic_partial_json_search_region'),
     url(r'^parcial/buscar-cidade/$', 'partial_json_search_city', name= 'generic_partial_json_search_city'),
     url(r'^parcial/buscar-empresa/(.+)/$', 'partial_json_search_company', name= 'generic_partial_json_search_company'),
+    url(r'^parcial/enviar-feedback/$', 'particial_send_feedback', name='generic_partial_send_feedback'),
 )
+
+
+def particial_send_feedback(request):
+    if (request.method == 'POST'):
+        try:
+            from django.core.mail import send_mail
+            message = request.POST['message']
+            if (not request.user.is_anonymous()):
+                message = request.user.username + '\n\n--------\n\n' + message
+
+            message = message + "\n\n--------\n\n" + str(datetime.now())
+
+            send_mail(
+                    u'Colabre | Feedback',
+                    message,
+                    colabre.settings.EMAIL_FROM, 
+                    ['zanfranceschi@gmail.com'], 
+                    fail_silently=False)
+            return HttpResponse(u'Obrigado! Sua mensagem foi enviada.')
+        except:
+            logger.exception("-- views/generic, particial_send_feedback --")
+            return HttpResponse(u'Erro ao enviar a mensagem')
+    else:
+        return HttpResponse(u'Mensagem não enviada.')
+            
+        
 
 @login_required
 def partial_json_search_job_title(request):
