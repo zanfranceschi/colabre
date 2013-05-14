@@ -36,26 +36,26 @@ $(function(){
 	$(".message-close-btn").click(function(){
 		$(this).parent().fadeOut(200);
 	});
-	
+
 	$(".message").click(function(){
 		$(this).fadeOut(200);
 	});
 
-	
-		$("[title]").not('input,textarea').tooltip({
-	 
+
+	$("[title]").not('input, textarea, .custom-tooltip').tooltip({
+
 	      // a little tweaking of the position
 	      offset: [-2, 10],
-	 
+
 	      // use the built-in fadeIn/fadeOut effect
 	      effect: "fade",
-	 
+
 	      // custom opacity setting
 	      opacity: 0.7
- 
-		}).dynamic({ bottom: { direction: 'down', bounce: true } });
-	
-	
+
+	}).dynamic({ bottom: { direction: 'down', bounce: true } });
+
+
 	$("input[title], textarea[title]").tooltip({
 
 		// place tooltip on the right edge

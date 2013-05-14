@@ -148,6 +148,7 @@ img
 	border-top: 1px solid #ddd;
 	color: #888;
 	margin-top: 20px;
+	margin-bottom: 15px;
 	clear: both;
 }
 
@@ -415,6 +416,10 @@ a.btn
 	z-index: 101;
 	-moz-box-shadow: 0 0 10px #000;
 	-webkit-box-shadow: 0 0 10px #000;
+
+	background-color: #eee;
+	color: #222;
+	font-size: 90%;
 }
 
 .date-input

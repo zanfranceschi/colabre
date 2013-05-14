@@ -4,30 +4,28 @@
 
 {% block extra_head %}
 <style type="text/css">
-
-ul
-{
-	list-style-type: none;
-	padding: 0 0 0 20px;
-	margin-top: 3px;
-}
-li label
-{
-	font-weight: normal;
-}
-#id_birthday_year
-{
-	width: 70px !important;
-}
-#id_birthday_month
-{
-	width: 110px !important;
-}
-#id_birthday_day
-{
-	width: 50px !important;
-}
-
+	ul
+	{
+		list-style-type: none;
+		padding: 0 0 0 20px;
+		margin-top: 3px;
+	}
+	li label
+	{
+		font-weight: normal;
+	}
+	#id_birthday_year
+	{
+		width: 70px !important;
+	}
+	#id_birthday_month
+	{
+		width: 110px !important;
+	}
+	#id_birthday_day
+	{
+		width: 50px !important;
+	}
 </style>
 {% endblock %}
 
@@ -43,7 +41,23 @@ li label
 		{% if field.html_name != 'password' %}
 			<div class="form-row">
 				{{ field.label_tag }}
-				{{ field }}
+
+				{% if field.html_name == 'profile_type' %}
+				<div
+					style="display: inline;"
+					class="profile-type custom-tooltip"
+					title="Por favor, note que independentemente de sua escolha aqui,<br />
+							você ainda será capaz de usar todos os serviços do Colabre.<br />
+							Essa escolha afeta apenas a navegação. Todos os serviços podem<br />
+							ser acessados através dos links no rodapé.">
+				{% endif %}
+
+					{{ field }}
+
+				{% if field.html_name == 'profile_type' %}
+				</div>
+				{% endif %}
+
 				{% if field.html_name == 'email' %}
 					{% if not user.get_profile.is_verified %}
 			<img src="{{ STATIC_URL }}img/exclamation-icon.png" title="email não verificado" alt="" align="absmiddle" />
@@ -93,6 +107,13 @@ li label
 
 	<script type="text/javascript">
 		$(function(){
+
+			$(".profile-type").tooltip({
+				position: 'center right',
+				offset: [-10, 10],
+				effect: "fade",
+				opacity: 0.9
+			});
 
 			// Autocompletes de país, estado, cidade
 			$("#id_city_name").autocomplete({
