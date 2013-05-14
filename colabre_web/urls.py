@@ -7,7 +7,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('colabre_web.views',
 
-	url(r'^test/(.+)/$', 'test.test', name='test'),
+	#url(r'^test/(.+)/$', 'test.test', name='test'),
 	
 	url(r'^auxiliares/', include('colabre_web.views.generic')),
 	
