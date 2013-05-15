@@ -10,21 +10,21 @@
 			color: #333;
 			display: block;
 			clear: both;
+			width: 70%;
+			margin: 0 auto 10px auto;
+			text-align: left;
+			overflow: auto;
 		}
 		.feature
 		{
-			width: 45%;
+			width: 30%;
 			float: left;
 			padding: 10px;
 
 		}
-		.feature-right
-		{
-			float: right;
-		}
 		.feature img
 		{
-			display: block;
+
 			margin: 0 auto;
 		}
 		.feature h2
@@ -35,39 +35,62 @@
 {% endblock %}
 {% block body %}
 
-<blockquote>
-	<img src="{{ STATIC_URL }}img/home/logo2.png" alt="" style="float: left; margin: 10px 30px 0 0;" /> O Colabre é um serviço gratuito de busca e publicação de vagas e currículos.
-</blockquote>
+<div style="text-align: center;">
+	<blockquote>
+		<img src="{{ STATIC_URL }}img/home/logo2.png" alt="" style="float: left; margin: 30px 30px 0 0;" /> O Colabre é um serviço gratuito de busca e publicação de vagas e currículos.
+	</blockquote>
+</div>
 
 <hr />
 
 <div class="feature">
 	<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
 	<h2>Análise com gráficos e métricas</h2>
-	<p>Com nossos gráficos e métricas de acesso, você obtem informações que te ajudam a deixar seu currículo mais completo ou suas vagas mais atraentes.</p>
+	<p>Com nossos gráficos e métricas de acesso, você obtem informações
+		que te ajudam a deixar seu currículo mais completo ou suas vagas
+		mais atraentes.</p>
 </div>
 
-<div class="feature feature-right">
+<div class="feature">
 	<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
 	<h2>Serviço 100% gratuito</h2>
-	<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa para fazer você pagar pelo serviço. É realmente gratuito.</p>
+	<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa
+		para fazer você pagar pelo serviço. É realmente gratuito.</p>
 </div>
-
-<hr />
 
 <div class="feature">
 	<img src="{{ STATIC_URL }}img/home/linkedin.png" alt="" />
 	<h2>Integração com LinkedIn</h2>
-	<p>Mesmo o cadastro no Colabre sendo super rápido e fácil, nós facilitamos ainda mais permitindo que crie sua conta no Colabre a partir da sua conta do LinkedIn.</p>
+	<p>Mesmo o cadastro no Colabre sendo super rápido e fácil, nós facilitamos
+		ainda mais permitindo que crie sua conta no Colabre a partir da sua conta
+		do LinkedIn.</p>
 	{% if not user.is_authenticated %}
 	<p><a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn para criar uma conta no Colabre.</a></p>
 	{% endif %}
 </div>
 
-<div class="feature feature-right">
+<div class="feature">
 	<img src="{{ STATIC_URL }}img/home/logo.png" alt="" />
 	<h2>Comece agora</h2>
-	<p>Você não precisa se cadastrar no Colabre para buscar profissionais ou vagas. Clique <a href="{% url 'jobs_index' %}">aqui</a> se quiser procurar por ofertas de trabalho ou <a href="{% url 'resumes_index' %}">aqui</a> se desejar buscar por profissionais.</p>
+	<p>Você não precisa se cadastrar no Colabre para buscar profissionais ou vagas.
+		Clique <a href="{% url 'jobs_index' %}">aqui</a> se quiser procurar por ofertas
+		de trabalho ou <a href="{% url 'resumes_index' %}">aqui</a> se desejar buscar por profissionais.</p>
 </div>
 
+<div class="feature">
+	<img src="{{ STATIC_URL }}img/home/twitter.png" alt="" />
+	<h2>#colabre</h2>
+	<p>Tuíte suas vagas com a hashtag <b>#colabre</b> para que apareçam ao lado.</p>
+</div>
+
+<div class="feature">
+<a
+	class="twitter-timeline"
+	href="https://twitter.com/search?q=%23colabre"
+	data-widget-id="334712844408987649"
+	width="1200" height="300"
+	data-chrome="nofooter transparent noheader"
+	>Tweets about "#colabre"</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div>
 {% endblock body %}

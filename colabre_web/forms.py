@@ -120,7 +120,7 @@ class UserProfileFormOAuth(BaseForm):
 	region_name = forms.CharField(
 		required=True,
 		max_length=60,
-		label='Região'
+		label='Estado'
 	) 
 
 	city_name = forms.CharField(
