@@ -566,25 +566,23 @@ class Resume(models.Model):
 	def get_segments_for_search_filter(cls):
 		query = """
 				select  
-					jt.id							, 
-					jt.id 		as job_title_id		, 
-					jt.name		as job_title_name	, 
+					0 			as id				, 
+					0 			as job_title_id		, 
+					'x'			as job_title_name	, 
 					se.id 		as segment_id 		, 
 					se.name		as segment_name		
-				 from colabre_web_jobtitle jt 
-					inner join colabre_web_segment se	on jt.segment_id = se.id 
-					inner join colabre_web_resume re	on re.segment_id = se.id
-				 where jt.active = 1 
-					and se.active = 1	
+				 from colabre_web_segment se
+					inner join colabre_web_resume re on re.segment_id = se.id
+				 where se.active = 1	
 					and re.visible = 1 
 				 group by 
-					jt.id		,
-					jt.name		,
-					se.id 	 	,
-					se.name	
+					id					,
+					job_title_id		,
+					job_title_name 	 	,
+					se.id				,
+					se.name
 				 order by
-					se.name	,
-					jt.name	;"""
+					se.name ;"""
 		return Segment.get_segments_by_sql_query(query)
 
 class Job(models.Model):
