@@ -50,7 +50,7 @@ def partial_details(request, id, search_term=None):
 								group by session_key, access_date
 							) t""", [id])
 		row = cursor.fetchone()
-		job_view_count = row[0] if row is not None else 0
+		job_view_count = row[0] or 0
 	except:
 		logger.exception("-- colabre_web/views/jobs.py, partial_details --")
 	
