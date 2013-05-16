@@ -151,7 +151,10 @@ img
 	margin-bottom: 15px;
 	clear: both;
 }
-
+#footer-social
+{
+	padding: 15px;	
+}
 td.label
 {
 	font-weight: bold;
