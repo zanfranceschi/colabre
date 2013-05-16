@@ -401,19 +401,39 @@ class JobForm(BaseForm):
 							'contact_phone']
 				
 		if not self.job_id: # new job
-			self.initial = {
-					'contact_email' : self.profile.user.email or None,
-					'contact_name' : self.profile.user.first_name + ' ' + self.profile.user.last_name,
-			}
+			
 			last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
 			last_posted_job = last_posted_jobs[0] if last_posted_jobs else None
-			if last_posted_job:
+			
+			username = self.profile.user.username
+			
+			if (username == 'colabre'): # hardcode para facilitar a publicação de várias vagas!
+				self.initial = {
+					#'job_title_name' 	: last_posted_job.job_title,
+					'segment_name' 		: last_posted_job.job_title.segment if last_posted_job is not None else '',
+					#'description' 		: last_posted_job.description,
+					#'address' 			: last_posted_job.address,
+					'country_name' 		: 'Brasil',
+					#'region_name' 		: last_posted_job.city.region,
+					#'city_name' 		: last_posted_job.city,
+					#'company_name' 		: last_posted_job.company,
+					#'contact_name' 		: last_posted_job.contact_name,
+					#'contact_email'		: last_posted_job.contact_email,
+					#'contact_phone' 	: last_posted_job.contact_phone
+				}
+			else:
+				self.initial = {
+						'contact_email' : self.profile.user.email or None,
+						'contact_name' : self.profile.user.first_name + ' ' + self.profile.user.last_name,
+				}
+			
+			if (last_posted_job and username != 'colabre'):
 				self.initial.update({
 					#'job_title_name' 	: last_posted_job.job_title,
 					'segment_name' 		: last_posted_job.job_title.segment,
 					#'description' 		: last_posted_job.description,
 					#'address' 			: last_posted_job.address,
-					#'country_name' 		: last_posted_job.city.region.country,
+					'country_name' 		: last_posted_job.city.region.country,
 					#'region_name' 		: last_posted_job.city.region,
 					#'city_name' 		: last_posted_job.city,
 					'company_name' 		: last_posted_job.company,
