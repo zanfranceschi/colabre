@@ -52,7 +52,7 @@
 				jobId = $(this).attr("job-id");
 				
 				req = $.ajax({
-					url: '/vagas/parcial/detalhar/' + jobId + '/' + q + '/',
+					url: '/vagas/parcial/detalhar/' + jobId + '/' + q.replace('#', '%23') + '/',
 					type: 'get',
 					complete: function()
 					{
