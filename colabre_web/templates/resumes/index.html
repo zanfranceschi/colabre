@@ -53,7 +53,7 @@
 				resumeId = $(this).attr("resume-id");
 				
 				var req = $.ajax({
-					url: '/curriculos/parcial/detalhar/' + resumeId + '/' + q + '/',
+					url: '/curriculos/parcial/detalhar/' + resumeId + '/' + q.replace('#', '%23') + '/',
 					type: 'get',
 					complete: function()
 					{
