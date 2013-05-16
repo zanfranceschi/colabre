@@ -88,5 +88,5 @@ def partial_html_search(request):
 def index(request):
 	segments = Job.get_segments_for_search_filter()
 	countries = Job.get_countries_for_search_filter()
-	days = [3, 7, 15, 30, 60, 90, 120, 150]
+	days = [15, 30, 60, 90, 120, 150]
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })
