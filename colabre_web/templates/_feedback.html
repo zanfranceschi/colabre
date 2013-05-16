@@ -52,12 +52,13 @@
 	<h2 style="margin-top: 0;">Feedback</h2>
 	<div id="feedback-content">
 		<p>O Colabre está em fase beta e seu feedback é muito importante para nós.</p>
-		<textarea id="message" rows="10" cols="32" style="overflow: auto; width: 245px; margin-bottom: 10px;"> </textarea>
+		<textarea id="fbmessage" rows="10" cols="32" style="overflow: auto; width: 245px; margin-bottom: 10px;"></textarea>
 		<input id="send-feedback" class="btn btn-info" type="button" value="enviar" />
 	</div>
 </div>
 
 <script type="text/javascript">
+	var _url = window.location.href;
 	$(function(){
 		$(".feedback-toggler").click(function(){
 			$(".feedback").toggle();
@@ -68,7 +69,8 @@
 				url: '{% url 'generic_partial_send_feedback' %}',
 				type: 'post',
 				data: {
-					message: $("#message").val(),
+					url: _url,
+					message: $("#fbmessage").val(),
 					csrfmiddlewaretoken: '{{ csrf_token }}'
 				},
 				success: function(data)

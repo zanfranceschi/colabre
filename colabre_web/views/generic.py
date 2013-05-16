@@ -27,10 +27,11 @@ def particial_send_feedback(request):
         try:
             from django.core.mail import send_mail
             message = request.POST['message']
+            url = request.POST['url']
             if (not request.user.is_anonymous()):
                 message = request.user.username + '\n\n--------\n\n' + message
 
-            message = message + "\n\n--------\n\n" + str(datetime.now())
+            message = url + '\n\n---\n\n' + message + "\n\n--------\n\n" + str(datetime.now())
 
             send_mail(
                     u'Colabre | Feedback',
