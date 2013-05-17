@@ -18,12 +18,8 @@
 </fieldset>
 {% block view_count %}
 {% if not job_view_count == 0 %}
-<p class="job_view_count">
-	{% if job_view_count = 1 %}
-		Esta vaga foi vista <b>1</b> vez.
-	{% else %}
-		Esta vaga já foi vista <b>{{ job_view_count }}</b> vezes.
-	{% endif %}
+<p class="job_view_count" job-details-views-id="{{ job.id }}">
+	<i>carregando número de visualizações...</i>
 </p>
 {% endif %}
 {% endblock %}

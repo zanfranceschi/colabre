@@ -22,6 +22,7 @@ logger = logging.getLogger('app')
 urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^$', 'index', name='jobs_index'),
 	url(r'^parcial/buscar/$', 'partial_html_search', name='jobs_partial_html_search'),
+	url(r'^parcial/detalhar/visualizacoes/(\d+)/$', 'partial_details_viewscount', name='jobs_partial_details_viewscount'),
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='jobs_partial_details'),
 	url(r'^visualizar/(\d+)/$', 'detail', name='jobs_detail'),
 )
@@ -30,13 +31,7 @@ def get_template_path(template):
 	return 'jobs/%s' % template
 
 
-def partial_details(request, id, search_term=None):
-	job = Job.objects.get(id=id)
-	job_view_count = 0
-	
-	"""
-		Stats stuff
-	"""
+def partial_details_viewscount(request, id):
 	try:
 		cursor = connections['stats'].cursor()
 		cursor.execute("""select sum(count) total from 
@@ -50,11 +45,16 @@ def partial_details(request, id, search_term=None):
 								group by session_key, access_date
 							) t""", [id])
 		row = cursor.fetchone()
-		job_view_count = row[0] or 0
+		response = HttpResponse(row[0] or 0)
+		response['job-id'] = id
+		return response
 	except:
-		logger.exception("-- colabre_web/views/jobs.py, partial_details --")
-	
-	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'job_view_count' : job_view_count})
+		logger.exception("-- colabre_web/views/jobs.py, partial_details_viewscount --")
+		return HttpResponse('0')
+
+def partial_details(request, id, search_term=None):
+	job = Job.objects.get(id=id)
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
 	response['job-id'] = id
 	return response
 
