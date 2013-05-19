@@ -300,8 +300,8 @@ input.required, textarea.required
 
 input.ui-autocomplete-input
 {
-	background-image: url('../img/list-icon.png');
-	/*background-image: url('../img/text-list-bullets-icon.png');*/
+	/*background-image: url('../img/list-icon.png');
+	background-image: url('../img/auto-complete-icon.png');*/
 	background-repeat: no-repeat;
 	background-position: right center;
 }
