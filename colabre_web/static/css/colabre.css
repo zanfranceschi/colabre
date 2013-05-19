@@ -9,6 +9,31 @@ body
 	background: url('../img/body-bg.png');
 	cursor: default;
 }
+#home-slogan
+{
+	text-align: center; 
+	margin: 20px;
+}
+.feature
+{
+	width: 31%;
+	height: 400px;
+	float: left;
+	padding: 10px;
+	border: 0px solid red;
+
+}
+.feature img
+{
+	display: block;
+	margin: 0 auto;
+}
+.feature h2
+{
+	text-align: center;
+	margin-top: 0;
+}
+
 .iframe-body
 {
 	text-align: left;

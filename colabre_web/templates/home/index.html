@@ -1,53 +1,17 @@
 {% extends "_base.html" %}
 {% load url from future %}
 {% block title %}Início{% endblock %}
-{% block extra_head %}
-<style type="text/css">
-		blockquote {
-			font-size: 300%;
-			font-weight: bold;
-			line-height: 1.45;
-			color: #333;
-			display: block;
-			clear: both;
-			width: 90%;
-			margin: 0 auto 10px auto;
-			text-align: left;
-			overflow: auto;
-		}
-		.feature
-		{
-			width: 31%;
-			height: 400px;
-			float: left;
-			padding: 10px;
-			border: 0px solid red;
-
-		}
-		.feature img
-		{
-			display: block;
-			margin: 0 auto;
-		}
-		.feature h2
-		{
-			text-align: center;
-		}
-</style>
-{% endblock %}
 {% block body %}
 
-<div style="text-align: center;">
-	<blockquote>
-		<img src="{{ STATIC_URL }}img/home/logo2.png" alt="" style="float: left; margin: 30px 30px 0 0;" /> O Colabre é um serviço gratuito de busca e publicação de vagas e currículos.
-	</blockquote>
+<div id="home-slogan">
+	<img src="{{ STATIC_URL }}img/home/logo-slogan.png" alt="" />
 </div>
 
 <hr />
 
 <div class="feature">
 	<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
-	<h2>Análise com gráficos e métricas</h2>
+	<h2>Gráficos e métricas</h2>
 	<p>Com nossos gráficos e métricas de acesso, você obtem informações
 		que te ajudam a deixar seu currículo mais completo ou suas vagas
 		mais atraentes.</p>
@@ -72,11 +36,12 @@
 </div>
 
 <div class="feature">
-	<img src="{{ STATIC_URL }}img/home/logo.png" alt="" />
-	<h2>Comece agora</h2>
-	<p>Você não precisa se cadastrar no Colabre para buscar profissionais ou vagas.
-		Clique <a href="{% url 'jobs_index' %}">aqui</a> se quiser procurar por ofertas
-		de trabalho ou <a href="{% url 'resumes_index' %}">aqui</a> se desejar buscar por profissionais.</p>
+	<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
+	<h2>Sem burocracia</h2>
+	<p>
+		É rápido e direto publicar suas vagas, divulgar seu currículo e se cadastar!
+		Nós fazemos de tudo para oferecer um serviço de qualidade e sem burocracia.
+	</p>
 </div>
 
 <div class="feature">
