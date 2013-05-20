@@ -62,22 +62,19 @@ def stats(request):
 		return render(request, get_template_path('index.html'), {'form' : form })
 	
 	today = datetime.now().date()
-	last_month = today - relativedelta(months=1)
 	yesterday = today - relativedelta(days=1)
-	last_week_date = today - relativedelta(weeks=1)
-	last_week = get_week_days_range(last_week_date.year, last_week_date.isocalendar()[1])
-	
+	current_week = get_week_days_range(today.year, today.isocalendar()[1])
 	stats_count_total = ResumeStatistics.objects.filter(resume_id=resume.id).count()
 	
-	stats_count_last_month = ResumeStatistics.objects.filter(
+	stats_count_current_month = ResumeStatistics.objects.filter(
 															resume_id=resume.id, 
-															access_date__year=last_month.year, 
-															access_date__month=last_month.month
+															access_date__year=today.year, 
+															access_date__month=today.month
 															).count()
 															
-	stats_count_last_week = ResumeStatistics.objects.filter(
+	stats_count_current_week = ResumeStatistics.objects.filter(
 															resume_id=resume.id,
-															access_date__range=[last_week[0], last_week[1]]
+															access_date__range=[current_week[0], current_week[1]]
 															).count()
 	
 	stats_count_yesterday = ResumeStatistics.objects.filter(
@@ -220,8 +217,8 @@ def stats(request):
 	                    									'chart_chart_all' : len(queryset_all) > 1,
 															'resume' : resume, 
 															'stats_count_total' : stats_count_total,
-															'stats_count_last_month' : stats_count_last_month,
-															'stats_count_last_week' : stats_count_last_week,
+															'stats_count_current_month' : stats_count_current_month,
+															'stats_count_current_week' : stats_count_current_week,
 															'stats_count_yesterday' : stats_count_yesterday,
 															'stats_count_today' : stats_count_today,
 															})

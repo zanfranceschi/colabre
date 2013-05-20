@@ -179,22 +179,20 @@ def individual_stats(request, id):
 	)
 	
 	today = datetime.datetime.now().date()
-	last_month = today - relativedelta(months=1)
 	yesterday = today - relativedelta(days=1)
-	last_week_date = today - relativedelta(weeks=1)
-	last_week = get_week_days_range(last_week_date.year, last_week_date.isocalendar()[1])
+	current_week = get_week_days_range(today.year, today.isocalendar()[1])
 	
 	stats_count_total = JobStatistics.objects.filter(job_id=id).count()
 	
-	stats_count_last_month = JobStatistics.objects.filter(
+	stats_count_current_month = JobStatistics.objects.filter(
 	                                                        job_id=id, 
-	                                                        access_date__year=last_month.year, 
-	                                                        access_date__month=last_month.month
+	                                                        access_date__year=today.year, 
+	                                                        access_date__month=today.month
 	                                                        ).count()
 
-	stats_count_last_week = JobStatistics.objects.filter(
+	stats_count_current_week = JobStatistics.objects.filter(
 	                                                        job_id=id, 
-	                                                        access_date__range=[last_week[0], last_week[1]]
+	                                                        access_date__range=[current_week[0], current_week[1]]
 	                                                        ).count()
 	
 	stats_count_yesterday = JobStatistics.objects.filter(
@@ -214,8 +212,8 @@ def individual_stats(request, id):
 	                    'chart_chart' : len(queryset) > 1,
 	                    'chart_chart_all' : len(queryset_all) > 1,
 	                    'stats_count_total' : stats_count_total,
-	                    'stats_count_last_week' : stats_count_last_week,
-	                    'stats_count_last_month' : stats_count_last_month,
+	                    'stats_count_current_week' : stats_count_current_week,
+	                    'stats_count_current_month' : stats_count_current_month,
 	                    'stats_count_yesterday' : stats_count_yesterday,
 	                    'stats_count_today' : stats_count_today
 	                    
