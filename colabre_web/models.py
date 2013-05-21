@@ -485,7 +485,7 @@ class Resume(models.Model):
 	last_update = models.DateField(auto_now=True)
 	
 	def __unicode__(self):
-		return "%s - %s" % (self.profile, self.short_description[:32])
+		return u"%s - %s" % (self.profile, self.short_description[:32])
 	
 	def try_get_job_title(self, index):
 		return self.segments[index-1:index]
