@@ -34,8 +34,13 @@
 
 {% if chart_chart %}
 <div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
-<br style="clear: both;" />
+{% else %}
+<div class="stats-element-chart stats-element stats-element-right stats-element-nodata">
+	Ainda não há dados suficientes para mostrarmos o gráfico com 
+	os termos de busca que mais levaram a seu currículo.
+</div>
 {% endif %}
+<br style="clear: both;" />
 
 {% if chart_chart_all %}
 <div id="chart_all" class="stats-element-chart" style="margin-top: 20px;"> </div>

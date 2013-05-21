@@ -484,6 +484,9 @@ class Resume(models.Model):
 	created = models.DateField(auto_now_add=True)
 	last_update = models.DateField(auto_now=True)
 	
+	def __unicode__(self):
+		return "%s - %s" % (self.profile, self.short_description[:32])
+	
 	def try_get_job_title(self, index):
 		return self.segments[index-1:index]
 	
@@ -533,9 +536,6 @@ class Resume(models.Model):
 		resume.visible = visible
 		resume.save()
 
-	def __unicode__(self):
-		return self.short_description
-	
 	@classmethod
 	def get_countries_for_search_filter(cls):
 		query = """select

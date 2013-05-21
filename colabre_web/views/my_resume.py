@@ -213,8 +213,8 @@ def stats(request):
 	)
 	return render(request, get_template_path('stats.html'), {
 															'charts' : [chart, chart_all],
-															'chart_chart' : len(queryset) > 1,
-	                    									'chart_chart_all' : len(queryset_all) > 1,
+															'chart_chart' : len(queryset) > 0,
+	                    									'chart_chart_all' : len(queryset_all) > 0,
 															'resume' : resume, 
 															'stats_count_total' : stats_count_total,
 															'stats_count_current_month' : stats_count_current_month,

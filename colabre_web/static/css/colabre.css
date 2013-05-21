@@ -502,6 +502,13 @@ iframe.contact-form
 	padding: 20px 0 20px 0;
 }
 
+.stats-element-nodata
+{
+	font-style: italic;
+	padding-top: 12%;
+	font-size: 80%;	
+}
+
 .stats-element
 {
 	width: 48%;
@@ -528,3 +535,4 @@ iframe.contact-form
 {
 	text-align: right;
 }
+
