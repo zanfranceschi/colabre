@@ -4,7 +4,7 @@
 <div resume-details-id="{{ resume.id }}">
 	<fieldset>
 		<legend>Currículo de <b>{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}</b></legend>
-		{{ resume.full_description|bbcode|newline_to_br|removetags:"script link a img input form input select button textarea"|safe }}
+		{{ resume.full_description|bbcode|newline_to_br|removetags:"ul li script link a img input form input select button textarea"|safe }}
 	</fieldset>
 	<div class="profile-name">
 		<a user-id="{{ resume.profile.user.id }}" class="profile-contact-form contact-form-opener">Entre em contato com <b>{{ resume.profile.user.first_name }} {{ resume.profile.user.last_name }}</b> ◄</a>

@@ -6,7 +6,7 @@
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
 	<h1>Meu Currículo</h1>
-	
+
 	<p><i>Atualização em {{ form.resume.last_update }}.</i></p>
 
 	<form action="{% url my_resume_index %}" method="post">
@@ -14,8 +14,8 @@
 		{% include '_form.html' %}
 		<input type="submit" value="salvar" class="btn-info" />
 	</form>
-	
-	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/jquery.sceditor.min.js"></script>
+
+	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/jquery.sceditor.bbcode.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/languages/pt-BR.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -39,9 +39,12 @@
 				}
 			});
 
-		$("textarea.bbcode").sceditorBBCodePlugin({
+		$("textarea.bbcode").sceditor({
+			plugins: "bbcode",
+			emoticonsEnabled: false,
+			enablePasteFiltering: true,
 			style: "{{ STATIC_URL }}sceditor/jquery.sceditor.default.min.css",
-			toolbar: "bold,italic,underline|size|left,center,right,justify|source",
+			toolbar: "removeformat|bold,italic,underline|size|left,center,right,justify|source",
 			locale: "pt-BR"
 		});
 	});
