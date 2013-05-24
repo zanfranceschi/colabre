@@ -1,5 +1,8 @@
 ﻿{% extends "_base.html" %}
 {% load bbcode %}
+{% block extra_head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}sceditor/themes/default.min.css" type="text/css" media="all" />
+{% endblock %}
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
 	<h1>Meu Currículo</h1>
@@ -11,7 +14,9 @@
 		{% include '_form.html' %}
 		<input type="submit" value="salvar" class="btn-info" />
 	</form>
-
+	
+	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/jquery.sceditor.min.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/languages/pt-BR.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
 

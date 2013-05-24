@@ -6,6 +6,8 @@ register = template.Library()
 def bbcode(value):
 
 	bbdata = [
+		(r'\[font=(.+?)\](.+?)\[/font\]', r'<span style="font-family: \1">\2</span>'),
+		(r'\[color=(.+?)\](.+?)\[/color\]', r'<span style="color: \1">\2</span>'),
 		(r'\[url\](.+?)\[/url\]', r'<a href="\1">\1</a>'),
 		(r'\[url=(.+?)\](.+?)\[/url\]', r'<a href="\1">\2</a>'),
 		(r'\[email\](.+?)\[/email\]', r'<a href="mailto:\1">\1</a>'),
