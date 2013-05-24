@@ -13,11 +13,11 @@ logger = logging.getLogger("app")
 urlpatterns = patterns('colabre_web.views.generic',
     
     url(r'^parcial/buscar-cargo/$', 'partial_json_search_job_title', name= 'generic_partial_json_search_job_title'),
-    url(r'^parcial/buscar-segmento/(.+)/$', 'partial_json_search_segment', name= 'generic_partial_json_search_segment'),
+    url(r'^parcial/buscar-segmento/$', 'partial_json_search_segment', name= 'generic_partial_json_search_segment'),
     url(r'^parcial/buscar-pais/$', 'partial_json_search_country', name= 'generic_partial_json_search_country'),
     url(r'^parcial/buscar-estado/$', 'partial_json_search_region', name= 'generic_partial_json_search_region'),
     url(r'^parcial/buscar-cidade/$', 'partial_json_search_city', name= 'generic_partial_json_search_city'),
-    url(r'^parcial/buscar-empresa/(.+)/$', 'partial_json_search_company', name= 'generic_partial_json_search_company'),
+    url(r'^parcial/buscar-empresa/$', 'partial_json_search_company', name= 'generic_partial_json_search_company'),
     url(r'^parcial/enviar-feedback/$', 'particial_send_feedback', name='generic_partial_send_feedback'),
 )
 
@@ -63,9 +63,11 @@ def partial_json_search_job_title(request):
         return HttpResponse(list, mimetype="application/json")
 
 @login_required
-def partial_json_search_segment(request, q):
-    list = serializers.serialize("json", Segment.objects.filter(name__icontains=q).order_by("name")[:10])
-    return HttpResponse(list, mimetype="application/json")
+def partial_json_search_segment(request):
+	if request.method == 'POST':
+		q = request.POST['q']
+		list = serializers.serialize("json", Segment.objects.filter(name__icontains=q).order_by("name")[:10])
+		return HttpResponse(list, mimetype="application/json")
 
 @login_required
 def partial_json_search_country(request):
@@ -108,6 +110,8 @@ def partial_json_search_city(request):
         return HttpResponse(list, mimetype="application/json")
     
 @login_required
-def partial_json_search_company(request, q):
-    list = serializers.serialize("json", Company.objects.filter(name__icontains=q).order_by("name")[:10])
-    return HttpResponse(list, mimetype="application/json")
+def partial_json_search_company(request):
+	if request.method == 'POST':
+		q = request.POST['q']
+		list = serializers.serialize("json", Company.objects.filter(name__icontains=q).order_by("name")[:10])
+		return HttpResponse(list, mimetype="application/json")

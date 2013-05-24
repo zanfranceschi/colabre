@@ -54,8 +54,12 @@
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/auxiliares/parcial/buscar-segmento/' + term,
-						type: 'get',
+						url: '/auxiliares/parcial/buscar-segmento/',
+						data : {
+							q : term,
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
 						success: function(data)
 						{
 							response($.map(data, function(item)
@@ -147,8 +151,12 @@
 				{
 					var term = request.term;
 					$.ajax({
-						url: '/auxiliares/parcial/buscar-empresa/' + term,
-						type: 'get',
+						url: '/auxiliares/parcial/buscar-empresa/',
+						data: {
+							q : term,
+							csrfmiddlewaretoken: '{{ csrf_token }}'
+						},
+						type: 'post',
 						success: function(data)
 						{
 							response($.map(data, function(item)

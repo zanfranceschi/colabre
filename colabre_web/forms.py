@@ -499,7 +499,7 @@ class ResumeForm(BaseForm):
 	)
 	full_description = forms.CharField(
 		label='Currículo Completo',
-		# help_text='Currículo completo.',
+		help_text='Se estiver copiando e colando do Word, verifique seu currículo na página de currículos após ter salvo; ele pode ficar desformatado.',
 		max_length=5000, widget=forms.Textarea(attrs={'rows' : 15, 'cols' : 80})
 	)
 	
