@@ -426,7 +426,10 @@ def create(request):
 			form.save()
 			template = get_template_path('index.html')
 			context = _index_data(request)
-			messages.success(request, 'Vaga criada.')
+			messages.success(request, 'Sua vaga foi publicada. '
+						' A equipe do Colabre se reserva o direito de revisar '
+						' e remover sua vaga sem aviso prévio caso a considere ' 
+						' inadequada.')
 		else:
 			messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
 			template = get_template_path('create.html')
@@ -451,7 +454,10 @@ def edit(request, job_id):
 				form.save()
 				template = get_template_path('index.html')
 				context = _index_data(request)
-				messages.success(request, 'Vaga atualizada.')
+				messages.success(request, 'Sua vaga foi atualizada. '
+						' A equipe do Colabre se reserva o direito de revisar '
+						' e remover sua vaga sem aviso prévio caso a considere ' 
+						' inadequada.')
 			else:
 				template = get_template_path('edit.html')
 				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
