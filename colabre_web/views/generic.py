@@ -37,7 +37,7 @@ def particial_send_feedback(request):
                     u'Colabre | Feedback',
                     message,
                     colabre.settings.EMAIL_FROM, 
-                    ['zanfranceschi@gmail.com'], 
+                    [colabre.settings.EMAIL_CONTACT], 
                     fail_silently=False)
             return HttpResponse(u'Obrigado! Sua mensagem foi enviada.')
         except:
