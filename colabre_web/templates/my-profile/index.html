@@ -1,16 +1,18 @@
 ﻿{% extends "_base.html" %}
-{% block title %}Meu Perfil{% endblock %}
+
+{% block title %}Perfil{% endblock %}
+
 {% block extra_head %}
 <style type="text/css">
 	ul
 	{
 		list-style-type: none;
-		padding: 0;
-		margin-top: 0;
+		padding: 0 0 0 20px;
+		margin-top: 3px;
 	}
 	li label
 	{
-		font-weight: normal !important;
+		font-weight: normal;
 	}
 	#id_birthday_year
 	{
@@ -22,7 +24,7 @@
 	}
 	#id_birthday_day
 	{
-		width: 55px !important;
+		width: 50px !important;
 	}
 </style>
 {% endblock %}
@@ -30,70 +32,99 @@
 {% block body %}
 	<h1>Perfil	{% if user.get_profile.is_from_oauth %} <img src="{{ STATIC_URL }}img/linkedin-logo-small.png" style="vertical-align: middle;" alt="membro linkedin" />{% endif %}</h1>
 
-	<form action="{% url 'my_profile_index' %}" class="form-horizontal" method="post">
+
+	<form action="{% url my_profile_index %}" method="post">
 		{% csrf_token %}
 
 		<!-- form -->
 		{% for field in form.visible_fields %}
-		
-		<div class="control-group{% if field.errors %} error{% endif %}">
-			<label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}</label>
-			<div class="controls">
-				{{ field }}
-				{% if field.html_name == 'password' %}
-				<span class="help-inline"><a href="{% url 'my_profile_change_password' %}">alterar senha</a></span>
+		{% if field.html_name != 'password' %}
+			<div class="form-row">
+				{{ field.label_tag }}
+
+				{% if field.html_name == 'profile_type' %}
+				<div
+					style="display: inline;"
+					class="profile-type custom-tooltip"
+					title="Por favor, note que independentemente de sua escolha aqui,<br />
+							você ainda será capaz de usar todos os serviços do Colabre.<br />
+							Essa escolha afeta apenas a navegação. Todos os serviços podem<br />
+							ser acessados através dos links no rodapé.">
 				{% endif %}
-				<span class="help-block">
-				{% if field.errors %}
-					{{ field.errors|striptags }}
-				{% else %}
-					{{ field.help_text }}
+
+					{{ field }}
+
+				{% if field.html_name == 'profile_type' %}
+				</div>
 				{% endif %}
-				</span>
-				
+
 				{% if field.html_name == 'email' %}
-				{% if not user.get_profile.is_verified %}
-				<span class="label label-important">
-					<i class="icon-exclamation-sign icon-white"></i> 
-					Email não verificado.
-				</span>
-				<a href="javascript:;" class="btn btn-mini btn-info" id="resend-verification-email">reenviar email para confirmação</a>
-				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" id="resend-verification-email-loading" style="display: none;" alt="requisitando..." align="absmiddle" />
-				<span class="small" id="resend-verification-email-reply" style="display: none">Email de confirmação enviado!</span>
+					{% if not user.get_profile.is_verified %}
+			<img src="{{ STATIC_URL }}img/exclamation-icon.png" title="email não verificado" alt="" align="absmiddle" />
+			<a href="javascript:;" class="ajax-link small" id="resend-verification-email">reenviar email para confirmação</a>
+			<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" id="resend-verification-email-loading" style="display: none;" alt="requisitando..." align="absmiddle" />
+			<span class="small" id="resend-verification-email-reply" style="display: none">Email de confirmação enviado!</span>
+					{% else %}
+			<img src="{{ STATIC_URL }}img/accept-icon.png" title="email verificado" alt="email verificado" align="absmiddle" />
+					{% endif %}
 				{% endif %}
-				{% endif %}
-				
+				<div>
+					<small>
+					{% if field.errors %}
+						<span class="error">{{ field.errors|striptags }}</span>
+					{% else %}
+						{{ field.help_text }}
+					{% endif %}
+					</small>
+				</div>
+
 			</div>
-		</div>
-		
+		{% elif field.html_name == 'password' %}
+			<div id="password-id" class="form-row">
+				{{ field.label_tag }}
+				{{ field }} <a style="margin-left: 5px" class="small" href="{% url my_profile_change_password %}">alterar senha</a>
+				<div>
+					<small>
+					{% if field.errors %}
+						<span class="error">{{ field.errors|striptags }}</span>
+					{% else %}
+						{{ field.help_text }}
+					{% endif %}
+					</small>
+				</div>
+
+			</div>
+		{% endif%}
 		{% endfor %}
 		<!-- /form -->
 
-		<div class="form-actions">
-			<button type="submit" class="btn btn-large btn-primary">salvar</button>
-		</div>
-		
-		<div style="margin: 30px 0 30px 0; overflow: auto;">
-			<a href="{% url 'my_profile_confirm_del' %}" class="pull-right btn btn-mini btn-danger pull-right">Cancelar minha conta no Colabre</a>
-		</div>
-		
+		<input type="submit" value="salvar" class="btn-info" />
+
+<div style="float: right; clear: both; margin: 20px 0 20px 0; font-size: 60%;">
+<a href="{% url my_profile_confirm_del %}" style="padding: 5px;" class="btn btn-cancel">Cancelar minha conta no Colabre.</a>
+</div>
 	</form>
+
 	<script type="text/javascript">
 		$(function(){
 
+			$(".profile-type").tooltip({
+				position: 'center right',
+				offset: [-10, 10],
+				effect: "fade",
+				opacity: 0.9
+			});
+
 			// Autocompletes de país, estado, cidade
-			$("#id_city_name").typeahead({
+			$("#id_city_name").autocomplete({
 				minLength: 1,
-				matcher: function(item)
-				{
-					return true;
-				},
 				source: function(request, response)
 				{
+					var term = request.term;
 					$.ajax({
 						url: '/auxiliares/parcial/buscar-cidade/',
 						data: {
-							q : request,
+							q : term,
 							country : $("#id_country_name").val(),
 							region : $("#id_region_name").val(),
 							csrfmiddlewaretoken: '{{ csrf_token }}'
@@ -110,18 +141,15 @@
 				}
 			});
 
-			$("#id_region_name").typeahead({
+			$("#id_region_name").autocomplete({
 				minLength: 1,
-				matcher: function(item)
-				{
-					return true;
-				},
 				source: function(request, response)
 				{
+					var term = request.term;
 					$.ajax({
 						url: '/auxiliares/parcial/buscar-estado/',
 						data: {
-							q : request,
+							q : term,
 							country : $("#id_country_name").val(),
 							csrfmiddlewaretoken: '{{ csrf_token }}'
 						},
@@ -137,18 +165,15 @@
 				}
 			});
 
-			$("#id_country_name").typeahead({
+			$("#id_country_name").autocomplete({
 				minLength: 1,
-				matcher: function(item)
-				{
-					return true;
-				},
 				source: function(request, response)
 				{
+					var term = request.term;
 					$.ajax({
 						url: '/auxiliares/parcial/buscar-pais/',
 						data: {
-							q : request,
+							q : term,
 							csrfmiddlewaretoken: '{{ csrf_token }}'
 						},
 						type: 'post',
@@ -169,7 +194,7 @@
 
 				$.ajax({
 					type: 'get',
-					url: '{% url 'my_profile_resend_verification_email' %}',
+					url: '{% url my_profile_resend_verification_email %}',
 					beforeSend: function()
 					{
 						$("#resend-verification-email-loading").show();

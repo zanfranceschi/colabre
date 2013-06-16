@@ -1,55 +1,220 @@
 {% extends "_base.html" %}
 {% load cache %}
-{% block title %}Busca de Currículos{% endblock %}
+{% load url from future %}
+{% block title %}Busca de currículos{% endblock %}
 {% block extra_head %}
 	<link href="{{ STATIC_URL }}css/resumes.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
+	<div class="search-wrapper">
+		<!-- left column -->
+		<div class="content-left">
 
-<h1 class="search-title text-center">Buscar Currículos</h1>
-
-<div class="row">
-	<div class="span4">
-		<!-- filters -->
-		{% block filter %}
-		{#% cache 600 jobs_search_filters %#}
-		{% include "resumes/_filters.html" %}
-		{#% endcache %#}
-		{% endblock %}
-		<!-- /filters -->
-	</div>
-	<div class="span8">
-		<div class="input-append" style="width: 100% !important;">
-			<input type="text" class="span6" id="search-term" style="width: 70% !important;">
-			<button id="btn-search" type="button" class="btn btn-search">Buscar</button>
-		</div>
-		
-		<!-- content -->
-		<div id="search-wrapper">
-
-			<!-- search result -->
-			<div class="loading-search text-center is-padded10" id="search-loading-img">
-				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
-				buscando...
-			</div>
-			<div class="partial-container" id="search-result"></div>
-			<div class="text-center is-padded20 loading-more" id="search-loading">
-				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+			<div class="content-header-aligner">
+				<h2>Buscar currículos</h2>
 			</div>
 			
+			<!-- filters -->
+			{#% cache 600 resumes_search_filters %#}
+			{% include "resumes/_filters.html" %}
+			{#% endcache %#}
+			<!-- /filters -->
 		</div>
-		<!-- /content -->
+		
+		<!-- right column -->
+		<div class="content-right">
+			
+			<!-- search input -->
+			<div class="content-header-aligner">
+				<input class="search-field" type="text" id="search-resumes" name="search-resumes" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />	
+			</div>
+			
+			<!-- search result -->
+			<div class="loading-search" id="resumes-loading-img">
+				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
+				buscando
+			</div>
+			<div class="partial-container" id="resumes"></div>
+			<div class="loading-more" id="resumes-loading">
+				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
+			</div>
+		</div>
 	</div>
-</div>
+	
+	<script type="text/javascript">
+		$(function(){
+			
+			var q = $("#search-resumes").val();
+			
+			// load content and toggle visiblity
+			$(".resume-wrapper-summary").live('click', function(){
+			
+				resumeId = $(this).attr("resume-id");
+				
+				var req = $.ajax({
+					url: '/curriculos/parcial/detalhar/' + resumeId + '/' + q.replace('#', '%23') + '/',
+					type: 'get',
+					complete: function()
+					{
+						
+					},
+					success: function(data)
+					{
+						respResumeId = req.getResponseHeader('resume-id')
+						_this = $("div.resume-wrapper-summary[resume-id=" + respResumeId + "]");
+					
+						details = _this.children("div.resume-details");
+						
+						_this.removeClass("resume-wrapper-summary")
+							.addClass("resume-wrapper-details wrapper-expanded");
+						
+						details.empty();
+						details.html(data);
+						
+						details.show('fast');
+					},
+					error: function(a, b, error)
+					{
+						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
+					}
+				});				
+			});
+			
+			// toggle visibility after content is loaded...
+			$(".resume-wrapper-details").live('click', function() {
+				_this = $(this);
+				details = $(this).children("div.resume-details");
+				details.toggle('fast', function(){
+					_this.toggleClass("wrapper-expanded wrapper-contracted");
+				});
+			});
+			
+			$(".profile-name, .contact-form").live('click', function(e){
+				e.stopPropagation();
+			});
+			
+			$(".contact-form-opener").live('click', function(){
+				user_id = $(this).attr("user-id");
+				form = $("#contact-form-" + user_id);
+				_this = ($(this));
+				form.toggle('fast', function(){
+					if ($(this).is(":visible"))
+					{
+						_this.html(_this.html().replace("◄", "▼"));
+					}
+					else
+					{
+						_this.html(_this.html().replace("▼", "◄"));
+					}	
+				});
+			});
 
-<script type="text/javascript">
-{% block jscript %}
-{% include "resumes/index.js" %}
-{% endblock %}
-</script>
-{% endblock %}
+			$(".filter-toggler").click(function(){
+				
+				target = $("#" + $(this).attr("target"));
+				
+				if (target.is(":visible"))
+				{
+					$(this).text("◄");
+					target.hide();
+				}
+				else
+				{
+					$(this).text("▼");
+					target.show();
+				}
+			});
+		
+			$(".country, .region").change(function(){
+				id = $(this).attr("id");
+				checked = $(this).attr("checked") ? true : false;
+				$("." + id).attr("checked", checked);
+			});
+		
+			var page = 1;
+			
+			// avoid resending the same request twice when page is scrolled all the way down
+			var lock = false;
+			
+			var display_result = function(result)
+			{
+				$("#resumes-loading-img").hide();
+				$("#resumes-loading").hide();
+				$("#resumes-search-info").show();
+				$("#resumes").html(result);
+				page++;
+			};
+			
+			var display_result_append = function(result)
+			{
+				$("#resumes-loading-img").hide();
+				$("#resumes-loading").hide();
+				$("#resumes-search-info").show();
+				$("#resumes").append(result);
+				page++;
+				lock = false;
+			};
+			
+			var send_search = function(callback)
+			{
+				segments = [];
+				_locations = [];
+				$(".segment-item:checked").each(function(){
+					segments.push($(this).val());
+				});
+				$(".location-item:checked").each(function(){
+					_locations.push($(this).val());
+				});
+				data = {
+					term: q,
+					segments: segments.join("-"),
+					locations: _locations.join("-"),
+					page: page,
+					csrfmiddlewaretoken: '{{ csrf_token }}'
+				};
+				$("#resumes-loading-img").show();
+				$("#resumes-search-info").hide();
+				search("/curriculos/parcial/buscar/", 'post', data, callback);
+			};
+			
+			$(".filter-control").bind('change select', function() { 
+				page = 1; 
+				send_search(display_result); 
+			});
+			
+			$("#btn-search").click(function(){
+				q = $("#search-resumes").val();
+				page = 1;
+				send_search(display_result);
+			});
 
-{% block footer %}
-{% include "_footer-simple.html" %}
-{% endblock footer %}
+			$("#search-resumes").keyup(function(e){
+				code = e.which ? e.which : e.keyCode;
+				q = $(this).val();
+				if (code == 13)
+				{
+					page = 1;
+					send_search(display_result);
+				}
+			});
+
+			$(window).scroll(function(){
+				if(!lock && $(window).scrollTop() == $(document).height() - $(window).height())
+				{
+					if ($("#stop_request_on_scroll").size() > 0)
+						return;
+
+					lock = true;
+					$("#resumes-loading").show();
+					send_search(display_result_append);
+				}
+			});
+			
+			$("#search-resumes").focus();
+			
+			send_search(display_result); 
+		});
+	</script>
+	
+{% endblock %}

@@ -53,9 +53,6 @@ def index(request):
 
 @login_required
 def individual_stats(request, id):
-	
-	job = Job.objects.get(id=id)
-	
 	queryset = JobStatistics.objects.filter(
 	                                            job_id=id, 
 	                                            search_term__regex=r'^.+'
@@ -82,7 +79,7 @@ def individual_stats(request, id):
 	        'options':
 	        {
 	            'type': 'column',
-	            'color' : 'rgba(32, 74, 135, 0.7)'
+	            'color' : 'rgba(70, 114, 193, 1)'
 	        },
 	        'terms': 
 	        [    
@@ -113,20 +110,21 @@ def individual_stats(request, id):
 	            },
 	            'title' : 
 	            {
-	                'text' : u'Termos de busca que mais levaram a esta vaga'
+	                'text' : 'Os termos de busca que mais levaram a sua vaga'
 	            }
 	        }
 	)
-	
-	queryset_jobtitle = JobStatistics.objects.filter(
-	                                            job_title_id=job.job_title.id,
+	job_title_id = queryset[0].job_title_id if queryset else 0
+	queryset_all = JobStatistics.objects.filter(
+	                                            job_title_id=job_title_id,
 	                                            search_term__regex=r'^.+'
 	                                            ).exclude(job_id=id)
-	ds_jobtitle = PivotDataPool(
+	
+	ds_all = PivotDataPool(
 	    series = [{
 	        'options' : 
 	        {
-	            'source': queryset_jobtitle,
+	            'source': queryset_all,
 	            'categories' : 'search_term'
 	        },
 	        'terms' : 
@@ -138,13 +136,13 @@ def individual_stats(request, id):
 	    top_n = 8
 	)
 	
-	chart_jobtitle = PivotChart(
-	    datasource = ds_jobtitle, 
+	chart_all = PivotChart(
+	    datasource = ds_all, 
 	    series_options = [{
 	        'options':
 	        {
 	            'type': 'column',
-	            'color' : 'rgba(52, 101, 164, 0.7)'
+	            'color' : 'rgba(150, 150, 150, 0.5)'
 	        },
 	        'terms': 
 	        [    
@@ -175,71 +173,7 @@ def individual_stats(request, id):
 	            },
 	            'title' : 
 	            {
-	                'text' : u'Termos de busca que mais levaram à vagas de {0}'.format(job.job_title.name)
-	            }
-	        }
-	)
-	
-
-	queryset_segment = JobStatistics.objects.filter(
-	                                            segment_id=job.job_title.segment.id,
-	                                            search_term__regex=r'^.+'
-	                                            ).exclude(job_id=id)
-	
-	ds_segment = PivotDataPool(
-	    series = [{
-	        'options' : 
-	        {
-	            'source': queryset_segment,
-	            'categories' : 'search_term'
-	        },
-	        'terms' : 
-	        {
-	            'Quantidade': Count('search_term'),
-	        }
-	    }],
-	    top_n_term = 'Quantidade',
-	    top_n = 8
-	)
-	
-	chart_segment = PivotChart(
-	    datasource = ds_segment, 
-	    series_options = [{
-	        'options':
-	        {
-	            'type': 'column',
-	            'color' : 'rgba(114, 159, 207, 0.7)'
-	        },
-	        'terms': 
-	        [    
-	            'Quantidade', 
-	        ],
-	    }], chart_options = {
-	            'chart' : 
-	            {
-	                'backgroundColor' : 'rgba(255, 255, 255, 0.0)'        
-	            },
-	            'yAxis' : 
-	            {
-	                'title' :
-	                {
-	                    'text' : ' '
-	                }
-	            },
-	            'legend' :
-	            {
-	                'enabled' : False
-	            },
-	            'xAxis' : 
-	            {
-	                'title' :
-	                {
-	                    'text' : ' '
-	                }
-	            },
-	            'title' : 
-	            {
-	                'text' : u'Termos de busca que mais levaram à vagas de {0}'.format(job.job_title.segment.name)
+	                'text' : 'Os termos de busca que mais levaram a vagas similares a esta'
 	            }
 	        }
 	)
@@ -270,14 +204,13 @@ def individual_stats(request, id):
 	                                                        job_id=id,
 	                                                        access_date=today 
 	                                                        ).count()
-	
+	job = Job.objects.get(id=id)
 	return render(request, get_template_path("individual-stats.html"), 
 	                { 
 	                    'job' : job, 
-	                    'charts' : [chart, chart_segment,chart_jobtitle],
+	                    'charts' : [chart, chart_all],
 	                    'chart_chart' : len(queryset) > 0,
-	                    'chart_chart_segment' : len(queryset_segment) > 0,
-	                    'chart_chart_jobtitle' : len(queryset_jobtitle) > 0,
+	                    'chart_chart_all' : len(queryset_all) > 0,
 	                    'stats_count_total' : stats_count_total,
 	                    'stats_count_current_week' : stats_count_current_week,
 	                    'stats_count_current_month' : stats_count_current_month,
@@ -490,19 +423,13 @@ def create(request):
 	if request.method == 'POST':
 		form = JobForm(request.POST, profile=profile)
 		if form.is_valid():
-			created_job = form.save()
-			send_mail(
-					u"Colabre | Aprovação de Nova Vaga",
-                    created_job.to_string(),
-                    colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
-                    fail_silently=False)
+			form.save()
 			template = get_template_path('index.html')
 			context = _index_data(request)
-			messages.success(request, 
-							u'Sua vaga foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email.')
+			messages.success(request, 'Sua vaga foi publicada. '
+						' A equipe do Colabre se reserva o direito de revisar '
+						' e remover sua vaga sem aviso prévio caso a considere ' 
+						' inadequada.')
 		else:
 			messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
 			template = get_template_path('create.html')
@@ -524,19 +451,13 @@ def edit(request, job_id):
 		if request.method == 'POST':
 			form = JobForm(request.POST, job_id=job.id, profile=profile)
 			if form.is_valid():
-				edited_job = form.save()
-				send_mail(
-					u"Colabre | Aprovação de Vaga Editada",
-                    edited_job.to_string(),
-                    colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
-                    fail_silently=False)
+				form.save()
 				template = get_template_path('index.html')
 				context = _index_data(request)
-				messages.success(request, 
-							u'Sua vaga foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email.')
+				messages.success(request, 'Sua vaga foi atualizada. '
+						' A equipe do Colabre se reserva o direito de revisar '
+						' e remover sua vaga sem aviso prévio caso a considere ' 
+						' inadequada.')
 			else:
 				template = get_template_path('edit.html')
 				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')

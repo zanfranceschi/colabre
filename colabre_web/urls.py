@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from django.conf.urls import *
+from django.conf.urls.defaults import *
 from django.contrib import admin
 import social_auth
 
@@ -7,13 +7,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('colabre_web.views',
 
-	
-	
 	#url(r'^test/(.+)/$', 'test.test', name='test'),
 	
 	url(r'^auxiliares/', include('colabre_web.views.generic')),
-	
-	url(r'^colabre-admin/', include('colabre_web.views.admin')),
 	
 	url(r'^inicio/', include('colabre_web.views.home')),
 	

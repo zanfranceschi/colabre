@@ -43,7 +43,7 @@ def index(request):
 			form.save()
 			messages.success(request, 'Perfil atualizado.')
 		else:
-			messages.error(request, 'Verifique o preenchimento do formulário.')
+			messages.error(request, 'Verifique o preenchimento do perfil.')
 	else:
 		form = get_user_profile_form(user=request.user)
 	return render(request, get_template_path('index.html'), {'form' : form })

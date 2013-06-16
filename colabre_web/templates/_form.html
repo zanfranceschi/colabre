@@ -4,17 +4,18 @@
 {% endfor %}
 {# Include the visible fields #}
 {% for field in form.visible_fields %}
-	<div class="control-group{% if field.errors %} error{% endif %}">
-		<label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}</label>
-		<div class="controls">
-			{{ field }}
-			<span class="help-block">
+	<div class="form-row">
+		{{ field.label_tag }}
+		{{ field }}
+		<div>
+			<small>
 			{% if field.errors %}
-				{{ field.errors|striptags }}
+				<span class="error">{{ field.errors|striptags }}</span>
 			{% else %}
 				{{ field.help_text }}
 			{% endif %}
-			</span>
+			</small>
 		</div>
+		
 	</div>
 {% endfor %}

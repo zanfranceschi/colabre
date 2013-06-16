@@ -19,23 +19,7 @@ def set_bbcode(field):
 
 def custom_init(instance):
 	for field in instance.fields:
-		try:			
-			if isinstance(instance.fields[field].widget, forms.Textarea):
-				if ('class' in instance.fields[field].widget.attrs):
-					instance.fields[field].widget.attrs['class'] += ' input-xxlarge'
-				else:
-					instance.fields[field].widget.attrs['class'] = 'input-xxlarge'
-					
-			if isinstance(instance.fields[field], forms.CharField) or isinstance(instance.fields[field], forms.PasswordInput):
-				if ('class' in instance.fields[field].widget.attrs):
-					instance.fields[field].widget.attrs['class'] += ' input-xlarge'
-				else:
-					instance.fields[field].widget.attrs['class'] = 'input-xlarge'
-			
-			if 'typeahead' in instance.fields[field].widget.attrs:
-				instance.fields[field].widget.attrs['autocomplete'] = 'off'
-				del instance.fields[field].widget.attrs['typeahead']
-			
+		try:
 			if 'address' in field:
 				pass
 				#instance.fields[field].widget.attrs['title'] = 'Não inclua o complemento se desejar integração com o Google Maps (futuro recurso).'
@@ -58,7 +42,6 @@ def custom_init(instance):
 					instance.fields[field].widget.attrs['style'] = 'width: 200px;'
 			
 			if instance.fields[field].required:
-				#instance.fields[field].widget.attrs.update({'required' : ''})
 				if 'class' in instance.fields[field].widget.attrs:
 					instance.fields[field].widget.attrs['class'] += ' required'
 				else:
@@ -129,21 +112,18 @@ class UserProfileFormOAuth(BaseForm):
 	CHOICES_YEAR = range(datetime.now().year - 14, 1919, -1)
 
 	country_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		required=True,
 		max_length=60,
 		label='País'
 	)
 		
 	region_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		required=True,
 		max_length=60,
 		label='Estado'
 	) 
 
 	city_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		required=True,
 		max_length=60,
 		label='Cidade'
@@ -152,8 +132,7 @@ class UserProfileFormOAuth(BaseForm):
 	profile_type = forms.ChoiceField(
 		required=True,
 		label='Tipo de Perfil',
-		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você. '
-					'Por favor, note que esta opção afeta apenas a disposição do menu.',  
+		help_text='Selecione o que melhor descreve seu objetivo no Colabre para otimizarmos o serviço para você.', 
 		choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')),
 		widget=forms.RadioSelect(),
 	)
@@ -205,9 +184,9 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 		label='Email')
 	password = forms.CharField(
 		widget=forms.PasswordInput,
-		help_text=u'Para atualizar seu cadastro é necessário colocar sua senha.', 
+		help_text=u'Para atualizar seu cadastro, é necessário colocar sua senha.', 
 		error_messages = { 
-			'required' : u'Para atualizar seu cadastro é necessário colocar sua senha.'
+			'required' : u'Para atualizar seu cadastro, é necessário colocar sua senha.'
 		},
 		label='Senha'
 	)
@@ -308,7 +287,6 @@ class JobForm(BaseForm):
 	job_id = None
 	
 	job_title_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=50, 
 		required=True,
 		label='Cargo',
@@ -316,7 +294,6 @@ class JobForm(BaseForm):
 	)
 	
 	segment_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=50,
 		required=True, 
 		label='Segmento',
@@ -340,21 +317,18 @@ class JobForm(BaseForm):
 	)
 	
 	country_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=60, 
 		label=u'País',
 		required=True
 	)
 	
 	region_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=60, 
 		label=u'Estado',
 		required=True
 	)
 	
 	city_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=60, 
 		label='Cidade',
 		required=True
@@ -408,8 +382,6 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		
 		job.save()
-		
-		return job
 	
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
@@ -514,7 +486,6 @@ class ResumeForm(BaseForm):
 				self.initial = data
 	
 	segment_name = forms.CharField(
-		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		label='Segmento',
 		help_text='Coloque o segmento do seu campo de trabalho. Por exemplo: Tecnologia da Informação',
 		max_length=50
@@ -549,7 +520,7 @@ class ResumeForm(BaseForm):
 class RetrieveAccessForm(BaseForm):
 	username_or_email = forms.CharField(
 		label='Usuário ou Email', 
-		help_text='Por favor, coloque seu usuário ou email para tentarmos recuperar seu acesso ao Colabre.'
+		help_text='Por favor, coloque seu usuário ou email tentarmos para recuperar seu acesso ao Colabre.'
 	)
 
 class ChangePasswordForm(BaseForm):

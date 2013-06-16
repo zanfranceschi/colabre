@@ -1,4 +1,4 @@
-﻿{% extends "_base.html" %}
+﻿{% extends "_or-linkedin.html" %}
 {% load url from future %}
 {% block title %}Login{% endblock %}
 {% block extra_head %}
@@ -22,27 +22,7 @@
 	}
 </style>
 {% endblock %}
-{% block body %}
-	<h1>Login</h1>
-	
-	<p>
-		Você pode fazer seu login usando o formulário abaixo ou usar 
-		<a href="{% url 'socialauth_begin' backend='linkedin' %}">
-			sua conta do 
-		 	<img style="border: 0; vertical-align: middle;" src="{{ STATIC_URL }}img/linkedin-logo-small.png" alt="linkedin" />
-		</a>.
-	</p>
-
-	<hr />	
-
-	<form action="/autenticar/" class="form-horizontal" method="post">
-	{% csrf_token %}
-	{% include '_form.html' %}
-	<div class="form-actions">
-		<input type="submit" value="entrar" class="btn btn-large btn-info" />
-	</div>
-	<div class="form-actions">
-		<a class="btn btn-mini" href="{% url 'my_profile_retrieve_access' %}">esqueci minha senha</a>
-	</div>
-</form>
+{% block content %}
+	<h1>Faça o login</h1>
+	{% include "auth/login-form.html" %}
 {% endblock %}

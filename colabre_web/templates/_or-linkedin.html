@@ -1,21 +1,23 @@
 {% extends "_base.html" %}
 {% load url from future %}
 {% block body %}
-<div class="row">
-	<div class="span6">
-		{% block content %}{% endblock %}
-	</div>
-	<div class="span1" style="vertical-align: middle;">
-		<img src="{{ STATIC_URL }}img/register-or-oauth.png" alt="ou" style="" />
-	</div>
-	<div class="span5">
-		<p>
+<table cellpadding="0" cellspacing="0" class="table">
+	<tr>
+		<td>
+			{% block content %}{% endblock %}		
+		</td>
+		<td class="or">
+			<img src="{{ STATIC_URL }}img/register-or-oauth.png" alt="ou" style="" />			
+		</td>
+		<td class="oauth">
+			<p>
 			Use sua conta do <a href="{% url 'socialauth_begin' backend='linkedin' %}"><img style="border: 0; vertical-align: middle;" src="{{ STATIC_URL }}img/linkedin-logo-small.png" alt="linkedin" /></a>
 			para acessar a área exclusiva para assinantes do Colabre!
 		</p>
 		<p style="text-align: center;">
 			<small><a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn.</a></small>
 		</p>
-	</div>	
-</div>
+		</td>
+	</tr>
+</table>
 {% endblock body %}

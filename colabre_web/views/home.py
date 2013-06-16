@@ -17,15 +17,11 @@ urlpatterns = patterns('colabre_web.views.home',
 )
 
 def get_template_path(template):
-	#return template
 	return 'home/%s' % template
 
 def index(request):
-	#messages.info(request, 'Vaga criada.')
-	#messages.success(request, 'Vaga criada.')
-	#messages.error(request, 'Vaga criada.')
-	#messages.warning(request, 'Vaga criada.')
-	return render(request, get_template_path("index.html"))
+	form = LoginForm()
+	return render(request, get_template_path("index.html"), {'form' : form})
 
 def legal(request):
 	return render(request, get_template_path("legal.html"))

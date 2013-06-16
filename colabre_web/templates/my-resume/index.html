@@ -2,43 +2,32 @@
 {% load bbcode %}
 {% block extra_head %}
 	<link rel="stylesheet" href="{{ STATIC_URL }}sceditor/themes/default.min.css" type="text/css" media="all" />
-	<style type="text/css">
-		#id_full_description
-		{
-			width: 90% !important;
-		}	
-	</style>
 {% endblock %}
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
 	<h1>Meu Currículo</h1>
-	
+
 	<p><i>Atualização em {{ form.resume.last_update }}.</i></p>
 
-	<form action="{% url 'my_resume_index' %}" class="form-horizontal" method="post">
+	<form action="{% url my_resume_index %}" method="post">
 		{% csrf_token %}
 		{% include '_form.html' %}
-		<div class="form-actions">
-			<button type="submit" class="btn btn-large btn-primary">salvar</button>
-		</div>
+		<input type="submit" value="salvar" class="btn-info" />
 	</form>
-	
-	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/jquery.sceditor.min.js"></script>
+
+	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/jquery.sceditor.bbcode.min.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}sceditor/languages/pt-BR.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
 
-		$("#id_segment_name").typeahead({
+		$("#id_segment_name").autocomplete({
 				minLength: 1,
 				source: function(request, response)
 				{
+					var term = request.term;
 					$.ajax({
-						url: '/auxiliares/parcial/buscar-segmento/',
-						data : {
-							q : request,
-							csrfmiddlewaretoken: '{{ csrf_token }}'
-						},
-						type: 'post',
+						url: '/auxiliares/parcial/buscar-segmento/' + term,
+						type: 'get',
 						success: function(data)
 						{
 							response($.map(data, function(item)
@@ -50,9 +39,12 @@
 				}
 			});
 
-		$("textarea.bbcode").sceditorBBCodePlugin({
+		$("textarea.bbcode").sceditor({
+			plugins: "bbcode",
+			emoticonsEnabled: false,
+			enablePasteFiltering: true,
 			style: "{{ STATIC_URL }}sceditor/jquery.sceditor.default.min.css",
-			toolbar: "bold,italic,underline|size|left,center,right,justify|source",
+			toolbar: "removeformat|bold,italic,underline|size|left,center,right,justify|source",
 			locale: "pt-BR"
 		});
 	});

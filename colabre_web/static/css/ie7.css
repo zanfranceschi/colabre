@@ -1,0 +1,13 @@
+.filter-toggler
+{
+	cursor: pointer;
+	float: right;
+	margin-right: 5px;
+	margin-top: -20px;
+	display: block;
+	width: 20px;
+}
+iframe
+{
+	border: none;
+}

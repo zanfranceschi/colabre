@@ -6,79 +6,49 @@
 
 <h1>Estatísticas</h1>
 
-<div class="is-padded20">
-	<p><strong>{% if job.is_editable %}<a href="{% url 'my_jobs_edit' job.id %}">{% endif %}{{ job.job_title }} ({{ job.job_title.segment.name }}){% if job.is_editable %}</a>{% endif %}</strong> - {{ job.city.full_name }} - publicada em <strong>{{ job.creation_date }}</strong>.</p>
-</div>
+<p><b>{% if job.is_editable %}<a href="{% url my_jobs_edit job.id %}">{% endif %}{{ job.job_title }} ({{ job.job_title.segment.name }}){% if job.is_editable %}</a>{% endif %}</b> - {{ job.city.full_name }} - publicada em <b>{{ job.creation_date }}</b>.</p>
 
-<div class="row">
-	<div class="span3">
-		<table class="table">
-			<tr class="stats-row">
-				<td class="stats-label">Visualizações hoje</td>
-				<td class="stats-value">{{ stats_count_today }}</td>
-			</tr>
-			<tr class="stats-row">
-				<td class="stats-label">Visualizações ontem</td>
-				<td class="stats-value">{{ stats_count_yesterday }}</td>
-			</tr>
-			<tr class="stats-row">
-				<td class="stats-label">Visualizações nesta semana</td>
-				<td class="stats-value">{{ stats_count_current_week }}</td>
-			</tr>
-			<tr class="stats-row">
-				<td class="stats-label">Visualizações neste mês</td>
-				<td class="stats-value">{{ stats_count_current_month }}</td>
-			</tr>
-			<tr class="stats-row">
-				<td class="stats-label">Total de visualizações</td>
-				<td class="stats-value">{{ stats_count_total }}</td>
-			</tr>
-		</table>
-	</div>
-	<div class="span9">
-		{% if chart_chart %}
-		<div id="chart"></div>
-		{% else %}
-		<div class="alert alert-block alert-warning">
-			Ainda não há dados suficientes para mostrarmos o gráfico com 
-			os termos de busca que mais levaram a esta vaga.
-		</div>
-		{% endif %}
-	</div>
-</div>
+<hr style="border: 0; height: 1px; background: #ccc; margin: 20px; clear: both;" />
 
-<div class="row">
-	{% if chart_chart_jobtitle and chart_chart_segment %}
-	<div class="span6">
-		{% if chart_chart_jobtitle %}
-		<div id="chart_jobtitle"></div>
-		{% endif %}
-	</div>
-	<div class="span6">
-		{% if chart_chart_segment %}
-		<div id="chart_segment"></div>
-		{% endif %}
-	</div>
-	{% elif chart_chart_jobtitle or chart_chart_segment %}
-	<div class="span12">
-		{% if chart_chart_jobtitle %}
-		<div id="chart_jobtitle"></div>
-		<div id="chart_segment" style="display: none;"></div>
-		{% elif chart_chart_segment %}
-		<div id="chart_segment"></div>
-		<div id="chart_jobtitle" style="display: none;"></div>
-		{% endif %}
-	</div>
-	{% else %}
-	<div id="chart_jobtitle" style="display: none;"></div>
-	<div id="chart_segment" style="display: none;"></div>
-	{% endif %}
-</div>
+<table class="stats-element stats-element-left" cellpadding="0" cellspacing="0">
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações hoje</td>
+		<td class="stats-value">{{ stats_count_today }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações ontem</td>
+		<td class="stats-value">{{ stats_count_yesterday }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações nesta semana</td>
+		<td class="stats-value">{{ stats_count_current_week }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Visualizações neste mês</td>
+		<td class="stats-value">{{ stats_count_current_month }}</td>
+	</tr>
+	<tr class="stats-row">
+		<td class="stats-label">Total de visualizações</td>
+		<td class="stats-value">{{ stats_count_total }}</td>
+	</tr>
+</table>
 
-{{ charts|load_charts:"chart,chart_segment,chart_jobtitle" }}
+{% if chart_chart %}
+<div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
+{% else %}
+<div class="stats-element-chart stats-element stats-element-right stats-element-nodata">
+	Ainda não há dados suficientes para mostrarmos o gráfico com 
+	os termos de busca que mais levaram a esta vaga.
+</div>
+{% endif %}
+<br style="clear: both;" />
+
+{% if chart_chart_all %}
+<div id="chart_all" class="stats-element-chart" style="margin-top: 20px;"> </div>
+{% endif %}
+
+{{ charts|load_charts:"chart,chart_all" }} 
+
+<br style="clear: both;" />
 
 {% endblock %}
-
-{% block footer %}
-{% include "_footer-simple.html" %}
-{% endblock footer %}

@@ -7,24 +7,27 @@
 
 	<h1>Cancelamento de Conta</h1>
 
-	<p>
-		<strong>{{ profile.user.first_name }}</strong>, é uma pena que queira cancelar sua conta no Colabre.
+	<p style="width: 50%;">
+		<b>{{ profile.user.first_name }}</b>, é uma pena que queira cancelar sua conta no Colabre.
 		Se não se importar, lhe pedimos que nos diga o motivo do cancelamento no campo abaixo.
 	</p>
 
-	<form action="{% url 'my_profile_cancel' %}" class="form-horizontal" method="post">
+	<form action="{% url my_profile_cancel %}" method="post">
 		{% csrf_token %}
-		<div class="control-group">
-			<label class="control-label" for="reason">Motivo do cancelamento</label>
-			<div class="controls">
-				<textarea name="reason" id="reason" rows="7" cols="60" class="input-xxlarge"></textarea>
-			</div>
+		
+		<div class="form-row">
+			<label for="reason">Motivo do cancelamento</label>
+			<textarea name="reason" id="reason" rows="10" cols="60" style="background-color: #fff;"></textarea>
+			<!--div>
+				<small>
+					Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.
+				</small>
+			</div-->
 		</div>
 		
-		<div class="form-actions">
-			<a href="{% url 'my_profile_index' %}" class="btn btn-info">Desisto do cancelamento</a>
-			<input type="submit" value="Cancele" class="btn btn-danger" />	
-		</div>
+		<a href="{% url my_profile_index %}" class="btn btn-info">Desisto do cancelamento</a>
+			
+		<input type="submit" value="Cancele minha conta" class="btn btn-cancel" />
 	</form>
 
 {% endblock %}

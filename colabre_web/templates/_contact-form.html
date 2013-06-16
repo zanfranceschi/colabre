@@ -3,16 +3,14 @@
 {% block title %}Contato{% endblock %}
 {% block body %}
 {% if form %}
-<form action="{% url 'contact' %}" class="form" method="post">
+<form action="{% url 'contact' %}" method="post">
 	{% csrf_token %}
 	{% include '_form.html'%}
-	<div class="form-actions">
-		<button type="submit" class="btn btn-large btn-primary">Enviar</button>
-	</div>
+	<input type="submit" class="btn btn-info" value="Enviar" />
 </form>
 {% else %}
-<div class="contact-message-sent alert alert-success" style="margin-top: 20%;">
-	<span>{{ contact_message }}</span>
+<div class="contact-message-sent">
+	{{ contact_message }}
 </div>
 {% endif %}
 {% endblock body%}
