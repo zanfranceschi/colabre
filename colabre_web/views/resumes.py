@@ -46,7 +46,7 @@ def detail(request, id):
 def partial_html_search(request):
 	if request.method == 'POST':
 		segments = request.POST['segments']
-		locations = request.POST['locations']
+		cities = request.POST['cities']
 		term = request.POST['term']
 		page = request.POST['page']
 		
@@ -54,11 +54,11 @@ def partial_html_search(request):
 		if segments:
 			segment_ids = [int(n) for n in segments.split("-")]
 		
-		locations_ids = None
-		if locations:
-			locations_ids = [int(n) for n in locations.split("-")]
+		cities_ids = None
+		if cities:
+			cities_ids = [int(n) for n in cities.split("-")]
 		
-		resumes, is_last_page, total_resumes = Resume.view_search_public(term, segment_ids, locations_ids, page, 30)
+		resumes, is_last_page, total_resumes = Resume.view_search_public(term, segment_ids, cities_ids, page, 30)
 		return render(request, get_template_path("partial/resumes.html"), {'total_resumes' : total_resumes, 'resumes' : resumes, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	else:
 		return HttpResponse('')

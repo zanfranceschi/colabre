@@ -75,7 +75,7 @@
 	
 <div class="job{% if job.published %} job-published{% endif %}" job-id="{{ job.id }}">
 	
-	<h3><a href="{% url jobs_detail job.id %}">{{ job.job_title.name }}</a></h3>
+	<h3><a href="{% url 'jobs_detail' job.id %}">{{ job.job_title.name }}</a></h3>
 	{% if job.company %}<h4>{{ job.company }}</h4>{% endif %}
 	
 	<b>Vaga criada em {{ job.creation_date }}</b>

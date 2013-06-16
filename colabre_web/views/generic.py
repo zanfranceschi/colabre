@@ -37,7 +37,7 @@ def particial_send_feedback(request):
                     u'Colabre | Feedback',
                     message,
                     colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
+                    ['zanfranceschi@gmail.com'], 
                     fail_silently=False)
             return HttpResponse(u'Obrigado! Sua mensagem foi enviada.')
         except:
@@ -62,7 +62,7 @@ def partial_json_search_job_title(request):
         list = serializers.serialize("json", titles.order_by('name')[:10])
         return HttpResponse(list, mimetype="application/json")
 
-@login_required
+#@login_required
 def partial_json_search_segment(request):
 	if request.method == 'POST':
 		q = request.POST['q']

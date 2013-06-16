@@ -1,4 +1,5 @@
-<div class="{% if forloop.first and not forloop.last %}resume-first-child {% endif %}{% if forloop.last and not forloop.first %}resume-last-child {% endif %}{% if forloop.first and forloop.last %}resume-single {% endif %}resume resume-wrapper-summary wrapper-summary" resume-id="{{ resume.id }}">
+<div 
+	class="{% if forloop.first and not forloop.last %}resume-first-child wrapper-expanded-first-element {% endif %}{% if forloop.last and not forloop.first %}resume-last-child {% endif %}{% if forloop.first and forloop.last %}resume-single {% endif %}resume resume-wrapper-summary wrapper-summary" resume-id="{{ resume.id }}">
 	<small><i><b>{{ resume.segment }}</b></i> em {{ resume.profile.city.full_name }}</small>
 	<p>{{ resume.short_description }}</p>
 	<div class="resume-details"></div>

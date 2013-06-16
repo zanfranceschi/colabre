@@ -1,7 +1,9 @@
-{% load url from future %}
-<form action="/autenticar/" method="post">
+
+<form action="/autenticar/" class="form-horizontal" method="post">
 	{% csrf_token %}
 	{% include '_form.html' %}
-	<input type="submit" value="entrar" class="btn-info" />
-	<a class="link-forgot-password" href="{% url 'my_profile_retrieve_access' %}">esqueci minha senha</a>
+	<div class="form-actions">
+		<input type="submit" value="entrar" class="btn btn-large btn-info" />
+		<a class="link-forgot-password" href="{% url 'my_profile_retrieve_access' %}">esqueci minha senha</a>	
+	</div>
 </form>

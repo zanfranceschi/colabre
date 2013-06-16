@@ -606,6 +606,9 @@ class Job(models.Model):
 	creation_date = models.DateTimeField(auto_now_add=True)
 	published = models.BooleanField(default=True)
 	active = models.BooleanField(default=True)
+	approved = models.BooleanField(default=False)
+	uuid = models.CharField(max_length=36, default=lambda: str(uuid.uuid4()), null=True)
+	approval_date = models.DateTimeField(null=True)
 
 	segment_name = None 
 	job_title_name = None
@@ -614,9 +617,64 @@ class Job(models.Model):
 	city_name = None
 	company_name = None
 
+	def to_string(self):
+		return u"""
+user				{0}
+segment				{1}
+title				{2}
+country				{3}
+region				{4}
+city				{5}
+address				{6}
+contact name		{7}
+contact email		{8}
+contact phone		{9}
+description:
+---
+{10}
+---
+
+ver: {13}/vaga/{11}
+aprovar: {13}/colabre-admin/vaga/aprovar/{11}/{12}
+""".format(
+		self.profile.user.first_name,
+		self.job_title.segment.name,
+		self.job_title.name,
+		self.city.region.country.name,
+		self.city.region.name,
+		self.city.name,
+		self.address,
+		self.contact_name,
+		self.contact_email,
+		self.contact_phone,
+		self.description,
+		self.id,
+		self.uuid,
+		colabre.settings.HOST_ROOT_URL
+		)
+
+	@classmethod
+	def approve(cls, id, uuid):
+		try:
+			job_to_approve = Job.objects.get(id=id, uuid=uuid, approved=False)
+			job_to_approve.save(**{'approve' : True})
+			return job_to_approve
+		except Job.DoesNotExist:
+			return None
+
+	def delete(self):
+		self.active = False
+		self.save()
 
 	def save(self, *args, **kwargs):
-		
+		if (kwargs.pop('approve', False) == True or self.profile.user.username == 'colabre'):
+			self.approved = True
+			self.approval_date = datetime.now()
+		else:
+			self.uuid = str(uuid.uuid4())
+			self.approved = False
+			self.approval_date = None
+			
 		if self.job_title_name:
 			self.job_title = JobTitle.get_existing_or_create(self.segment_name, self.job_title_name)
 		
@@ -671,7 +729,7 @@ class Job(models.Model):
 		now = datetime.now()
 		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
 		
-		query = Q(published=True) & Q(creation_date__gte=ref_datetime)
+		query = Q(approved=True) & Q(published=True) & Q(creation_date__gte=ref_datetime)
 		
 		if job_titles_ids:
 			query = query & Q(job_title__in=(job_titles_ids))
@@ -715,6 +773,7 @@ class Job(models.Model):
 					inner join colabre_web_city ci	on r.id = ci.region_id
 					inner join colabre_web_job j	on ci.id = j.city_id
 				where j.active = 1
+					and j.approved = 1
 				order by
 					co.name,
 					r.name,
@@ -734,7 +793,8 @@ class Job(models.Model):
 				 	inner join colabre_web_segment se	on jt.segment_id = se.id 
 				 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
 				 where jt.active = 1 
-				 	and jo.active = 1 
+				 	and jo.active = 1
+				 	and jo.approved = 1
 				 	and se.active = 1
 				 group by 
 				 	jt.id		,

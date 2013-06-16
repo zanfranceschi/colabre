@@ -1,76 +1,129 @@
-			<div class="filters-wrapper">
-				<!-- period -->
-				<div id="filter-period" class="filter-element-wrapper">
-					<h4>Período</h4>
-					<div class="filter-element-content-level-01">
-						Publicadas até <select id="period-days" 
-											class="filter-control">
-										{% for day in days %}
-											<option value="{{day}}">{{day}}</option>	
-										{% endfor %}
-										</select> dias atrás.
+<div class="accordion" id="search-filters">
+
+  <div class="accordion-group search-filter-accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#search-filters" href="#search-filter-period">
+        Período
+      </a>
+    </div>
+    <div id="search-filter-period" class="accordion-body collapse in">
+      <div class="accordion-inner">
+
+        Publicadas até <select id="period-days" style="width: 70px;" class="input-small filter-control">
+						{% for day in days %}
+							<option value="{{day}}">{{day}}</option>
+						{% endfor %}
+						</select> dias atrás.
 						{% block my_jobs_period %}{% endblock %}
-					</div>
-				</div>
-				
-				<!-- locations -->
-				<div id="filter-locations" class="filter-element-wrapper">
-					<h4>Localização</h4>
-					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
-					{% for country in countries %}
-						<div>
-							<input type="checkbox" class="filter-control country country-{{ country.id }}" id="country-{{ country.id }}" />
-							<label for="country-{{ country.id }}">{{ country.name }}</label>
-							<a target="country-regions-{{ country.id }}" class="filter-toggler">◄</a>
-							
-							<div class="filter-element-content-level-02 filter-element-content-level-wrapper" id="country-regions-{{ country.id }}">
-							{% for region in country.regions %}
-								<div>
-									<input type="checkbox" class="filter-control region country-{{ country.id }} region-{{ region.id }}" id="region-{{ region.id }}" />
-									<label for="region-{{ region.id }}">{{ region.name }}</label>
-									<a target="region-cities-{{ region.id }}" class="filter-toggler">◄</a>
-									
-									<div id="region-cities-{{ region.id }}" class="filter-element-content-level-last">
-									{% for city in region.cities %}
-										<div>
-											<input id="location-{{ city.id }}" class="city filter-control location-item country-{{ country.id }} region-{{ region.id }}" type="checkbox" value="{{ city.id }}" />
-											<label for="location-{{ city.id }}">{{ city.name }}</label>
-										</div>
-									{% endfor %}
-									</div>
-								</div>
-							{% endfor %}
-							</div>
-						</div>
-					{% endfor %}
-					</div>
-				</div>
-				
-				<!-- segments -->
-				<div id="filter-segments" class="filter-element-wrapper">
-					<h4>Segmentos/Cargos</h4>
-					<div class="filter-element-content-level-01 filter-element-content-level-wrapper">
-						{% for segment in segments %}
-						<div class="segment-wrapper">
-							<input id="segment-{{ segment.id }}" 
-								type="checkbox" 
-								value="{{ segment.id }}" 
-								class="filter-control segment-item"  />
+      </div>
+    </div>
+  </div>
 
-							<label for="segment-{{ segment.id }}">{{ segment.name }}</label>
-							<a target="titles-{{ segment.id }}" class="filter-toggler" >◄</a>
-							
-							<div class="filter-element-content-level-last" id="titles-{{ segment.id }}">
-							{% for job_title in segment.job_titles %}
-								<div>
-									<input class="filter-control jot-title-item" job-title-segmentid="{{ segment.id }}" id="jot-title-{{ job_title.id }}" type="checkbox" value="{{ job_title.id }}" />
-									<label for="jot-title-{{ job_title.id }}">{{ job_title.name|truncatechars:200 }}</label>
-								</div>
-							{% endfor %}
-							</div>
-						</div>
-					{% endfor %}
-					</div>
-				</div>
+  <div class="accordion-group search-filter-accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#search-filters" href="#search-filter-cities">
+        Localização
+      </a>
+    </div>
+    <div id="search-filter-cities" class="accordion-body collapse">
+      <div class="accordion-inner">
 
-			</div>
+        <ul class="countries">
+        {% for country in countries %}
+        	<li id="country-{{ country.id }}" class="search-filter search-filter-parent">
+        		<div>
+        			<span class="search-filter-toggler" data-child="#region-country-{{ country.id }}">{{ country.name }}</span> 
+        			<input id="filter-country-{{ country.id }}" type="checkbox" class="filter-control checkbox-filter-parent pull-right" data-target=".country-{{ country.id }}" />
+        		</div>
+        		<ul id="region-country-{{ country.id }}" class="regions search-filter-collapsible">
+        		{% for region in country.regions %}
+        			<li id="region-{{ region.id }}" class="search-filter search-filter-parent">
+        				<div>
+	        				<span class="search-filter-toggler" data-child="#region-city-{{ region.id }}">{{ region.name }}</span> 
+	        				<input id="filter-region-{{ region.id }}" type="checkbox" class="filter-control checkbox-filter-parent pull-right country-{{ country.id }}" data-target=".region-{{ region.id }}" />
+        				</div>
+        				<ul id="region-city-{{ region.id }}" class="search-filter-node-wrapper cities search-filter-collapsible">
+			       		{% for city in region.cities %}
+			       			<li class="search-filter search-filter-node">
+			       				<div>
+			       					<label for="filter-city-{{ city.id }}">{{ city.name|truncatechars:50 }}</label>
+			       					<input id="filter-city-{{ city.id }}" type="checkbox" class="city-item filter-control pull-right region-{{ region.id }} country-{{ country.id }}" value="{{ city.id }}" />
+			       				</div>
+			       			</li>
+			       		{% endfor %}
+			       		</ul>
+        			</li>
+        		{% endfor %}
+        		</ul>
+        	</li>
+        {% endfor %}
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-group search-filter-accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#search-filters" href="#search-filter-jobtitles">
+        Segmentos/Cargos
+      </a>
+    </div>
+    <div id="search-filter-jobtitles" class="accordion-body collapse">
+      <div class="accordion-inner">
+			
+			<ul class="segments">
+			{% for segment in segments %}
+				<li class="search-filter search-filter-parent">
+					<div>
+						<span class="search-filter-toggler" data-child="#segment-jobtitle-{{ segment.id }}">{{ segment.name }}</span>
+						<input id="segment-{{ segment.id }}" type="checkbox" class="filter-control pull-right checkbox-filter-parent" data-target=".segment-{{ segment.id }}" />
+					</div>
+					<ul id="segment-jobtitle-{{ segment.id }}" class="search-filter-node-wrapper jobtitles search-filter-collapsible">
+		       		{% for job_title in segment.job_titles %}
+		       			<li class="search-filter search-filter-node">
+		       				<div>
+		       					<label for="jobtitle-{{ job_title.id }}">{{ job_title.name|truncatechars:50 }}</label>
+		       					<input id="jobtitle-{{ job_title.id }}" type="checkbox" class="jobtitle-item filter-control pull-right segment-{{ segment.id }}" value="{{ job_title.id }}" />
+		       				</div>
+		       			</li>
+		       		{% endfor %}
+		       		</ul>
+				</li>
+			{% endfor %}
+			</ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	$(function() {
+	    
+	    // Collapse all filters.
+	    $(".search-filter-collapsible").hide("fast");
+	
+		// Expanded/contracted icons.  
+	    $(".search-filter-toggler").click(function(){
+	    	child = $($(this).attr("data-child"));
+	    	_this = $(this); 
+	    	child.toggle("fast", function(){
+	    		_this.css({
+	    			"background-image" : child.is(":visible") ? "url('{{ STATIC_URL }}img/searchfilter-minus.png')" : "url('{{ STATIC_URL }}img/searchfilter-plus.png')" 
+	    		});
+	    	});
+	    });
+	    
+	    // On parent filter selected, all children are checked.
+	    $(".checkbox-filter-parent").change(function(){
+	    	
+	    	checked = $(this).prop("checked");
+	    	
+	    	$($(this).attr("data-target")).prop("checked", checked);
+		    
+		    $(this).parent("div").parent("li").find("a.checkable-checkbox").removeClass("checkable-checkbox-checked");
+		    $(this).parent("div").parent("li").find(":checkbox:checked  + a.checkable-checkbox").addClass("checkable-checkbox-checked");
+	    });
+	});
+</script>
+

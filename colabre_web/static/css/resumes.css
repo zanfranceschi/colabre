@@ -131,3 +131,16 @@
 	cursor: pointer;
 	text-decoration: underline;
 }
+
+div.contact-form-wrapper
+{
+	display: none;
+	padding: 0;
+	height: 370px;
+}
+iframe.contact-form
+{
+	width: 100%;
+	border: 0;
+	height: 100%;
+}

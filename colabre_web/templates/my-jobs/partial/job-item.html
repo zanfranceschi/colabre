@@ -1,11 +1,14 @@
-<div id="job-{{job.id}}" job-id="{{job.id}}" class="{% if forloop.first and not forloop.last %}job-first-child {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job-show-details my-job job job-wrapper-summary {% if job.is_editable %}job-editable{% endif %}">
-	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
-	<h3>{{ job.job_title }}</h3>
-	<div class="job-date">publicada em {{ job.creation_date }}</div>
-	<a alt="estatísticas" title="estatísticas" class="job-stats" href="{% url my_jobs_individualstats job.id %}"><img src="{{ STATIC_URL }}img/stats.png" /></a>
-	{% if job.is_editable %}<a alt="edição" title="editar" class="job-edit" href="{% url my_jobs_edit job.id %}"><img src="{{ STATIC_URL }}img/page_white_edit.png" /></a>{% endif %}
-	<a href="{% url my_jobs_confirm_del job.id %}" class="job-del">
-		<img src="{{ STATIC_URL }}img/delete.png" alt="exclusão" title="excluir" />
-	</a>
-	<div class="job-details" id="job-details-{{job.id}}"></div>
+{% extends "jobs/partial/job-item.html" %}
+{% block my_jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
+{% block approved%}
+	{% if not job.approved %}
+			<span class="label label-warning">pendente de aprovação</span>
+	{% endif %}
+{% endblock %}
+{% block my_jobs_buttons %}	
+<div style="position: absolute; bottom: 5px; right: 5px;">
+	<a alt="estatísticas" title="estatísticas" class="job-action-button btn btn-small btn-primary" href="{% url 'my_jobs_individualstats' job.id %}"><!--img src="{{ STATIC_URL }}img/stats.png" /-->estatísticas</a>
+	{% if job.is_editable %}<a alt="edição" title="editar" class="job-action-button job-edit btn btn-small btn-success" href="{% url 'my_jobs_edit' job.id %}"><!--img src="{{ STATIC_URL }}img/page_white_edit.png" /-->editar</a>{% endif %}
+	<a href="{% url 'my_jobs_confirm_del' job.id %}" class="job-action-button btn btn-small btn-danger"><!--img src="{{ STATIC_URL }}img/delete.png" alt="exclusão" title="excluir" /-->excluir</a>
 </div>
+{% endblock %}
