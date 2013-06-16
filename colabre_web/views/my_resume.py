@@ -114,7 +114,7 @@ def stats(request):
 			'options':
 			{
 				'type': 'column',
-				'color' : 'rgba(70, 114, 193, 1)'
+				'color' : 'rgba(32, 74, 135, 0.7)'
 			},
 			'terms': 
 			[	
@@ -145,7 +145,7 @@ def stats(request):
 				},
 				'title' : 
 				{
-					'text' : 'Os termos de busca que mais levaram a seu currículo'
+					'text' : 'Termos de busca que mais levaram a seu currículo'
 				}
 			}
 	)
@@ -168,7 +168,7 @@ def stats(request):
 			}
 		}],
 		top_n_term = 'Quantidade',
-		top_n = 6
+		top_n = 10
 	)
 	chart_all = PivotChart(
 		datasource = ds_all, 
@@ -176,7 +176,7 @@ def stats(request):
 			'options':
 			{
 				'type': 'column',
-				'color' : 'rgba(150, 150, 150, 0.5)'
+				'color' : 'rgba(52, 101, 164, 0.7)'
 			},
 			'terms': 
 			[	
@@ -207,7 +207,7 @@ def stats(request):
 				},
 				'title' : 
 				{
-					'text' : 'Os termos de busca que mais levaram a currículos similares'
+					'text' : u'Termos de busca que mais levaram a currículos de {0}'.format(resume.segment.name)
 				}
 			}
 	)

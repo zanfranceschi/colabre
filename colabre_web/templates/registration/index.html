@@ -1,4 +1,4 @@
-﻿{% extends "_or-linkedin.html" %}
+﻿{% extends "_base.html" %}
 {% load url from future %}
 {% block title %}Cadastre-se{% endblock %}
 {% block extra_head %}
@@ -17,22 +17,37 @@
 	}
 </style>
 {% endblock %}
-{% block content %}
+{% block body %}
 <h1>Cadastre-se</h1>
+
+
 <p>
 	Cadastre-se no Colabre! É rápido, fácil e você terá todos 
 	os benefícios do melhor serviço de busca e divulgação de empregos do Brasil.
+	Você pode fazer seu cadastro usando o formulário abaixo ou usar 
+	<a href="{% url 'socialauth_begin' backend='linkedin' %}">
+		sua conta do 
+	 	<img style="border: 0; vertical-align: middle;" src="{{ STATIC_URL }}img/linkedin-logo-small.png" alt="linkedin" />
+	</a>.
 </p>
-<form action="{% url 'registration_index' %}" method="post">
 
-	
+<hr />
+
+<form action="{% url 'registration_index' %}" class="form-horizontal" method="post">
 	{% csrf_token %}
 	{% include "_form.html" %}
 
-	<div class="alert alert-info small" style="padding: 10px;">
-		Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
-		<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
+	<div class="control-group">
+		<div class="controls">
+			<div class="label label-info" style="padding: 10px; white-space: normal;">
+				Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
+				<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
+			</div>
+		</div>
 	</div>
-	<input type="submit" value="cadastre-se" class="btn-info" />
+
+	<div class="form-actions">
+		<input type="submit" value="cadastre-se" class="btn btn-large btn-info" />	
+	</div>
 </form>
-{% endblock content %}
+{% endblock body %}

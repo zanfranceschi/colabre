@@ -1,24 +1,34 @@
 ﻿<div job-details-id="{{ job.id }}">
-{% if job.company %}<h4 style="margin: 3px 0 10px 3px;">{{ job.company.name }}</h4>{% endif %}
-<fieldset>
-	<legend>Descrição da vaga</legend>
-	<p>{{ job.description|removetags:"script link a img input form input select button"|safe }}</p>
-	{% if job.address %}
-	<hr />
-	<div>
-		{{ job.address }}
-	</div>
-	{% endif %}
-	<hr />
-	<div>
-		contato: <b>{{ job.contact_name }}</b> /
-		{{ job.contact_email|urlize }}
-		{% if job.contact_phone %} / <b>{{ job.contact_phone }}</b>{% endif %}
-	</div>
-</fieldset>
+	
+	<dl class="dl-horizontal">
+		{% if job.company %}
+		<dt>Empresa</dt>
+		<dd>{{ job.company.name }}</dd>
+		{% endif %}
+		<hr />
+		<dt>Descrição</dt>
+		<dd class="description">{{ job.description|removetags:"script link a img input form input select button"|safe }}</dd>
+		<hr />
+		{% if job.address %}
+		<dt>Endereço</dt>
+		<dd>{{ job.address }}</dd>
+		{% endif %}
+
+		<dt>Contato</dt>
+		<dd>{{ job.contact_name }}</dd>
+		
+		<dt>Email</dt>
+		<dd>{{ job.contact_email|urlize }}</dd>
+		
+		{% if job.contact_phone %}
+		<dt>Telefone</dt>
+		<dd>{{ job.contact_phone }}</dd>
+		{% endif %}
+	</dl>
+	
 {% block view_count %}
 {% if not job_view_count == 0 %}
-<p class="job_view_count" job-details-views-id="{{ job.id }}">
+<p class="job_view_count job-view-count" job-details-views-id="{{ job.id }}">
 	<i>carregando número de visualizações...</i>
 </p>
 {% endif %}

@@ -1,8 +1,4 @@
-﻿#period-days
-{
-	width: 60px;
-}
-.job-details
+﻿.job-details
 {
 	display: none;
 }
@@ -89,31 +85,26 @@
 .job .job-date
 {
 	font-size: small;
-	position: absolute;
-	top: 5px;
-	right: 5px;
 }
 .job-wrapper-details
 {
 
 }
-.job-del, .job-edit, .job-stats
+.job-action-button
 {
-	position: absolute;
-	bottom: 0px;
-	z-index: 10;
+	margin-left: 5px;
 }
 .job-del
 {
-	right: 5px;
+	
 }
 .job-edit
 {
-	right: 40px;
+	
 }
 .job-stats
 {
-	left: 5px;
+	
 }
 .job-editable
 {
@@ -121,10 +112,10 @@
 }
 .my-job
 {
-	padding-bottom: 35px;
+	padding-bottom: 25px;
 }
 
-.job p.job_view_count
+.job p.job-view-count
 {
 	white-space: normal;
 	margin: 0;

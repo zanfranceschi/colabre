@@ -1,247 +1,55 @@
 {% extends "_base.html" %}
 {% load cache %}
-{% block title %}Busca de vagas{% endblock %}
+{% block title %}Busca de Vagas{% endblock %}
 {% block extra_head %}
 	<link href="{{ STATIC_URL }}css/jobs.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
-	<div class="search-wrapper">
-		<!-- left column -->
-		<div class="content-left">
 
-			<div class="content-header-aligner">
-				<h2>Buscar vagas</h2>
-			</div>
+<h1 class="search-title text-center">Buscar Vagas</h1>
 
-			<!-- filters -->
-			{#% cache 600 jobs_search_filters %#}
-			{% include "jobs/_filters.html" %}
-			{#% endcache %#}
-			<!-- /filters -->
+<div class="row">
+	<div class="span4">
+		<!-- filters -->
+		{% block filter %}
+		{#% cache 600 jobs_search_filters %#}
+		{% include "jobs/_filters.html" %}
+		{#% endcache %#}
+		{% endblock %}
+		<!-- /filters -->
+	</div>
+	<div class="span8">
+		<div class="input-append" style="width: 100% !important;">
+			<input type="text" class="span6" id="search-term" style="width: 70% !important;">
+			<button id="btn-search" type="button" class="btn btn-search">Buscar</button>
 		</div>
-
-		<!-- right column -->
-		<div class="content-right">
-
-			<!-- search input -->
-			<div class="content-header-aligner">
-				<input class="search-field" type="text" id="search-jobs" name="search-jobs" /><input id="btn-search" type="button" class="btn btn-info" value="buscar" />
-			</div>
+		
+		<!-- content -->
+		<div id="search-wrapper">
 
 			<!-- search result -->
-			<div class="loading-search" id="jobs-loading-img">
+			<div class="loading-search text-center is-padded10" id="search-loading-img">
 				<img src="{{ STATIC_URL }}img/ajax-loader-small.gif" alt="requisitando..." align="absmiddle" />
-				buscando
+				buscando...
 			</div>
-			<div class="partial-container" id="jobs"></div>
-			<div class="loading-more" id="jobs-loading">
+			<div class="partial-container" id="search-result"></div>
+			<div class="text-center is-padded20 loading-more" id="search-loading">
 				<img src="{{ STATIC_URL }}img/ajax-loader.gif" />
 			</div>
+			
 		</div>
+		<!-- /content -->
 	</div>
+</div>
 
-	<script type="text/javascript">
-		$(function(){
-
-			var q = $("#search-jobs").val();
-
-			// load content and toggle visiblity
-			$(".job-wrapper-summary").live('click', function(){
-
-				jobId = $(this).attr("job-id");
-
-				req = $.ajax({
-					url: '/vagas/parcial/detalhar/' + jobId + '/' + q.replace('#', '%23') + '/',
-					type: 'get',
-					complete: function()
-					{
-
-					},
-					success: function(data)
-					{
-						respJobId = req.getResponseHeader('job-id')
-						_this = $("div.job-wrapper-summary[job-id=" + respJobId + "]");
-
-						details = _this.children("div.job-details");
-
-						_this.removeClass("job-wrapper-summary")
-							.addClass("job-wrapper-details wrapper-expanded");
-
-						details.empty();
-						details.html(data);
-						viewsReq = $.ajax({
-							url: '/vagas/parcial/detalhar/visualizacoes/' + jobId + '/',
-							type: 'get',
-							error: function(a, b, error)
-							{
-								alert('Desculpe-nos, fizemos algo errado: ' + error);
-							},
-							success: function(c)
-							{
-								viewsRespJobId = viewsReq.getResponseHeader('job-id')
-
-								viewsDiv = $(".job_view_count[job-details-views-id=" + viewsRespJobId + "]");
-
-								if (c == '0')
-								{
-									viewsDiv.html('Esta é a primeira visualização desta vaga!');
-								}
-								else if (c == '1')
-								{
-									viewsDiv.html('Esta vaga já foi vista <b>1</b> vez.');
-								}
-								else
-								{
-									viewsDiv.html('Esta vaga já foi vista <b>' + c + '</b> vezes.');
-								}
-							}
-						});
-
-						details.show('fast', function(){});
-					},
-					error: function(a, b, error)
-					{
-						alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
-					}
-				});
-			});
-
-			// toggle visibility after content is loaded...
-			$(".job-wrapper-details").live('click', function() {
-				_this = $(this);
-				details = $(this).children("div.job-details");
-				details.toggle({
-					duration: 'fast',
-					complete: function(){
-						_this.toggleClass('wrapper-expanded wrapper-contracted');
-					}
-				});
-			});
-
-			$(".job-wrapper-details a").live('click', function(e) {
-
-				e.stopPropagation();
-
-			});
-
-			$(".filter-toggler").click(function(){
-
-				target = $("#" + $(this).attr("target"));
-
-				if (target.is(":visible"))
-				{
-					$(this).text("◄");
-					target.hide();
-				}
-				else
-				{
-					$(this).text("▼");
-					target.show();
-				}
-			});
-
-			$(".country, .region").change(function(){
-				id = $(this).attr("id");
-				checked = $(this).attr("checked") ? true : false;
-				$("." + id).attr("checked", checked);
-			});
-
-			$(".segment-item").change(function(){
-				checked = $(this).attr("checked") ? true : false;
-				$("[job-title-segmentid=" + $(this).val() + "]").attr("checked", checked);
-			});
-
-			$(".jot-title-item").change(function(){
-				segmentId = $(this).attr("job-title-segmentid");
-				checked = $(".jot-title-item:checked[job-title-segmentid=" + segmentId + "]").size() > 0;
-				$("#segment-" + segmentId).attr("checked", checked);
-			});
-
-			var page = 1;
-
-			// avoid resending the same request twice when page is scrolled all the way down
-			var lock = false;
-
-			var display_result = function(result)
-			{
-				$("#jobs-loading-img").hide();
-				$("#jobs-loading").hide();
-				$("#jobs-search-info").show();
-				$("#jobs").html(result);
-				page++;
-			};
-
-			var display_result_append = function(result)
-			{
-				$("#jobs-loading-img").hide();
-				$("#jobs-loading").hide();
-				$("#jobs-search-info").show();
-				$("#jobs").append(result);
-				page++;
-				lock = false;
-			};
-
-			var send_search = function(callback)
-			{
-				job_titles = [];
-				_locations = [];
-				$(".jot-title-item:checked").each(function(){
-					job_titles.push($(this).val());
-				});
-				$(".location-item:checked").each(function(){
-					_locations.push($(this).val());
-				});
-				data = {
-					term: q,
-					job_titles: job_titles.join("-"),
-					cities: _locations.join("-"),
-					days: $("#period-days").val(),
-					page: page,
-					csrfmiddlewaretoken: '{{ csrf_token }}'
-				};
-				$("#jobs-loading-img").show();
-				$("#jobs-search-info").hide();
-				search("/vagas/parcial/buscar/", 'post', data, callback);
-			};
-
-			$(".filter-control").bind('change select', function() {
-				page = 1;
-				send_search(display_result);
-			});
-
-			$("#btn-search").click(function(){
-				q = $("#search-jobs").val();
-				page = 1;
-				send_search(display_result);
-			});
-
-			$("#search-jobs").keyup(function(e){
-				code = e.which ? e.which : e.keyCode;
-				q = $(this).val();
-				if (code == 13)
-				{
-					page = 1;
-					send_search(display_result);
-				}
-			});
-
-			$(window).scroll(function(){
-				if(!lock && $(window).scrollTop() == $(document).height() - $(window).height())
-				{
-					if ($("#stop_request_on_scroll").size() > 0)
-						return;
-
-					lock = true;
-					$("#jobs-loading").show();
-					send_search(display_result_append);
-				}
-			});
-
-			$("#search-jobs").focus();
-
-			send_search(display_result);
-		});
-	</script>
-
+<script type="text/javascript">
+{% block jscript %}
+{% include "jobs/index.js" %}
 {% endblock %}
+</script>
+{% endblock %}
+
+{% block footer %}
+{% include "_footer-simple.html" %}
+{% endblock footer %}

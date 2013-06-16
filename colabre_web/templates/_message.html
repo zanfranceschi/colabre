@@ -2,7 +2,8 @@
     {% for message in messages %}
 		{% if message %}
 			<div class="message alert alert-{{ message.tags }}">
-				<a class="message-close-btn">&times;</a>
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				
 				<p>{{ message|safe }}</p>
 			</div>
 		{% endif %}

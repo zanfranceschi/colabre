@@ -5,49 +5,54 @@
 {% block body %}
 <h1>Estatísticas do Meu Currículo</h1>
 
-<p>Currículo criado em <b>{{ resume.created }}</b> e atualizado em <b>{{ resume.last_update }}</b>.</p>
-
-<hr style="border: 0; height: 1px; background: #ccc; margin: 20px; clear: both;" />
-
-<table class="stats-element stats-element-left" cellpadding="0" cellspacing="0">
-	<tr class="stats-row">
-		<td class="stats-label">Visualizações hoje</td>
-		<td class="stats-value">{{ stats_count_today }}</td>
-	</tr>
-	<tr class="stats-row">
-		<td class="stats-label">Visualizações ontem</td>
-		<td class="stats-value">{{ stats_count_yesterday }}</td>
-	</tr>
-	<tr class="stats-row">
-		<td class="stats-label">Visualizações nesta semana</td>
-		<td class="stats-value">{{ stats_count_current_week }}</td>
-	</tr>
-	<tr class="stats-row">
-		<td class="stats-label">Visualizações neste mês</td>
-		<td class="stats-value">{{ stats_count_current_month }}</td>
-	</tr>
-	<tr class="stats-row">
-		<td class="stats-label">Total de visualizações</td>
-		<td class="stats-value">{{ stats_count_total }}</td>
-	</tr>
-</table>
-
-{% if chart_chart %}
-<div id="chart" class="stats-element-chart stats-element stats-element-right"> </div>
-{% else %}
-<div class="stats-element-chart stats-element stats-element-right stats-element-nodata">
-	Ainda não há dados suficientes para mostrarmos o gráfico com 
-	os termos de busca que mais levaram a seu currículo.
+<div class="is-padded20">
+	<p>Currículo criado em <strong>{{ resume.created }}</strong> e atualizado em <strong>{{ resume.last_update }}</strong>.</p>
 </div>
-{% endif %}
-<br style="clear: both;" />
 
-{% if chart_chart_all %}
-<div id="chart_all" class="stats-element-chart" style="margin-top: 20px;"> </div>
-{% endif %}
+<div class="row">
+	<div class="span3">
+		<table class="table">
+			<tr class="stats-row">
+				<td class="stats-label">Visualizações hoje</td>
+				<td class="stats-value">{{ stats_count_today }}</td>
+			</tr>
+			<tr class="stats-row">
+				<td class="stats-label">Visualizações ontem</td>
+				<td class="stats-value">{{ stats_count_yesterday }}</td>
+			</tr>
+			<tr class="stats-row">
+				<td class="stats-label">Visualizações nesta semana</td>
+				<td class="stats-value">{{ stats_count_current_week }}</td>
+			</tr>
+			<tr class="stats-row">
+				<td class="stats-label">Visualizações neste mês</td>
+				<td class="stats-value">{{ stats_count_current_month }}</td>
+			</tr>
+			<tr class="stats-row">
+				<td class="stats-label">Total de visualizações</td>
+				<td class="stats-value">{{ stats_count_total }}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="span9">
+		{% if chart_chart %}
+		<div id="chart"> </div>
+		{% else %}
+		<div class="alert alert-block alert-warning">
+			Ainda não há dados suficientes para mostrarmos o gráfico com 
+			os termos de busca que mais levaram a seu currículo.
+		</div>
+		{% endif %}
+	</div>
+</div>
 
+<div class="row">
+	<div class="span12">
+		<div id="chart_all"{% if not chart_chart_all %} style="display: none;"{% endif %}></div>
+	</div>
+</div>
 {{ charts|load_charts:"chart,chart_all" }}
-
-<br style="clear: both;" />
-
 {% endblock %}
+{% block footer %}
+{% include "_footer-simple.html" %}
+{% endblock footer %}
