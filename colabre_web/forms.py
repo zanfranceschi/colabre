@@ -595,7 +595,7 @@ class RegisterForm(BaseForm):
 
 	username = forms.CharField(
 				max_length=30,
-				help_text=u'Usuário com no máximo 30 caracteres. Você pode usar letras, dígitos e @/./+/-/_.', 
+				help_text=u'Usuário com no máximo 30 caracteres. Você pode usar letras, dígitos e os símbolos @ . + - _.', 
 				label='Usuário', 
 				validators=[
 					validate_username_unique,
