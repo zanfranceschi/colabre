@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load url from future %}
+{% load chartit %}
 {% block title %}Início{% endblock %}
 {% block body %}
 
@@ -7,6 +8,9 @@
 	<h1>O Colabre é um serviço gratuito de busca e publicação de <a href="{% url 'jobs_index' %}">vagas</a> e <a href="{% url 'resumes_index' %}">currículos</a>.</h1>
 </div>
 
+<div id="chart"></div>
+
+{{ chart|load_charts:"chart," }}
 <div class="row">
 
 	<div class="span4 feature">
