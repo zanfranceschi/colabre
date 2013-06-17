@@ -54,7 +54,12 @@ def index(request):
 @login_required
 def individual_stats(request, id):
 	
-	job = Job.objects.get(id=id)
+	job = None
+
+	try:
+		job = Job.objects.get(id=id, profile=request.user.get_profile())
+	except Job.DoesNotExist:
+		return HttpResponseRedirect(reverse('colabre_web.views.my_jobs.index'))
 	
 	queryset = JobStatistics.objects.filter(
 	                                            job_id=id, 
