@@ -634,8 +634,8 @@ description:
 {10}
 ---
 
-ver: {13}/vaga/{11}
-aprovar: {13}/colabre-admin/vaga/aprovar/{11}/{12}
+ver: {13}vagas/detalhar/{11}
+aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 """.format(
 		self.profile.user.first_name,
 		self.job_title.segment.name,

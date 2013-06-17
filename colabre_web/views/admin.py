@@ -30,7 +30,7 @@ def job_approve(request, id, uuid):
 			message = u"""{0},
 
 Obrigado por usar o Colabre! Acabamos de aprovar a sua vaga para {1}.
-Você pode vê-la em {3}/vaga/{2}
+Você pode vê-la em {3}vagas/detalhar/{2}
 
 Abraços,
 
