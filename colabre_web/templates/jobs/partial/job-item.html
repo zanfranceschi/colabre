@@ -4,6 +4,7 @@
 	<div class="pull-right job-date">publicada em {{ job.creation_date|date:"d/m/Y" }}</div>
 	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
 	<h3>{{ job.job_title }}</h3>
+	<button job-id="{{ job.id }}" class="show-details btn btn-small">detalhes</button>
 	{% block my_jobs_buttons %}{% endblock %}
 	<div class="job-details"></div>
 </div>

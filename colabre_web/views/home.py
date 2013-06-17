@@ -23,37 +23,108 @@ def get_template_path(template):
 	return 'home/%s' % template
 
 def index(request):
-	#messages.info(request, 'Vaga criada.')
-	#messages.success(request, 'Vaga criada.')
-	#messages.error(request, 'Vaga criada.')
-	#messages.warning(request, 'Vaga criada.')
-	
-	queryset = Segment.objects.filter(jobtitle__job__active=True, jobtitle__job__approved=True).annotate(quantidade=Count('jobtitle__job')).order_by('-quantidade')
-	queryset = queryset[0:6]
-	ds = DataPool(
+	"""
+	queryset_segments_jobs = Segment.objects.filter(jobtitle__job__active=True, jobtitle__job__approved=True).annotate(quantidade=Count('jobtitle__job')).order_by('-quantidade')
+	queryset_segments_jobs = queryset_segments_jobs[0:5]
+	ds_segments_jobs = DataPool(
        series=
         [{
-		'options': { 'source': queryset },
-		'terms': [ 'name', 'quantidade' ]
+		'options': { 'source': queryset_segments_jobs },
+		'terms': {'name' : 'name', u'Número de Vagas' : 'quantidade'}
 		}]
 	)
-	chart = Chart(
-        datasource = ds, 
+	chart_segments_jobs = Chart(
+        datasource = ds_segments_jobs, 
         series_options = 
           [{'options':{
-              'type': 'column',
-              'stacking': False},
+              'type': 'bar',
+              'stacking': False
+              },
             'terms':{
-              'name': ['quantidade', ]
+              'name': [ u'Número de Vagas'], 
               }}],
-        chart_options = 
-          {'title': {
-               'text': 'Weather Data of Boston and Houston'},
-           'xAxis': {
-                'title': {
-                   'text': 'Month number'}}})
+        chart_options = {
+			'chart' : 
+			{
+				'backgroundColor' : 'rgba(255, 255, 255, 0.0)',
+			},
+			'title': 
+			{
+				'text': ' '
+			},
+           	'xAxis': 
+			 {
+			 	'title': 
+			 	{
+					'text': ' ',
+				}
+			},
+			'plotOptions' : 
+			{ 
+				'series' : 
+				{
+                    'dataLabels': 
+					 {
+                        'enabled': True,
+                    },
+                    'showInLegend': False,
+                    'color' : 'rgba(70, 114, 193, 0.8)'
+				}
+			}
+		}
+	)
 	
-	return render(request, get_template_path("index.html"), { 'chart' : chart })
+	queryset_segments_resumes = Segment.objects.filter().annotate(quantidade=Count('resume')).order_by('-quantidade')
+	queryset_segments_resumes = queryset_segments_resumes[0:5]
+	ds_segments_resumes = DataPool(
+       series=
+        [{
+		'options': { 'source': queryset_segments_resumes },
+		'terms': {'name' : 'name', u'Número de Vagas' : 'quantidade'}
+		}]
+	)
+	chart_segments_resumes = Chart(
+        datasource = ds_segments_resumes, 
+        series_options = 
+          [{'options':{
+              'type': 'bar',
+              'stacking': False
+              },
+            'terms':{
+              'name': [ u'Número de Vagas'], 
+              }}],
+        chart_options = {
+			'chart' : 
+			{
+				'backgroundColor' : 'rgba(255, 255, 255, 0.0)',
+			},
+			'title': 
+			{
+				'text': ' '
+			},
+           	'xAxis': 
+			 {
+			 	'title': 
+			 	{
+					'text': ' ',
+				}
+			},
+			'plotOptions' : 
+			{ 
+				'series' :
+				{
+					'dataLabels' :
+					{
+						'enabled' : True
+					},
+					'showInLegend': False,
+					'color' : 'rgba(70, 114, 193, 0.8)'
+				},
+			}
+		}
+	)
+	"""
+	return render(request, get_template_path("index.html"), { 'charts' : '[chart_segments_jobs,chart_segments_resumes]' })
 
 def legal(request):
 	return render(request, get_template_path("legal.html"))

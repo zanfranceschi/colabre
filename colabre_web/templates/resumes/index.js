@@ -3,7 +3,7 @@ $(function(){
 	var q = $("#search-term").val();
 
 	// load content and toggle visibility
-	$(document).on("click", ".resume-wrapper-summary" , function(){
+	$(document).on("click", ".resume-wrapper-summary button.show-details" , function(){
 
 		resId = $(this).attr("resume-id");
 
@@ -37,9 +37,9 @@ $(function(){
 	});
 
 	// toggle visibility after content is loaded...
-	$(document).on("click", ".resume-wrapper-details" , function() {
-		_this = $(this);
-		details = $(this).children("div.resume-details");
+	$(document).on("click", ".resume-wrapper-details button.show-details" , function() {
+		_this = $(this).parent('.resume-wrapper-details');
+		details = _this.children("div.resume-details");
 		details.toggle({
 			duration: 'fast',
 			complete: function(){

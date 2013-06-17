@@ -8,9 +8,6 @@
 	<h1>O Colabre é um serviço gratuito de busca e publicação de <a href="{% url 'jobs_index' %}">vagas</a> e <a href="{% url 'resumes_index' %}">currículos</a>.</h1>
 </div>
 
-<div id="chart"></div>
-
-{{ chart|load_charts:"chart," }}
 <div class="row">
 
 	<div class="span4 feature">
@@ -59,7 +56,6 @@
 		<img src="{{ STATIC_URL }}img/home/twitter.png" alt="" />
 		<p>Siga-nos no Twitter em <a style="text-decoration: none;" href="http://twitter.com/colabre">@colabre</a>! Você também pode usar a hashtag <b>#colabre</b> para falar com a gente.</p>
 	</div>
-
 	<div class="span4 feature">
 		<h3>Últimos Tuítes</h3>
 		<a 
@@ -71,5 +67,4 @@
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	</div>
 </div>
-
 {% endblock body %}

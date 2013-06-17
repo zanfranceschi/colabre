@@ -24,8 +24,8 @@ $(function(){
 	});
 
 	// load content and toggle visibility
-	$(document).on("click", ".job-wrapper-summary" , function(){
-
+	$(document).on("click", ".job-wrapper-summary button.show-details" , function(){
+	
 		jobId = $(this).attr("job-id");
 
 		req = $.ajax({
@@ -58,9 +58,9 @@ $(function(){
 	});
 
 	// toggle visibility after content is loaded...
-	$(document).on("click", ".job-wrapper-details" , function() {
-		_this = $(this);
-		details = $(this).children("div.job-details");
+	$(document).on("click", ".job-wrapper-details button.show-details" , function() {
+		_this = $(this).parent('.job-wrapper-details');
+		details = _this.children("div.job-details");
 		details.toggle({
 			duration: 'fast',
 			complete: function(){
