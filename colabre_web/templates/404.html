@@ -1,1 +1,11 @@
-xi...
+{% extends '_base.html' %}
+{% block title %}Página Não Encontrada{% endblock %}
+{% block body %}
+<h1>Página Não Encontrada</h1>
+<p>Nos desculpe, mas a página que tentou acessar não existe.</p>
+
+<div class="form-actions">
+	<a href="{% url 'home_index' %}">voltar à página inicial</a>
+</div>
+
+{% endblock body %}
