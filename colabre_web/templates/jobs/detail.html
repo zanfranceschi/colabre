@@ -1,10 +1,15 @@
 {% extends "_base.html" %}
 {% load bbcode %}
-{% block title %}Vaga: {{ job.jobtitle }}{% endblock %}
+{% block title %}Vaga: {{ job.job_title }}{% endblock %}
 {% block body %}
 <h1>{{ job.job_title.name }}</h1>
-
 	<dl class="dl-horizontal">
+		<dt>Publicada em</dt>
+		<dd>{{ job.creation_date|date:"d/m/Y" }}</dd>
+		<dt>Local</dt>
+		<dd>{{ job.city.full_name }}</dd>
+		<dt>Segmento</dt>
+		<dd>{{ job.job_title.segment }}</dd>
 		{% if job.company %}
 		<dt>Empresa</dt>
 		<dd>{{ job.company.name }}</dd>

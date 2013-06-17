@@ -10,6 +10,10 @@ $(function(){
 		req = $.ajax({
 			url: '/curriculos/parcial/detalhar/' + resId + '/' + q.replace('#', '%23') + '/',
 			type: 'get',
+			beforeSend: function()
+			{
+				$("img[resume-id='" + resId + "'], button[resume-id='" + resId + "']").toggle('fast');
+			},
 			complete: function()
 			{
 
@@ -24,13 +28,18 @@ $(function(){
 				_this.removeClass("resume-wrapper-summary")
 					.addClass("resume-wrapper-details wrapper-expanded");
 
+				$("button.show-details[resume-id='"+respResId+"']").text("- detalhes");
+				$("img[resume-id='" + respResId + "'], button[resume-id='" + respResId + "']").toggle('fast');
+
 				details.empty();
 				details.html(data);
-				
+
 				details.show('fast', function(){});
 			},
 			error: function(a, b, error)
 			{
+				$("img[resume-id]").hide();
+				$("button[resume-id]").show();
 				alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
 			}
 		});
@@ -40,14 +49,16 @@ $(function(){
 	$(document).on("click", ".resume-wrapper-details button.show-details" , function() {
 		_this = $(this).parent('.resume-wrapper-details');
 		details = _this.children("div.resume-details");
+		button = $(this);
 		details.toggle({
 			duration: 'fast',
 			complete: function(){
 				_this.toggleClass('wrapper-expanded wrapper-contracted');
+				button.text(details.is(":visible") ? "- detalhes" : "+ detalhes");
 			}
 		});
 	});
-	
+
 	$(document).on("click", ".resume a" , function(e) {
 		e.stopPropagation();
 	});
@@ -134,11 +145,11 @@ $(function(){
 	$("#search-term").focus();
 
 	send_search(display_result);
-	
+
 	$(document).on("click", ".profile-name, .contact-form", function(e){
 		e.stopPropagation();
 	});
-			
+
 	$(document).on("click", ".contact-form-opener", function(){
 		user_id = $(this).attr("user-id");
 		form = $("#contact-form-" + user_id);
@@ -151,8 +162,8 @@ $(function(){
 			else
 			{
 				_this.html(_this.html().replace("▼", "◄"));
-			}	
+			}
 		});
 	});
-	
+
 });

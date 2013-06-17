@@ -1,10 +1,11 @@
-<div 
+<div
 	class="{% if forloop.first and not forloop.last %}job-first-child wrapper-expanded-first-element {% endif %}{% if forloop.last and not forloop.first %}job-last-child {% endif %}{% if forloop.first and forloop.last %}job-single {% endif %}job job-wrapper-summary wrapper-summary {% block my_jobs_classes %}{% endblock %}" job-id="{{ job.id }}">
 	{% block approved%}{% endblock %}
 	<div class="pull-right job-date">publicada em {{ job.creation_date|date:"d/m/Y" }}</div>
 	<small><i><b>{{ job.job_title.segment }}</b></i> em {{ job.city.full_name }}</small>
 	<h3>{{ job.job_title }}</h3>
-	<button job-id="{{ job.id }}" class="show-details btn btn-small">detalhes</button>
+	<button job-id="{{ job.id }}" class="show-details btn btn-small">+ detalhes</button>
+	<img job-id="{{ job.id }}" src="{{ STATIC_URL }}img/ajax-loader-small.gif" class="show-details-loading" />
 	{% block my_jobs_buttons %}{% endblock %}
 	<div class="job-details"></div>
 </div>

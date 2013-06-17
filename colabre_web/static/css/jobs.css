@@ -97,15 +97,15 @@
 }
 .job-del
 {
-	
+
 }
 .job-edit
 {
-	
+
 }
 .job-stats
 {
-	
+
 }
 .job-editable
 {
@@ -123,4 +123,5 @@
 	padding: 5px;
 	text-align: right;
 	font-size: 75%;
+	float: right;
 }

@@ -1,16 +1,16 @@
 $(function(){
 
 	var q = $("#search-term").val();
-	
+
 	var period_days = $("#period-days").val();
 
 	$("#period-days").change(function(){
 		period_days = $(this).val();
 	});
-	
+
 	$("#filter-period-all").change(function(){
 		checked = $(this).prop("checked");
-		
+
 		if (checked)
 		{
 			$("#period-days").prop("disabled", true);
@@ -25,12 +25,16 @@ $(function(){
 
 	// load content and toggle visibility
 	$(document).on("click", ".job-wrapper-summary button.show-details" , function(){
-	
+
 		jobId = $(this).attr("job-id");
 
 		req = $.ajax({
 			url: '/minhas-vagas/parcial/detalhar/' + jobId + '/' + q.replace('#', '%23') + '/',
 			type: 'get',
+			beforeSend: function()
+			{
+				$("img[job-id='" + jobId + "'], button[job-id='" + jobId + "']").toggle('fast');
+			},
 			complete: function()
 			{
 
@@ -45,14 +49,19 @@ $(function(){
 				_this.removeClass("job-wrapper-summary")
 					.addClass("job-wrapper-details wrapper-expanded");
 
+				$("button.show-details[job-id='"+respJobId+"']").text("- detalhes");
+				$("img[job-id='" + respJobId + "'], button[job-id='" + respJobId + "']").toggle('fast');
+
 				details.empty();
 				details.html(data);
-				
+
 				details.show('fast', function(){});
 			},
 			error: function(a, b, error)
 			{
-				alert('1 - Desculpe-nos, fizemos alguma coisa errada: ' + error);
+				$("img[job-id]").hide();
+				$("button[job-id]").show();
+				alert('Desculpe-nos, fizemos alguma coisa errada: ' + error);
 			}
 		});
 	});
@@ -61,14 +70,16 @@ $(function(){
 	$(document).on("click", ".job-wrapper-details button.show-details" , function() {
 		_this = $(this).parent('.job-wrapper-details');
 		details = _this.children("div.job-details");
+		button = $(this);
 		details.toggle({
 			duration: 'fast',
 			complete: function(){
 				_this.toggleClass('wrapper-expanded wrapper-contracted');
+				button.text(details.is(":visible") ? "- detalhes" : "+ detalhes");
 			}
 		});
 	});
-	
+
 	$(document).on("click", ".job a" , function(e) {
 		e.stopPropagation();
 	});

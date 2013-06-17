@@ -1,7 +1,8 @@
-<div 
+<div
 	class="{% if forloop.first and not forloop.last %}resume-first-child wrapper-expanded-first-element {% endif %}{% if forloop.last and not forloop.first %}resume-last-child {% endif %}{% if forloop.first and forloop.last %}resume-single {% endif %}resume resume-wrapper-summary wrapper-summary" resume-id="{{ resume.id }}">
 	<small><i><b>{{ resume.segment }}</b></i> em {{ resume.profile.city.full_name }}</small>
 	<p>{{ resume.short_description }}</p>
-	<button resume-id="{{ resume.id }}" class="show-details btn btn-small">detalhes</button>
+	<button resume-id="{{ resume.id }}" class="show-details btn btn-small">+ detalhes</button>
+	<img resume-id="{{ resume.id }}" src="{{ STATIC_URL }}img/ajax-loader-small.gif" class="show-details-loading" />
 	<div class="resume-details"></div>
 </div>

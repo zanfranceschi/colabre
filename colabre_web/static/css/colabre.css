@@ -14,9 +14,9 @@
 	}
 	.search-title
 	{
-		margin-top: -20px;	
+		margin-top: -20px;
 	}
-	
+
 	#footer-social
 	{
 		display: none;
@@ -25,7 +25,7 @@
 	{
 		width: 30% !important;
 	}
-	
+
 	.hero-unit
 	{
 		padding: 0px !important;
@@ -63,7 +63,7 @@
 	}
 	.search-title
 	{
-		margin: 10px 0 20px 0;	
+		margin: 10px 0 20px 0;
 	}
 	.feature h3
 	{
@@ -203,11 +203,16 @@ li.search-filter
 	padding: 20px;
 }
 
-.wrapper-summary button.show-details
+.wrapper-summary button.show-details, img.show-details-loading
 {
 	position: absolute;
 	bottom: 5px;
 	left: 5px;
+}
+
+img.show-details-loading
+{
+	display: none;
 }
 .wrapper-expanded
 {
@@ -235,7 +240,7 @@ li.search-filter
 /*
 .dl-horizontal dt
 {
-	width: 100px;	
+	width: 100px;
 }
 
 .dl-horizontal dd
