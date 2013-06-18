@@ -244,6 +244,51 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['city_name']
 		)
 
+
+class OpenContactForm(BaseForm):
+	name = forms.CharField(
+		max_length=60, 
+		label='Seu nome',
+	)
+	email_from = forms.EmailField(label='Seu email', required=True)
+	subject = forms.CharField(
+		max_length=60, 
+		label='Assunto',
+	)
+	message = forms.CharField(
+		label='Mensagem',
+		required=True,
+		help_text=u'Máximo de 700 caracteres',
+		max_length=700, 
+		widget=forms.Textarea(attrs={'rows' : 10, 'cols' : 40})
+	)
+	
+	def __init__(self, *args, **kwargs):
+		self.user = kwargs.pop('user', None)
+		super(OpenContactForm, self).__init__(*args, **kwargs)
+		if self.user:
+			self.initial.update({ 'email_from' : self.user.email })
+			self.initial.update({ 'name' : self.user.get_full_name() })
+
+	def send_email(self):
+		subject = self.cleaned_data['subject']
+		email_from = self.cleaned_data['email_from']
+		message = self.cleaned_data['message']
+		if self.user is not None:
+			message = message + """
+---
+user		{0}
+email		{1}
+name		{2}
+""".format(self.user.username, self.user.email, self.user.get_full_name())
+		send_mail(
+				subject,
+				message,
+				email_from, 
+				[colabre.settings.EMAIL_CONTACT],
+				fail_silently=False)
+
+
 class ContactForm(BaseForm):
 	user_id = forms.CharField(widget=forms.HiddenInput())
 	subject = forms.CharField(widget=forms.HiddenInput())

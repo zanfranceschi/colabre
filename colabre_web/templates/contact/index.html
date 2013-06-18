@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% block title %}Contato{% endblock %}
+{% block extra_head %}
+{% endblock %}
+{% block body %}
+
+<h1>Contato</h1>
+
+<form action="{% url 'open_contact' %}" class="form-horizontal" method="post">
+	{% csrf_token %}
+	{% include '_form.html' %}
+	<div class="form-actions">
+		<input type="submit" class="btn btn-large btn-primary" value="Enviar" />
+	</div>
+</form>
+
+{% endblock %}
+
+{% block footer %}
+{% include "_footer-simple.html" %}
+{% endblock footer %}

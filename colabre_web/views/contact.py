@@ -1,11 +1,37 @@
 ﻿from django.shortcuts import render
+from django.core.urlresolvers import reverse
 from colabre_web.models import Job
-from colabre_web.forms import ContactForm
+from colabre_web.forms import ContactForm, OpenContactForm
 from django.conf.urls import patterns, url
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 urlpatterns = patterns('colabre_web.views.contact',
 	url(r'^contatar/$', 'contact', name='contact'),
+	url(r'^$', 'open_contact', name='open_contact'),
 )
+
+def open_contact(request):
+	template = 'contact/index.html'
+	form = OpenContactForm()
+	if (request.method == 'POST'):
+		if (not request.user.is_anonymous()):
+			form = OpenContactForm(request.POST, user=request.user)
+		else:
+			form = OpenContactForm(request.POST)
+			
+		if (form.is_valid()):
+			form.send_email()
+			messages.success(request, u'Obrigado pelo contato. Seu email foi enviado e responderemos o mais breve possível.')
+			return HttpResponseRedirect(reverse('colabre_web.views.contact.open_contact'))
+		else:
+			return render(request, template, {'form' : form })
+	
+	if (not request.user.is_anonymous()):
+		form = OpenContactForm(user=request.user)
+
+	return render(request, template, {'form' : form })
+
 
 def contact(request):
 	if request.method == 'POST':
