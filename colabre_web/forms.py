@@ -349,8 +349,8 @@ class LoginForm(BaseForm):
 
 
 class JobForm(BaseForm):
-	profile = None
-	job_id = None
+	
+	public_uuid = forms.CharField(required=False, widget=forms.HiddenInput())
 	
 	job_title_name = forms.CharField(
 		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
@@ -435,9 +435,12 @@ class JobForm(BaseForm):
 		
 		if self.job_id:
 			job = Job.objects.get(id=self.job_id)
+		elif (self.public_uuid):
+			job = Job.objects.get(public_uuid=self.public_uuid)
 		else:
 			job = Job()
 			job.profile = self.profile
+			job.publicly_created = self.public
 			
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -457,10 +460,13 @@ class JobForm(BaseForm):
 		return job
 	
 	def __init__(self, *args, **kwargs):
-		self.profile = kwargs.pop('profile', None)
+		self.public = kwargs.pop('public', False)
+		self.profile = kwargs.pop('profile', UserProfile.objects.get(user__username='colabre'))
 		self.job_id = kwargs.pop('job_id', None)
+		self.public_uuid = kwargs.pop('public_uuid', None)
 		super(JobForm, self).__init__(*args, **kwargs)
 		self.fields.keyOrder = [
+							'public_uuid',
 							'segment_name', 
 							'job_title_name', 
 							'description', 
@@ -472,15 +478,15 @@ class JobForm(BaseForm):
 							'contact_name',
 							'contact_email', 
 							'contact_phone']
-				
-		if not self.job_id: # new job
+			
+		if (self.job_id is None and self.public_uuid is None): # new job
 			
 			last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
 			last_posted_job = last_posted_jobs[0] if last_posted_jobs else None
-			
+		
 			username = self.profile.user.username
 			
-			if (username == 'colabre'): # hardcode para facilitar a publicação de várias vagas!
+			if (not self.public and username == 'colabre'): # hardcode para facilitar a publicação de várias vagas!
 				self.initial = {
 					#'job_title_name' 	: last_posted_job.job_title,
 					'segment_name' 		: last_posted_job.job_title.segment if last_posted_job is not None else '',
@@ -494,7 +500,7 @@ class JobForm(BaseForm):
 					#'contact_email'		: last_posted_job.contact_email,
 					#'contact_phone' 	: last_posted_job.contact_phone
 				}
-			else:
+			elif (not self.public):
 				self.initial = {
 						'contact_email' : self.profile.user.email or None,
 						'contact_name' : self.profile.user.first_name + ' ' + self.profile.user.last_name,
@@ -515,7 +521,11 @@ class JobForm(BaseForm):
 					'contact_phone' 	: last_posted_job.contact_phone
 				})
 		else: # existing job
-			job = Job.objects.get(id=self.job_id)
+			if (self.public_uuid is not None): # public job
+				job = Job.objects.get(public_uuid=self.public_uuid)
+			elif (self.job_id is not None): # not public job
+				job = Job.objects.get(id=self.job_id)
+			
 			self.initial = {
 				'job_title_name' 	: job.job_title,
 				'segment_name' 		: job.job_title.segment,
@@ -527,9 +537,18 @@ class JobForm(BaseForm):
 				'company_name' 		: job.company,
 				'contact_name' 		: job.contact_name,
 				'contact_email' 	: job.contact_email,
-				'contact_phone' 	: job.contact_phone
+				'contact_phone' 	: job.contact_phone,
+				'public_uuid'		: job.public_uuid
 			}
 
+
+class CodeJobForm(BaseForm):
+	public_uuid = forms.CharField(
+		max_length=50, 
+		required=True,
+		label='Código da Vaga',
+		help_text=u'Código que foi gerado na criação da vaga.'
+	)
 
 class ResumeForm(BaseForm):
 

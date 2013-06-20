@@ -16,7 +16,8 @@
 		{% include '_form.html' %}
 
 		<div class="form-actions">
-			<button type="submit" class="btn btn-large btn-primary">salvar</button>
+			<button type="submit" class="btn btn-large btn-primary">Salvar</button>
+			{% if job %}<a href="{% url 'jobs_delete' job.id %}" class="btn btn-large btn-danger">Excluir Vaga</a>{% endif %}
 		</div>
 
 	</form>

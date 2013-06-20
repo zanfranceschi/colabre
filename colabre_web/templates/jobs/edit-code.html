@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% block title %}Atualização de Vaga{% endblock %}
+
+{% block body %}
+	<h1>Atualização de Vaga</h1>
+	<form action="{{ action }}" class="form-horizontal" method="post">
+		{% csrf_token %}
+		{% include '_form.html' %}
+		<div class="form-actions">
+			<button type="submit" class="btn btn-large btn-primary">Ir</button>
+		</div>
+	</form>
+{% endblock %}

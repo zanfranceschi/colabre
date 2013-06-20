@@ -48,7 +48,7 @@ def particial_send_feedback(request):
             
         
 
-@login_required
+#@login_required
 def partial_json_search_job_title(request):
     if request.method == 'POST':
         q = request.POST['q']
@@ -69,7 +69,7 @@ def partial_json_search_segment(request):
 		list = serializers.serialize("json", Segment.objects.filter(name__icontains=q).order_by("name")[:10])
 		return HttpResponse(list, mimetype="application/json")
 
-@login_required
+#@login_required
 def partial_json_search_country(request):
     if request.method == 'POST':
         q = request.POST['q']
@@ -77,7 +77,7 @@ def partial_json_search_country(request):
         list = serializers.serialize("json", Country.objects.filter(filter).order_by("name")[:10], extras=('name',))
         return HttpResponse(list, mimetype="application/json")
 
-@login_required
+#@login_required
 def partial_json_search_region(request):
     if request.method == 'POST':
         q = request.POST['q']
@@ -91,7 +91,7 @@ def partial_json_search_region(request):
         list = serializers.serialize("json", Region.objects.filter(filter).order_by("name")[:50], extras=('name',))
         return HttpResponse(list, mimetype="application/json")
 
-@login_required
+#@login_required
 def partial_json_search_city(request):
     if request.method == 'POST':
         q = request.POST['q']
@@ -109,7 +109,7 @@ def partial_json_search_city(request):
         list = serializers.serialize("json", City.objects.filter(filter).order_by("name")[:50], extras=('name',))
         return HttpResponse(list, mimetype="application/json")
     
-@login_required
+#@login_required
 def partial_json_search_company(request):
 	if request.method == 'POST':
 		q = request.POST['q']

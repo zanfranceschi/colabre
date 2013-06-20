@@ -12,6 +12,7 @@ from datetime import *
 import time
 import colabre.settings
 import sys
+import shortuuid
 
 def dictfetchall(cursor):
 	"Returns all rows from a cursor as a dict"
@@ -594,7 +595,7 @@ class Job(models.Model):
 		
 	is_editable = property(get_is_editable)
 
-	profile = models.ForeignKey(UserProfile)
+	profile = models.ForeignKey(UserProfile, null=True)
 	job_title = models.ForeignKey(JobTitle)
 	address = models.CharField(max_length=120, null=True)
 	city = models.ForeignKey(City, null=True)
@@ -609,6 +610,8 @@ class Job(models.Model):
 	approved = models.BooleanField(default=False)
 	uuid = models.CharField(max_length=36, default=lambda: str(uuid.uuid4()), null=True)
 	approval_date = models.DateTimeField(null=True)
+	publicly_created = models.BooleanField(default=False)
+	public_uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
 
 	segment_name = None 
 	job_title_name = None
@@ -619,6 +622,7 @@ class Job(models.Model):
 
 	def to_string(self):
 		return u"""
+public				{14}
 user				{0}
 segment				{1}
 title				{2}
@@ -650,7 +654,8 @@ aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 		self.description,
 		self.id,
 		self.uuid,
-		colabre.settings.HOST_ROOT_URL
+		colabre.settings.HOST_ROOT_URL,
+		self.publicly_created
 		)
 
 	@classmethod
