@@ -612,6 +612,7 @@ class Job(models.Model):
 	approval_date = models.DateTimeField(null=True)
 	publicly_created = models.BooleanField(default=False)
 	public_uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
+	email_validated = models.BooleanField(default=False)
 
 	segment_name = None 
 	job_title_name = None
@@ -672,8 +673,8 @@ aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 		self.save()
 
 	def save(self, *args, **kwargs):
-		if (kwargs.pop('approve', False) == True or self.profile.user.username == 'colabre'):
-			self.approved = True
+		if (kwargs.pop('approve', False) == True or (self.profile.user.username == 'colabre' and not self.publicly_created)):
+			self.approved = True and not self.publicly_created
 			self.approval_date = datetime.now()
 		else:
 			self.uuid = str(uuid.uuid4())

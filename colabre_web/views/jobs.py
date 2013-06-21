@@ -16,6 +16,7 @@ from colabre_web.forms import *
 from colabre_web.statistics.models import *
 from django.conf.urls import patterns, url
 import logging
+from urlparse import urljoin
 
 logger = logging.getLogger('app')
 
@@ -29,13 +30,8 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	
 	
 	url(r'^criar/$', 'create', name='jobs_create'),
-	url(r'^editar/$', 'edit', name='jobs_edit'),
-	url(r'^atualizar/$', 'update', name='jobs_update'),
-    
-	#url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='jobs_confirm_del'),
-	url(r'^excluir/([\d]+)/$', 'delete', name='jobs_delete'),
-	
-	
+	url(r'^validar-email-vaga/(\d+)/(.+)/$', 'validate_job_email', name='jobs_validate_job_email'),
+    url(r'^excluir/(.+)/$', 'delete', name='jobs_delete'),
 )
 
 def get_template_path(template):
@@ -103,95 +99,122 @@ def index(request):
 	return render(request, get_template_path('index.html'), { 'countries' : countries, 'days' : days, 'segments' :  segments })
 
 
-def create(request):	
-	if request.method == 'POST':
-		form = JobForm(request.POST, public=True)
-		if form.is_valid():
-			created_job = form.save()
-			send_mail(
-					u"Colabre | Aprovação de Nova Vaga",
-                    created_job.to_string(),
-                    colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
-                    fail_silently=False)
-			messages.success(request, 
-							u'Sua vaga foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email. {0}'.format(created_job.public_uuid))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+	Criação de uma vaga pública
+"""
+def create(request):
+	if (not request.user.is_anonymous()):
+		return HttpResponseRedirect(reverse('colabre_web.views.home.index'))
+		"""
+			Usuários logados não postam vagas públicas
+		"""
+	else:
+		if request.method != 'POST':
+			"""
+				1º Passo - mostrar formulário de cadastro
+			"""
+			form = JobForm(public=True)
+
+		elif request.method == 'POST':
+			"""
+				2º Passo - registro submetido. Envia email para aprovação.
+			"""
+			form = JobForm(request.POST, public=True)
+			if form.is_valid():
+				created_job = form.save()
+				send_mail(
+						u"Colabre | Aprovação de Nova Vaga Pública",
+						created_job.to_string(),
+						colabre.settings.EMAIL_FROM, 
+						[colabre.settings.EMAIL_CONTACT], 
+						fail_silently=False)
+				messages.success(request, 
+								u'Sua vaga foi submetida para aprovação. '
+								u'A aprovação não deve levar mais do que alguns minutos e, '
+								u'assim que concluída, você receberá uma notificação por email.')
 		else:
 			messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
-	else:
-		form = JobForm(public=True)
 
-	return render(request, get_template_path('create.html'), {'form' : form, 'action' : '/vagas/criar/'})
+		return render(request, get_template_path('create.html'), {'form' : form, 'action' : '/vagas/criar/'})
 
 
-def edit(request):
-	if request.method == 'POST':
-		public_uuid = request.POST['public_uuid']
+def validate_job_email(request, id, public_uuid):
+	"""
+		3º Passo - validar email da vaga
+	"""
+	try:
+		job = Job.objects.get(id=id, public_uuid=public_uuid, email_validated=False)
+		job.email_validated = True
+		job.approved = True
+		job.approval_date = datetime.now()
+		job.save() # email validado
+		
+		message = u"""	<strong>{0}</strong>, sua vaga foi ativada. Se quiser excluí-la, acesse o 
+					 	endereço <a href='{1}'>{1}</a>, e informe o código <strong>{2}</strong> e seu email. 
+						Nós lhe enviamos um email com estas instruções para que 
+						não precise anotá-las agora.""".format(
+															job.contact_name, 
+															urljoin(colabre.settings.HOST_ROOT_URL, reverse('colabre_web.views.jobs.delete', args=(job.public_uuid,))),
+															job.public_uuid
+														)
+		messages.success(request, message)
+		send_mail(
+			u"Colabre | Informação de Vaga",
+			u"""{0},
+
+Sua vaga de {1} foi ativada. Se quiser excluí-la, acesse o endereço {2}{3}, e informe o código {4} e seu email.			
+			
+Abraços,
+
+Equipe Colabre
+www.colabre.org			
+""".format(
+		job.contact_name, 
+		job.job_title, 
+		colabre.settings.HOST_ROOT_URL,
+		reverse('colabre_web.views.jobs.delete', args=(job.public_uuid,)),
+		job.public_uuid
+		),
+			colabre.settings.EMAIL_FROM, 
+			[job.contact_email], 
+			fail_silently=False)
+		return render(request, get_template_path("detail.html"), { 'job' : job })
+	except Job.DoesNotExist:
+		return HttpResponse("{0} / {1}".format(id, public_uuid))
+
+
+
+"""
+	Excluir vaga
+"""
+def delete(request, public_uuid):
+	if (request.method != 'POST'):
+		"""
+			Informe o código e email...
+		"""
 		try:
 			job = Job.objects.get(public_uuid=public_uuid)
-			form = JobForm(public_uuid=public_uuid)
-			return render(request, get_template_path('edit.html'), {'form' : form, 'job' : job, 'action' : '/vagas/atualizar/'})
+			return render(request, get_template_path("delete.html"), { 'job' : job, 'form' : DeleteJobForm(), 'action' : reverse('colabre_web.views.jobs.delete', args=(public_uuid,)) })
 		except Job.DoesNotExist:
 			return HttpResponseRedirect(reverse('colabre_web.views.home.index'))
-	else:
-		form = CodeJobForm()
-		return render(request, get_template_path('edit-code.html'), {'form' : form, 'action' : '/vagas/editar/'})
-
-def update(request):
-	if (request.method == 'POST'):
-		form = JobForm(request.POST, public_uuid=request.POST['public_uuid'])
-		if form.is_valid():
-			edited_job = form.save()
-			messages.success(request, 
-							u'Sua edição foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email.')
-			return render(request, get_template_path('edit-code.html'), {'form' : CodeJobForm(), 'action' : '/vagas/editar/'})
-			
-	else:
-		return HttpResponseRedirect(reverse('colabre_web.views.home.index'))
-	
-
-def delete(request, id):
-	pass
-
-"""			
-def update(request):
-	if request.method == 'POST':
-		uuid = request.POST['uuid']
+	elif (request.method == 'POST'):
 		try:
-			job = Job.objects.get(public_uuid=uuid)
-			form = JobForm(request.POST, uuid=uuid)
-			if form.is_valid():
-				edited_job = form.save()
-				send_mail(
-					u"Colabre | Aprovação de Vaga Editada",
-                    edited_job.to_string(),
-                    colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
-                    fail_silently=False)
-				
-				template = get_template_path('index.html')
-				
-				messages.success(request, 
-							u'Sua vaga foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email.')
-			else:
-				template = get_template_path('edit.html')
-				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
+			pass
 		except Job.DoesNotExist:
 			pass
-	else:
-		template = get_template_path('edit.html')
-		form = JobForm(job_id=job.id)
-				
-			
-		context.update({'form' : form, 'action' : '/minhas-vagas/editar/' + job_id + '/'})
-		return render(request, template, context)
-	else:
-		messages.error(request, u'Esta vaga foi criada a mais de 24 horas atrás. As vagas só podem ser editadas até 24 após sua criação. Por favor, considere excluí-la e criar uma nova.')
-		return HttpResponseRedirect(reverse('colabre_web.views.my_jobs.index'))
-"""
+

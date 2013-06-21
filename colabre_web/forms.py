@@ -542,12 +542,11 @@ class JobForm(BaseForm):
 			}
 
 
-class CodeJobForm(BaseForm):
-	public_uuid = forms.CharField(
-		max_length=50, 
-		required=True,
-		label='Código da Vaga',
-		help_text=u'Código que foi gerado na criação da vaga.'
+class DeleteJobForm(BaseForm):
+	email_from = forms.EmailField(
+		label='Email',
+		help_text='Email informado para a vaga', 
+		required=True
 	)
 
 class ResumeForm(BaseForm):

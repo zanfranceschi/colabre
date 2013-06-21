@@ -1,13 +1,13 @@
 {% extends "_base.html" %}
-{% block title %}Atualização de Vaga{% endblock %}
+{% block title %}Exclusão de Vaga{% endblock %}
 
 {% block body %}
-	<h1>Atualização de Vaga</h1>
+	<h1>Confirmação para Exclusão de Vaga: {{ job.job_title }}</h1>
 	<form action="{{ action }}" class="form-horizontal" method="post">
 		{% csrf_token %}
 		{% include '_form.html' %}
 		<div class="form-actions">
-			<button type="submit" class="btn btn-large btn-primary">Ir</button>
+			<button type="submit" class="btn btn-large btn-danger">Confirmar Exclusão</button>
 		</div>
 	</form>
 {% endblock %}
