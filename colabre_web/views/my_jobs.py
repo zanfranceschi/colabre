@@ -479,15 +479,6 @@ def partial_html_search(request):
 
 @login_required
 @user_passes_test(is_verified, login_url=is_not_verified_url)
-def partial_toggle_published(request, job_id):
-	job = Job.objects.get(id=job_id)
-	job.published = not job.published
-	job.save()
-	return render(request, get_template_path('partial/job-item.html'), {'job' : job})
-
-
-@login_required
-@user_passes_test(is_verified, login_url=is_not_verified_url)
 def create(request):	
 	template = None
 	profile = request.user.get_profile()
@@ -514,7 +505,7 @@ def create(request):
 	else:
 		template = get_template_path('create.html')
 		form = JobForm(profile=profile)
-	context.update({'form' : form, 'action' : '/minhas-vagas/criar/'})
+	context.update({'form' : form, 'action' : reverse('colabre_web.views.my_jobs.create')})
 	return render(request, template, context)
 
 
@@ -527,28 +518,32 @@ def edit(request, job_id):
 	context = {}
 	if job.is_editable:
 		if request.method == 'POST':
-			form = JobForm(request.POST, job_id=job.id, profile=profile)
+			form = JobForm(request.POST, job=job, profile=profile)
 			if form.is_valid():
 				edited_job = form.save()
-				send_mail(
-					u"Colabre | Aprovação de Vaga Editada",
-                    edited_job.to_string(),
-                    colabre.settings.EMAIL_FROM, 
-                    [colabre.settings.EMAIL_CONTACT], 
-                    fail_silently=False)
 				template = get_template_path('index.html')
 				context = _index_data(request)
-				messages.success(request, 
-							u'Sua vaga foi submetida para aprovação. '
-							u'A aprovação não deve levar mais do que alguns minutos e, '
-							u'assim que concluída, você receberá uma notificação por email.')
+				if (not edited_job.contact_email_verified):
+					messages.success(request, 
+								u'Você receberá um email para confirmar o email desta vaga.')
+				if (not edited_job.admin_approved):
+					send_mail(
+						u"Colabre | Aprovação de Vaga Editada",
+	                    edited_job.to_string(),
+	                    colabre.settings.EMAIL_FROM, 
+	                    [colabre.settings.EMAIL_CONTACT], 
+	                    fail_silently=False)
+					messages.success(request, 
+								u'Sua vaga foi submetida para aprovação. '
+								u'A aprovação não deve levar mais do que alguns minutos e, '
+								u'assim que concluída, você receberá uma notificação por email.')
 			else:
 				template = get_template_path('edit.html')
 				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
 		else:
 			template = get_template_path('edit.html')
-			form = JobForm(profile=profile, job_id=job.id)
-		context.update({'form' : form, 'action' : '/minhas-vagas/editar/' + job_id + '/'})
+			form = JobForm(profile=profile, job=job)
+		context.update({'form' : form, 'action' : reverse('colabre_web.views.my_jobs.edit', args=(job_id,)) })
 		return render(request, template, context)
 	else:
 		messages.error(request, u'Esta vaga foi criada a mais de 24 horas atrás. As vagas só podem ser editadas até 24 após sua criação. Por favor, considere excluí-la e criar uma nova.')

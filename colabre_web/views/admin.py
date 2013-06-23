@@ -12,6 +12,8 @@ from django.conf.urls import patterns, url
 import logging
 from django.core.urlresolvers import reverse
 import sys
+from urlparse import urljoin
+import shortuuid
 
 
 logger = logging.getLogger('app')
@@ -27,20 +29,31 @@ def get_template_path(template):
 
 def job_approve(request, id, uuid):
 	try:
-		approved_job = Job.approve(id, uuid)
-		email = None
-		if (approved_job is not None):
-			email = approved_job.contact_email
-			message = None
-			if (approved_job.publicly_created):
-				"""
-					Publicly created, needs email confirmation.
-				"""
-				message = u"""{0},
+		approved_job = Job.objects.get(id=id, uuid=uuid, admin_approved=False)
+		approved_job.admin_approved = True
+		approved_job.uuid = shortuuid.uuid()
+		approved_job.admin_approval_date = datetime.now()
+		approved_job.save()
+		
+		sub_message = None
+		
+		if (approved_job.contact_email_verified):
+			sub_message = u"Você pode vê-la em {0}".format(urljoin(
+															colabre.settings.HOST_ROOT_URL, 
+															reverse('colabre_web.views.jobs.detail', args=(approved_job.id,))
+														)
+													)
+		else:
+			sub_message = u"Entretanto, é necessário que este email seja verificado. Entre em {0} e informe o código: {1}".format(urljoin(
+															colabre.settings.HOST_ROOT_URL, 
+															reverse('colabre_web.views.jobs.validade_email', args=(approved_job.id,approved_job.contact_email,))
+														)
+													)
 
-Obrigado por usar o Colabre! Acabamos de aprovar a sua vaga para {1}.
-Para que sua vaga seja ativada, é necessário validar o email da vaga acessando o link 
-{2}{3}
+		message = u"""{0},
+
+Obrigado por usar o Colabre! Acabamos de aprovar sua vaga para {1}.
+{2}
 
 Abraços,
 
@@ -49,33 +62,18 @@ www.colabre.org
 """.format(
 		approved_job.contact_name, 
 		approved_job.job_title,
-		colabre.settings.HOST_ROOT_URL,
-		reverse('colabre_web.views.jobs.validate_job_email', args=(approved_job.id, approved_job.public_uuid))
+		sub_message 
 		)
-			else:
-				user = approved_job.profile.user
-				email = user.email 
-				message = u"""{0},
 
-Obrigado por usar o Colabre! Acabamos de aprovar a sua vaga para {1}.
-Você pode vê-la em {3}vagas/detalhar/{2}
-
-Abraços,
-
-Equipe Colabre
-www.colabre.org
-""".format(user.first_name, approved_job.job_title, approved_job.id, colabre.settings.HOST_ROOT_URL)
-			
-			send_mail(
+		send_mail(
 					u"Colabre | Vaga Aprovada",
                     message,
                     colabre.settings.EMAIL_FROM, 
-                    [email], 
+                    [approved_job.contact_email], 
                     fail_silently=False)
-			return HttpResponse("vaga aprovada")
-		else:
-			return HttpResponse("vaga não aprovada")
+		return HttpResponse("vaga aprovada")
 	except Exception, ex:
+		raise ex
 		return HttpResponse(ex.message)
 
 

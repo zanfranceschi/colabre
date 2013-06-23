@@ -350,8 +350,6 @@ class LoginForm(BaseForm):
 
 class JobForm(BaseForm):
 	
-	public_uuid = forms.CharField(required=False, widget=forms.HiddenInput())
-	
 	job_title_name = forms.CharField(
 		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=50, 
@@ -431,17 +429,9 @@ class JobForm(BaseForm):
 	)
 	
 	def save(self):
-		job = None 
+		job = self.job or Job()
 		
-		if self.job_id:
-			job = Job.objects.get(id=self.job_id)
-		elif (self.public_uuid):
-			job = Job.objects.get(public_uuid=self.public_uuid)
-		else:
-			job = Job()
-			job.profile = self.profile
-			job.publicly_created = self.public
-			
+		job.profile = self.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
 		job.contact_name = self.cleaned_data['contact_name']
@@ -454,19 +444,16 @@ class JobForm(BaseForm):
 		job.region_name = self.cleaned_data['region_name']
 		job.city_name = self.cleaned_data['city_name']
 		job.company_name = self.cleaned_data['company_name']
-		
+		job.set_contact_email_verified()
 		job.save()
-		
+
 		return job
 	
 	def __init__(self, *args, **kwargs):
-		self.public = kwargs.pop('public', False)
-		self.profile = kwargs.pop('profile', UserProfile.objects.get(user__username='colabre'))
-		self.job_id = kwargs.pop('job_id', None)
-		self.public_uuid = kwargs.pop('public_uuid', None)
+		self.profile = kwargs.pop('profile', None)
+		self.job = kwargs.pop('job', None)
 		super(JobForm, self).__init__(*args, **kwargs)
 		self.fields.keyOrder = [
-							'public_uuid',
 							'segment_name', 
 							'job_title_name', 
 							'description', 
@@ -479,66 +466,39 @@ class JobForm(BaseForm):
 							'contact_email', 
 							'contact_phone']
 			
-		if (self.job_id is None and self.public_uuid is None): # new job
+		if (self.job is None): # new job
 			
-			last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
-			last_posted_job = last_posted_jobs[0] if last_posted_jobs else None
-		
-			username = self.profile.user.username
+			if (self.profile is not None): # bring last posted job data...
+				last_posted_jobs = Job.objects.filter(profile=self.profile).order_by("-id")[:1]
+				last_posted_job = last_posted_jobs[0] if last_posted_jobs else None
 			
-			if (not self.public and username == 'colabre'): # hardcode para facilitar a publicação de várias vagas!
-				self.initial = {
-					#'job_title_name' 	: last_posted_job.job_title,
-					'segment_name' 		: last_posted_job.job_title.segment if last_posted_job is not None else '',
-					#'description' 		: last_posted_job.description,
-					#'address' 			: last_posted_job.address,
-					'country_name' 		: 'Brasil',
-					#'region_name' 		: last_posted_job.city.region,
-					#'city_name' 		: last_posted_job.city,
-					#'company_name' 		: last_posted_job.company,
-					#'contact_name' 		: last_posted_job.contact_name,
-					#'contact_email'		: last_posted_job.contact_email,
-					#'contact_phone' 	: last_posted_job.contact_phone
-				}
-			elif (not self.public):
-				self.initial = {
-						'contact_email' : self.profile.user.email or None,
-						'contact_name' : self.profile.user.first_name + ' ' + self.profile.user.last_name,
-				}
-			
-			if (last_posted_job and username != 'colabre'):
-				self.initial.update({
-					#'job_title_name' 	: last_posted_job.job_title,
-					'segment_name' 		: last_posted_job.job_title.segment,
-					#'description' 		: last_posted_job.description,
-					#'address' 			: last_posted_job.address,
-					'country_name' 		: last_posted_job.city.region.country,
-					#'region_name' 		: last_posted_job.city.region,
-					#'city_name' 		: last_posted_job.city,
-					'company_name' 		: last_posted_job.company,
-					'contact_name' 		: last_posted_job.contact_name,
-					'contact_email'		: last_posted_job.contact_email,
-					'contact_phone' 	: last_posted_job.contact_phone
-				})
+				if (last_posted_job is not None):
+					self.initial.update({
+						#'job_title_name' 	: last_posted_job.job_title,
+						'segment_name' 		: last_posted_job.job_title.segment,
+						#'description' 		: last_posted_job.description,
+						#'address' 			: last_posted_job.address,
+						'country_name' 		: last_posted_job.city.region.country,
+						#'region_name' 		: last_posted_job.city.region,
+						#'city_name' 		: last_posted_job.city,
+						'company_name' 		: last_posted_job.company,
+						'contact_name' 		: last_posted_job.contact_name,
+						'contact_email'		: last_posted_job.contact_email,
+						'contact_phone' 	: last_posted_job.contact_phone
+					})
 		else: # existing job
-			if (self.public_uuid is not None): # public job
-				job = Job.objects.get(public_uuid=self.public_uuid)
-			elif (self.job_id is not None): # not public job
-				job = Job.objects.get(id=self.job_id)
-			
 			self.initial = {
-				'job_title_name' 	: job.job_title,
-				'segment_name' 		: job.job_title.segment,
-				'description' 		: job.description,
-				'address' 			: job.address,
-				'country_name' 		: job.city.region.country,
-				'region_name' 		: job.city.region,
-				'city_name' 		: job.city,
-				'company_name' 		: job.company,
-				'contact_name' 		: job.contact_name,
-				'contact_email' 	: job.contact_email,
-				'contact_phone' 	: job.contact_phone,
-				'public_uuid'		: job.public_uuid
+				'job_title_name' 	: self.job.job_title,
+				'segment_name' 		: self.job.job_title.segment,
+				'description' 		: self.job.description,
+				'address' 			: self.job.address,
+				'country_name' 		: self.job.city.region.country,
+				'region_name' 		: self.job.city.region,
+				'city_name' 		: self.job.city,
+				'company_name' 		: self.job.company,
+				'contact_name' 		: self.job.contact_name,
+				'contact_email' 	: self.job.contact_email,
+				'contact_phone' 	: self.job.contact_phone,
 			}
 
 
@@ -546,6 +506,15 @@ class DeleteJobForm(BaseForm):
 	email_from = forms.EmailField(
 		label='Email',
 		help_text='Email informado para a vaga', 
+		required=True
+	)
+	
+	
+class ValidateJobForm(BaseForm):
+	uuid = forms.CharField(
+		max_length=60,
+		label='Código',
+		help_text='Entre com o código informado para validar o email da vaga.', 
 		required=True
 	)
 

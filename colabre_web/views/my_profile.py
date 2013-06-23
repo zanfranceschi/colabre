@@ -63,7 +63,8 @@ def verify_email(request, uuid):
 		if profile:
 			messages.success(request, 'Obrigado! Seu email foi verificado com sucesso.')
 		if request.user:
-			form = get_user_profile_form(user=request.user)
+			user = User.objects.get(id=request.user.id)
+			form = get_user_profile_form(user=user)
 			return render(request, get_template_path('index.html'), {'form' : form})
 	except:
 		logger.exception("-- colabre_web/views/my_profile.py, verify_email --")
@@ -134,7 +135,7 @@ Login: {3}
 
 		from django.contrib.auth import logout
 		Resume.objects.filter(profile=user.get_profile()).update(visible=False, active=False)
-		Job.objects.filter(profile=user.get_profile()).update(published=False, active=False)
+		Job.objects.filter(profile=user.get_profile()).update(active=False)
 		UserProfile.objects.filter(user=user).update(excluded=True, active=False)
 		user.is_active = False
 		user.save()

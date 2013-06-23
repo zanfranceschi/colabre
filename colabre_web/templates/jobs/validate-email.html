@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% block title %}Validação de Email{% endblock %}
+
+{% block body %}
+	<h1>Validação de Email</h1>
+	<form action="{{ action }}" class="form-horizontal" method="post">
+		{% csrf_token %}
+		{% include '_form.html' %}
+		<div class="form-actions">
+			<button type="submit" class="btn btn-large btn-primary">Validar</button>
+		</div>
+	</form>
+{% endblock %}

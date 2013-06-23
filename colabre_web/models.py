@@ -11,8 +11,9 @@ import uuid
 from datetime import *
 import time
 import colabre.settings
-import sys
 import shortuuid
+from urlparse import urljoin
+from django.core.urlresolvers import reverse
 
 def dictfetchall(cursor):
 	"Returns all rows from a cursor as a dict"
@@ -605,26 +606,18 @@ class Job(models.Model):
 	contact_email = models.EmailField(max_length=254)
 	contact_phone = models.CharField(max_length=25, null=True)
 	creation_date = models.DateTimeField(auto_now_add=True)
-	published = models.BooleanField(default=True)
-	active = models.BooleanField(default=True)
-	approved = models.BooleanField(default=False)
-	uuid = models.CharField(max_length=36, default=lambda: str(uuid.uuid4()), null=True)
-	approval_date = models.DateTimeField(null=True)
-	publicly_created = models.BooleanField(default=False)
-	public_uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
-	email_validated = models.BooleanField(default=False)
-
-	segment_name = None 
-	job_title_name = None
-	country_name = None
-	region_name = None
-	city_name = None
-	company_name = None
-
+	
+	admin_approved = models.BooleanField(default=False)
+	admin_approval_date = models.DateTimeField(null=True)
+	
+	contact_email_verified = models.BooleanField(default=False)
+	uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
+	
+	active = models.BooleanField(default=False)
+	
 	def to_string(self):
 		return u"""
-public				{14}
-user				{0}
+public				{0}
 segment				{1}
 title				{2}
 country				{3}
@@ -639,10 +632,10 @@ description:
 {10}
 ---
 
-ver: {13}vagas/detalhar/{11}
-aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
+ver: {11}
+aprovar: {12}
 """.format(
-		self.profile.user.first_name,
+		self.contact_email_verified,
 		self.job_title.segment.name,
 		self.job_title.name,
 		self.city.region.country.name,
@@ -653,45 +646,55 @@ aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 		self.contact_email,
 		self.contact_phone,
 		self.description,
-		self.id,
-		self.uuid,
-		colabre.settings.HOST_ROOT_URL,
-		self.publicly_created
+		urljoin(
+			colabre.settings.HOST_ROOT_URL,
+			reverse('colabre_web.views.jobs.detail', args=(self.id,))
+		),
+		urljoin(
+			colabre.settings.HOST_ROOT_URL,
+			reverse('colabre_web.views.admin.job_approve', args=(self.id,self.uuid,))
 		)
-
-	@classmethod
-	def approve(cls, id, uuid):
-		try:
-			job_to_approve = Job.objects.get(id=id, uuid=uuid, approved=False)
-			job_to_approve.save(**{'approve' : True})
-			return job_to_approve
-		except Job.DoesNotExist:
-			return None
+	)
 
 	def delete(self):
 		self.active = False
 		self.save()
 
+	def set_contact_email_verified(self):
+		if (self.profile is not None and self.profile.user.email == self.contact_email):
+			self.contact_email_verified = True
+		elif (self.profile is not None and self.profile.user.email != self.contact_email):
+			emails = Job.objects.filter(profile=self.profile, contact_email_verified=True).values('contact_email')
+			email_is_verified = len([email['contact_email'] for email in emails if email['contact_email'] == self.contact_email]) > 0
+			self.contact_email_verified = email_is_verified
+
 	def save(self, *args, **kwargs):
-		if (kwargs.pop('approve', False) == True or (self.profile.user.username == 'colabre' and not self.publicly_created)):
-			self.approved = True and not self.publicly_created
-			self.approval_date = datetime.now()
-		else:
-			self.uuid = str(uuid.uuid4())
-			self.approved = False
-			self.approval_date = None
+		if (self.profile is not None and self.pk is None):
+			self.contact_email_verified = True
 			
-		if self.job_title_name:
+		if (self.pk is not None):
+			original = Job.objects.get(pk=self.pk)
+			if (original.description != self.description):
+				self.admin_approved = False
+		
+		if (self.job_title_name):
 			self.job_title = JobTitle.get_existing_or_create(self.segment_name, self.job_title_name)
 		
-		if self.city_name and self.region_name and self.country_name:
+		if (self.city_name and self.region_name and self.country_name):
 			self.city = City.get_existing_or_create(self.country_name, self.region_name, self.city_name)
 			
-		if self.company_name:
+		if (self.company_name):
 			self.company = Company.get_existing_or_create(self.company_name)
 		
 		super(Job, self).save(*args, **kwargs)
 
+
+	job_title_name = None
+	city_name= None
+	region_name = None
+	country_name = None
+	company_name = None
+	
 
 	def __unicode__(self):
 		return u"{0} - {1} ({2})".format(self.creation_date.date().strftime("%Y/%m/%d"), self.job_title.name, self.city)
@@ -699,7 +702,7 @@ aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 	@classmethod
 	def view_search_my_jobs(cls, profile, term, job_titles_ids, cities_ids, days, page, limit):
 		
-		query = Q(published=True) & Q(profile=profile)
+		query = Q(profile=profile)
 		
 		if days > 0:
 			now = datetime.now()
@@ -735,7 +738,7 @@ aprovar: {13}colabre-admin/vaga/aprovar/{11}/{12}
 		now = datetime.now()
 		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
 		
-		query = Q(approved=True) & Q(published=True) & Q(creation_date__gte=ref_datetime)
+		query = Q(approved=True) & Q(creation_date__gte=ref_datetime)
 		
 		if job_titles_ids:
 			query = query & Q(job_title__in=(job_titles_ids))

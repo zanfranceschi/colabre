@@ -30,7 +30,7 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	
 	
 	url(r'^criar/$', 'create', name='jobs_create'),
-	url(r'^validar-email-vaga/(\d+)/(.+)/$', 'validate_job_email', name='jobs_validate_job_email'),
+	url(r'^validar-email/(\d+)/(.+)/$', 'validate_email', name='jobs_validate_email'),
     url(r'^excluir/(.+)/$', 'delete', name='jobs_delete'),
 )
 
@@ -153,51 +153,30 @@ def create(request):
 		return render(request, get_template_path('create.html'), {'form' : form, 'action' : '/vagas/criar/'})
 
 
-def validate_job_email(request, id, public_uuid):
-	"""
-		3º Passo - validar email da vaga
-	"""
-	try:
-		job = Job.objects.get(id=id, public_uuid=public_uuid, email_validated=False)
-		job.email_validated = True
-		job.approved = True
-		job.approval_date = datetime.now()
-		job.save() # email validado
+def validate_email(request, id, email):
+	if (request.method != 'POST'):
+		try:
+			job = Job.objects.get(id=id, contact_email=email, contact_email_verified=False)
+			form = ValidateJobForm()
+			return render(request, get_template_path('validate-email.html'), { 'form' : form, 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })
+		except Job.DoesNotExist:
+			return HttpResponseRedirect(reverse('colabre_web.views.home.index'))
+	elif (request.method == 'POST'):
+		form = ValidateJobForm(request.POST)
+		if (form.is_valid()):
+			uuid = request.POST['uuid']
+			try:
+				job = Job.objects.get(id=id, contact_email=email, uuid=uuid, contact_email_verified=False)
+				job.contact_email_verified = True
+				job.save()
+				messages.success(request, u"Email validado! Sua vaga está publicada agora.")
+				return render(request, get_template_path('detail.html'), { 'job' : job })
+			except Job.DoesNotExist:
+				messages.error(request, u"Não encontramos uma vaga com o código informado. Tente novamente, por favor.")
+				return render(request, get_template_path('validate-email.html'), { 'form' : ValidateJobForm(), 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })
+		else:
+			return render(request, get_template_path('validate-email.html'), { 'form' : form, 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })			
 		
-		message = u"""	<strong>{0}</strong>, sua vaga foi ativada. Se quiser excluí-la, acesse o 
-					 	endereço <a href='{1}'>{1}</a>, e informe o código <strong>{2}</strong> e seu email. 
-						Nós lhe enviamos um email com estas instruções para que 
-						não precise anotá-las agora.""".format(
-															job.contact_name, 
-															urljoin(colabre.settings.HOST_ROOT_URL, reverse('colabre_web.views.jobs.delete', args=(job.public_uuid,))),
-															job.public_uuid
-														)
-		messages.success(request, message)
-		send_mail(
-			u"Colabre | Informação de Vaga",
-			u"""{0},
-
-Sua vaga de {1} foi ativada. Se quiser excluí-la, acesse o endereço {2}{3}, e informe o código {4} e seu email.			
-			
-Abraços,
-
-Equipe Colabre
-www.colabre.org			
-""".format(
-		job.contact_name, 
-		job.job_title, 
-		colabre.settings.HOST_ROOT_URL,
-		reverse('colabre_web.views.jobs.delete', args=(job.public_uuid,)),
-		job.public_uuid
-		),
-			colabre.settings.EMAIL_FROM, 
-			[job.contact_email], 
-			fail_silently=False)
-		return render(request, get_template_path("detail.html"), { 'job' : job })
-	except Job.DoesNotExist:
-		return HttpResponse("{0} / {1}".format(id, public_uuid))
-
-
 
 """
 	Excluir vaga
