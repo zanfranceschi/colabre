@@ -10,6 +10,7 @@ import re
 from django.forms import ModelForm, extras
 from datetime import datetime
 import logging
+import signals
 
 logger = logging.getLogger('app')
 
@@ -445,6 +446,14 @@ class JobForm(BaseForm):
 		job.city_name = self.cleaned_data['city_name']
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
+		
+		if (job.id is not None):
+			original = Job.objects.get(id=job.id)
+			if (original.description != job.description):
+				job.admin_approved = False
+		
+		signals.job_form_before_instance_saved.send(sender=JobForm, job=job)
+		
 		job.save()
 
 		return job
@@ -502,19 +511,12 @@ class JobForm(BaseForm):
 			}
 
 
-class DeleteJobForm(BaseForm):
-	email_from = forms.EmailField(
-		label='Email',
-		help_text='Email informado para a vaga', 
-		required=True
-	)
-	
 	
 class ValidateJobForm(BaseForm):
 	uuid = forms.CharField(
 		max_length=60,
 		label='Código',
-		help_text='Entre com o código informado para validar o email da vaga.', 
+		help_text='Entre com o código informado.', 
 		required=True
 	)
 

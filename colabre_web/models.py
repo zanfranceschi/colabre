@@ -613,49 +613,8 @@ class Job(models.Model):
 	contact_email_verified = models.BooleanField(default=False)
 	uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
 	
-	active = models.BooleanField(default=False)
+	active = models.BooleanField(default=True)
 	
-	def to_string(self):
-		return u"""
-public				{0}
-segment				{1}
-title				{2}
-country				{3}
-region				{4}
-city				{5}
-address				{6}
-contact name		{7}
-contact email		{8}
-contact phone		{9}
-description:
----
-{10}
----
-
-ver: {11}
-aprovar: {12}
-""".format(
-		self.contact_email_verified,
-		self.job_title.segment.name,
-		self.job_title.name,
-		self.city.region.country.name,
-		self.city.region.name,
-		self.city.name,
-		self.address,
-		self.contact_name,
-		self.contact_email,
-		self.contact_phone,
-		self.description,
-		urljoin(
-			colabre.settings.HOST_ROOT_URL,
-			reverse('colabre_web.views.jobs.detail', args=(self.id,))
-		),
-		urljoin(
-			colabre.settings.HOST_ROOT_URL,
-			reverse('colabre_web.views.admin.job_approve', args=(self.id,self.uuid,))
-		)
-	)
-
 	def delete(self):
 		self.active = False
 		self.save()
@@ -669,14 +628,6 @@ aprovar: {12}
 			self.contact_email_verified = email_is_verified
 
 	def save(self, *args, **kwargs):
-		if (self.profile is not None and self.pk is None):
-			self.contact_email_verified = True
-			
-		if (self.pk is not None):
-			original = Job.objects.get(pk=self.pk)
-			if (original.description != self.description):
-				self.admin_approved = False
-		
 		if (self.job_title_name):
 			self.job_title = JobTitle.get_existing_or_create(self.segment_name, self.job_title_name)
 		
@@ -738,7 +689,7 @@ aprovar: {12}
 		now = datetime.now()
 		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
 		
-		query = Q(approved=True) & Q(creation_date__gte=ref_datetime)
+		query = Q(active=True) & Q(admin_approved=True) & Q(contact_email_verified=True) & Q(creation_date__gte=ref_datetime)
 		
 		if job_titles_ids:
 			query = query & Q(job_title__in=(job_titles_ids))
@@ -782,7 +733,8 @@ aprovar: {12}
 					inner join colabre_web_city ci	on r.id = ci.region_id
 					inner join colabre_web_job j	on ci.id = j.city_id
 				where j.active = 1
-					and j.approved = 1
+					and j.admin_approved = 1
+					and j.contact_email_verified = 1
 				order by
 					co.name,
 					r.name,
@@ -803,7 +755,8 @@ aprovar: {12}
 				 	inner join colabre_web_job jo		on jo.job_title_id = jt.id 
 				 where jt.active = 1 
 				 	and jo.active = 1
-				 	and jo.approved = 1
+				 	and jo.admin_approved = 1
+				 	and jo.contact_email_verified = 1
 				 	and se.active = 1
 				 group by 
 				 	jt.id		,

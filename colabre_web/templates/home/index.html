@@ -5,20 +5,17 @@
 {% block body %}
 
 <div class="hero-unit">
-	<h1>O Colabre é um serviço gratuito de busca e publicação de <a href="{% url 'jobs_index' %}">vagas</a> e <a href="{% url 'resumes_index' %}">currículos</a>.</h1>
+	<h1>O Colabre é um serviço gratuito de <a href="{% url 'jobs_index' %}">busca</a> e <a href="{% url 'jobs_create' %}">publicação</a> de oportunidades de emprego.</h1>
 </div>
 
 <div class="row">
 
 	<div class="span4 feature">
-		<a href="{% url 'jobs_create' %}">Publicar uma Vaga</a>
-		<!--
 		<h3>Gráficos e métricas</h3>
 		<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
 		<p>Com nossos gráficos e métricas de acesso, você obtem informações
 		que te ajudam a deixar seu currículo mais completo ou suas vagas
 		mais atraentes.</p>
-		-->
 	</div>
 
 	<div class="span4 feature">

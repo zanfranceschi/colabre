@@ -14,8 +14,8 @@
 			</a>
 			<div class="nav-collapse collapse">
 				<ul class="nav">
-					<li class="menu-main"><a href="{% url 'jobs_index' %}">Vagas</a></li>
-					<li class="menu-main"><a href="{% url 'resumes_index' %}">Currículos</a></li>
+					<li class="menu-main"><a href="{% url 'jobs_index' %}">Buscar Vagas</a></li>
+					<li class="menu-main"><a href="{% url 'jobs_create' %}">Publicar Vaga</a></li>
 				</ul>
 				<ul class="nav pull-right">
 				{% if user.is_authenticated %}

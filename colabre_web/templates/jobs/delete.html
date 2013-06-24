@@ -2,7 +2,7 @@
 {% block title %}Exclusão de Vaga{% endblock %}
 
 {% block body %}
-	<h1>Confirmação para Exclusão de Vaga: {{ job.job_title }}</h1>
+	<h1>Exclusão de Vaga: {{ job.job_title }}</h1>
 	<form action="{{ action }}" class="form-horizontal" method="post">
 		{% csrf_token %}
 		{% include '_form.html' %}

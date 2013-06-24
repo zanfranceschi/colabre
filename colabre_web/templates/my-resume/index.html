@@ -11,9 +11,11 @@
 {% endblock %}
 {% block title %}Meu Currículo{% endblock %}
 {% block body %}
-	<h1>Meu Currículo</h1>
+	<h1>Meu Currículo <span class="label label-important">beta</span></h1> 
 	
+	{% if form.resume.last_update %}
 	<p><i>Atualização em {{ form.resume.last_update }}.</i></p>
+	{% endif %}
 
 	<form action="{% url 'my_resume_index' %}" class="form-horizontal" method="post">
 		{% csrf_token %}
