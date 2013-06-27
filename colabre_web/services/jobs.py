@@ -110,7 +110,6 @@ def admin_approve(id, uuid):
 	approved_job.admin_approval_date = datetime.now()
 	approved_job.set_contact_email_verified()
 	approved_job.save()
-	send_mail_to_verify_email(approved_job)
 	
 
 def validate_email(job_id, email, uuid):
