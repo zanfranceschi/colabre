@@ -11,12 +11,14 @@
 <div class="row">
 
 	<div class="span4 feature">
-		<h3>Gráficos e métricas</h3>
-		<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
-		<p>Com nossos gráficos e métricas de acesso, você obtem informações
-		que te ajudam a deixar seu currículo mais completo ou suas vagas
-		mais atraentes.</p>
+		<h3>Sem burocracia</h3>
+		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
+		<p>
+			É super rápido e direto <a href="{% url 'jobs_create' %}">publicar uma vagas</a>. Não é necessário se cadastrar!
+			Nós fazemos de tudo para oferecer um serviço de qualidade e sem burocracia.
+		</p>
 	</div>
+
 
 	<div class="span4 feature">
 		<h3>Serviço 100% gratuito</h3>
@@ -28,12 +30,11 @@
 	<div class="span4 feature">
 		<h3>Integração com LinkedIn</h3>
 		<img src="{{ STATIC_URL }}img/home/linkedin.png" alt="" />
-		<p>Mesmo o cadastro no Colabre sendo super rápido e fácil, nós facilitamos
-		ainda mais permitindo que crie sua conta no Colabre a partir da sua conta
-		do LinkedIn.</p>
-		{% if not user.is_authenticated %}
-		<p><a href="{% url 'socialauth_begin' backend='linkedin' %}">Use sua conta do LinkedIn para criar uma conta no Colabre.</a></p>
-		{% endif %}
+		<p>Se você optar por se cadastrar (recomendado para profissionais de áreas de recrutamento),
+			poderá usar sua conta do
+			{% if not user.is_authenticated %}<a href="{% url 'socialauth_begin' backend='linkedin' %}">LinkedIn</a>{% else %}LinkedIn{% endif %}
+			para não precisar lembrar de mais uma senha.
+		</p>
 	</div>
 
 </div>
@@ -43,12 +44,10 @@
 <div class="row">
 
 	<div class="span4 feature">
-		<h3>Sem burocracia</h3>
-		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
-		<p>
-		É rápido e direto publicar suas vagas, divulgar seu currículo e se cadastar!
-		Nós fazemos de tudo para oferecer um serviço de qualidade e sem burocracia.
-		</p>
+		<h3>Gráficos e métricas</h3>
+		<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
+		<p>Os profissionais de áreas de recrutamento cadastrados no Colabre contam com gráficos e métricas de acesso
+			para análise de informações que ajudam a deixar as vagas mais atraentes e de acordo com os termos de busca mais utilizados.</p>
 	</div>
 
 	<div class="span4 feature">
