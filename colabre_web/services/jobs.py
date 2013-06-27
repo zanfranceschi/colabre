@@ -11,7 +11,7 @@ from colabre_web.signals import job_form_before_instance_saved
 from django.dispatch import receiver
 from colabre_web.forms import JobForm
 
-@receiver(post_save, sender=Job)
+@receiver(post_save, sender=Job, dispatch_uid='dispatcher_send_email_post_save')
 def job_post_save(sender, **kwargs):
 	job = kwargs['instance']
 	send_mail_to_admin_approve(job)
