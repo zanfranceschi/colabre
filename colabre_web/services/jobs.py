@@ -86,7 +86,7 @@ Se desejar excluir a vaga, informe o código {0} no formulário do endereço {1}
 	message = u"""{0},
 	
 O email da vaga {1} precisa ser verificado.
-Acesse {2} e informe o código {3} para validá-lo.{4}
+Acesse {2} e informe o código {3} para validá-lo. {4}
 
 {5}""".format(
 			job.contact_name,
@@ -96,7 +96,7 @@ Acesse {2} e informe o código {3} para validá-lo.{4}
 				reverse('colabre_web.views.jobs.validate_email', args=(job.id,job.contact_email,))
 			),
 			job.uuid,
-			how_to_exclude_instructions,
+			how_to_exclude_instructions or '',
 			render_to_string("email-footer.txt")
 		)
 
