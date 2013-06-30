@@ -668,6 +668,7 @@ class Job(models.Model):
 		
 		list = Job.objects.filter(
 			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
+			Q(active=True),
 			query
 		).order_by("-creation_date")
 
