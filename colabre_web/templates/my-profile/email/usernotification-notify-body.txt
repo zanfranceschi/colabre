@@ -3,4 +3,4 @@
 Por favor, confirme seu registro acessando o link a seguir:
 {{ url }}{% url 'my_profile_verify_email' uuid %}
 
-Equipe Colabre.org
+{% include "email-footer.txt" %}

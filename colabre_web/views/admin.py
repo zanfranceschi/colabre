@@ -26,5 +26,5 @@ def job_approve(request, id, uuid):
 		messages.error(request, ex.message)
 		messages.error(request, traceback.format_exc())
 	
-	return render(request, "admin/index.html")
+	return render(request, "colabre-admin/index.html")
 	

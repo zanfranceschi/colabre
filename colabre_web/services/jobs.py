@@ -10,6 +10,7 @@ from django.db.models.signals import post_save
 from colabre_web.signals import job_form_before_instance_saved
 from django.dispatch import receiver
 from colabre_web.forms import JobForm
+from django.template.loader import render_to_string
 
 @receiver(post_save, sender=Job, dispatch_uid='dispatcher_send_email_post_save')
 def job_post_save(sender, **kwargs):
@@ -41,9 +42,10 @@ description:
 ---
 
 ver: {11}
+
 aprovar: {12}
 """.format(
-		job.contact_email_verified,
+		job.profile is not None,
 		job.job_title.segment.name,
 		job.job_title.name,
 		job.city.region.country.name,
@@ -81,16 +83,12 @@ Se desejar excluir a vaga, informe o código {0} no formulário do endereço {1}
 				reverse('colabre_web.views.jobs.delete', args=(job.id,job.contact_email,))
 			))
 	
-
 	message = u"""{0},
 	
 O email da vaga {1} precisa ser verificado.
 Acesse {2} e informe o código {3} para validá-lo.{4}
 
-Obrigado,
-
-Equipe Colabre
-www.colabre.org""".format(
+{5}""".format(
 			job.contact_name,
 			job.job_title,
 			urljoin(
@@ -98,7 +96,8 @@ www.colabre.org""".format(
 				reverse('colabre_web.views.jobs.validate_email', args=(job.id,job.contact_email,))
 			),
 			job.uuid,
-			how_to_exclude_instructions
+			how_to_exclude_instructions,
+			render_to_string("email-footer.txt")
 		)
 
 	email.send(u"Validação de Email", message, [job.contact_email])
