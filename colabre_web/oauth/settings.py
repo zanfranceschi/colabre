@@ -1,6 +1,6 @@
 from colabre.secrets import *
 
-HTTP_USE_PROXY = True
+HTTP_USE_PROXY = False
 
 if HTTP_USE_PROXY:
     import urllib2
@@ -66,6 +66,7 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
     'colabre_web.oauth.pipeline.check_oauth_email_existence',
+    'colabre_web.oauth.pipeline.check_if_user_is_active',
     #'social_auth.backends.pipeline.associate.associate_by_email',
     'social_auth.backends.pipeline.user.get_username',
     'social_auth.backends.pipeline.user.create_user',
