@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 def job_post_save(sender, **kwargs):
 	job = kwargs['instance']
 	send_mail_to_admin_approve(job)
-	send_mail_to_verify_email(job)
+	#send_mail_to_verify_email(job)
 
 @receiver(job_form_before_instance_saved, sender=JobForm)
 def test(sender, **kwargs):
@@ -108,6 +108,7 @@ def admin_approve(id, uuid):
 	approved_job.uuid = shortuuid.uuid()
 	approved_job.admin_approval_date = datetime.now()
 	approved_job.set_contact_email_verified()
+	approved_job.contact_email_verified = True
 	approved_job.save()
 	
 
