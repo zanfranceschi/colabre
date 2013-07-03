@@ -23,10 +23,13 @@ def dictfetchall(cursor):
 		for row in cursor.fetchall()
 	]
 
-
 class Country(models.Model):
 	name = models.CharField(max_length=60)
 	code = models.CharField(max_length=3, null=True)
+	
+	def save(self, *args, **kwargs):
+		self.name = self.name.title()
+		super(Country, self).save(*args, **kwargs)
 	
 	def __unicode__(self):
 		return self.name
@@ -128,6 +131,10 @@ class Region(models.Model):
 	code = models.CharField(max_length=2, null=True)
 	country = models.ForeignKey(Country)
 	
+	def save(self, *args, **kwargs):
+		self.name = self.name.title()
+		super(Region, self).save(*args, **kwargs)
+	
 	def __unicode__(self):
 		return self.code if self.code else self.name
 	
@@ -135,6 +142,10 @@ class City(models.Model):
 	name = models.CharField(max_length=60)
 	region = models.ForeignKey(Region)
 	active = models.BooleanField(default=True)
+
+	def save(self, *args, **kwargs):
+		self.name = self.name.title()
+		super(City, self).save(*args, **kwargs)
 
 	def __unicode__(self):
 		return self.name
@@ -374,6 +385,10 @@ class UserProfile(models.Model):
 class Segment(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	active = models.BooleanField(default=True)
+	
+	def save(self, *args, **kwargs):
+		self.name = self.name.title()
+		super(Segment, self).save(*args, **kwargs)
 
 	@classmethod
 	def get_existing_or_create(cls, segment_name):
@@ -434,6 +449,10 @@ class JobTitle(models.Model):
 	name = models.CharField(max_length=50)
 	segment = models.ForeignKey(Segment)
 	active = models.BooleanField(default=True)
+	
+	def save(self, *args, **kwargs):
+		self.name = self.name.title()
+		super(JobTitle, self).save(*args, **kwargs)
 	
 	@classmethod
 	def get_existing_or_create(cls, segment_name, job_title_name):
