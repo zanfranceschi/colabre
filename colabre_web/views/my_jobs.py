@@ -28,6 +28,7 @@ urlpatterns = patterns('colabre_web.views.my_jobs',
     url(r'^estatisticas/([\d]+)/$', 'individual_stats', name='my_jobs_individualstats'),
 	url(r'^criar/$', 'create', name='my_jobs_create'),
 	url(r'^editar/([\d]+)/$', 'edit', name='my_jobs_edit'),
+	url(r'^superusuario-editar/([\d]+)/$', 'superuser_edit', name='my_jobs_superuser_edit'),
     
 	url(r'^confirmar-exclusao/([\d]+)/$', 'confirm_del', name='my_jobs_confirm_del'),
 	url(r'^excluir/([\d]+)/$', 'delete', name='my_jobs_delete'),
@@ -288,7 +289,6 @@ def individual_stats(request, id):
 	                    'stats_count_current_month' : stats_count_current_month,
 	                    'stats_count_yesterday' : stats_count_yesterday,
 	                    'stats_count_today' : stats_count_today
-	                    
 	                })
 	
 
@@ -507,6 +507,37 @@ def edit(request, job_id):
 			template = get_template_path('edit.html')
 			form = JobForm(profile=profile, job=job)
 		context.update({'form' : form, 'action' : reverse('colabre_web.views.my_jobs.edit', args=(job_id,)) })
+		return render(request, template, context)
+	else:
+		messages.error(request, u'Esta vaga foi criada a mais de 24 horas atrás. As vagas só podem ser editadas até 24 após sua criação. Por favor, considere excluí-la e criar uma nova.')
+		return redirect(reverse('colabre_web.views.my_jobs.index'))
+
+@login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
+def superuser_edit(request, job_id):
+	template = None
+	job = Job.objects.get(id=job_id)
+	context = {}
+	if job.is_editable:
+		if request.method == 'POST':
+			form = JobForm(request.POST, job=job)
+			if form.is_valid():
+				job.admin_approved = True
+				job.save()
+				edited_job = form.save()
+				template = get_template_path('index.html')
+				context = _index_data(request)
+				if (not edited_job.admin_approved):
+					messages.success(request, 
+						u'Sua vaga foi submetida para aprovação.')
+				return redirect(reverse('colabre_web.views.my_jobs.index'))
+			else:
+				template = get_template_path('edit.html')
+				messages.error(request, 'Por favor, verifique o preenchimento da vaga.')
+		else:
+			template = get_template_path('edit.html')
+			form = JobForm(job=job)
+		context.update({'form' : form, 'action' : reverse('colabre_web.views.my_jobs.superuser_edit', args=(job_id,)) })
 		return render(request, template, context)
 	else:
 		messages.error(request, u'Esta vaga foi criada a mais de 24 horas atrás. As vagas só podem ser editadas até 24 após sua criação. Por favor, considere excluí-la e criar uma nova.')

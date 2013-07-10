@@ -432,7 +432,7 @@ class JobForm(BaseForm):
 	def save(self):
 		job = self.job or Job()
 		
-		job.profile = self.profile
+		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
 		job.contact_name = self.cleaned_data['contact_name']

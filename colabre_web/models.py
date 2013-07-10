@@ -672,7 +672,9 @@ class Job(models.Model):
 	@classmethod
 	def view_search_my_jobs(cls, profile, term, job_titles_ids, cities_ids, days, page, limit):
 		
-		query = Q(profile=profile)
+		query = Q()
+		if (not profile.user.is_superuser):
+			query = Q(profile=profile)
 		
 		if days > 0:
 			now = datetime.now()

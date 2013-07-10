@@ -1,5 +1,5 @@
 ﻿<div job-details-id="{{ job.id }}">
-	
+
 	<dl class="dl-horizontal">
 		{% if job.company %}
 		<dt>Empresa</dt>
@@ -16,16 +16,16 @@
 
 		<dt>Contato</dt>
 		<dd>{{ job.contact_name }}</dd>
-		
+
 		<dt>Email</dt>
 		<dd>{{ job.contact_email|urlize }}</dd>
-		
+
 		{% if job.contact_phone %}
 		<dt>Telefone</dt>
 		<dd>{{ job.contact_phone }}</dd>
 		{% endif %}
 	</dl>
-	
+
 {% block view_count %}
 {% if not job_view_count == 0 and False %}
 <p class="job_view_count job-view-count" job-details-views-id="{{ job.id }}">
