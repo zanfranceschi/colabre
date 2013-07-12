@@ -14,6 +14,8 @@ import colabre.settings
 import shortuuid
 from urlparse import urljoin
 from django.core.urlresolvers import reverse
+import re
+
 
 def dictfetchall(cursor):
 	"Returns all rows from a cursor as a dict"
@@ -722,7 +724,7 @@ class Job(models.Model):
 	def view_search_admin_jobs(cls, term, job_titles_ids, cities_ids, days, page, limit):
 
 		query = Q()
-	
+		
 		if days > 0:
 			now = datetime.now()
 			ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
@@ -733,13 +735,36 @@ class Job(models.Model):
 			
 		if cities_ids:
 			query = query & Q(city__in=(cities_ids))
+
 		
+		user_term = term
+		match = re.match("(\(.+\))", user_term)
+		for group in match.groups():
+			user_term = user_term.replace(group, '').strip()
+
+		user_query = Q(
+				   Q(description__icontains=user_term)
+				 | Q(job_title__name__icontains=user_term)
+				 | Q(profile__user__username=user_term)
+			)
+
+		admin_query = Q()
+
+		if ("(spam)" in term):
+			admin_query = admin_query & Q(spam=True)
+			
+		if ("(not spam)" in term):
+			admin_query = admin_query & Q(spam=False)
+			
+		if ("(approved)" in term):
+			admin_query = admin_query & Q(admin_approved=True) 
+		
+		if ("(disapproved)" in term):
+			admin_query = admin_query & Q(admin_approved=False)
+			
 		list = Job.objects.filter(
-			Q(
-				Q(description__icontains=term)
-				 | Q(job_title__name__icontains=term)
-				 | Q(profile__user__username=term)
-			), 
+			admin_query,
+			user_query, 
 			Q(active=True),
 			query
 		).order_by("-creation_date")
