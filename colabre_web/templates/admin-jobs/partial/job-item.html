@@ -2,8 +2,15 @@
 {% block jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
 {% block approved%}
 	({% if job.profile %}{{ job.profile.user.username }}{% else %}<i>anônimo</i>{% endif %})
+
+	{% if job.spam %}
+		<span class="label label-important">spam</span>
+	{% else %}
+		<button class="btn btn-mini btn-danger admin-job-markspam" id="admin-job-markspam-{{ job.id }}" url="{% url 'admin_jobs_mark_spam' job.id %}">marcar como spam</button>
+	{% endif %}
+
 	{% if not job.admin_approved %}
-		<a class="btn btn-mini btn-warning" href="{% url 'admin_jobs_approve' job.id job.uuid %}">aprovar</a>
+		<button class="btn btn-mini btn-warning admin-job-approve" id="admin-job-approve-{{ job.id }}" url="{% url 'admin_jobs_approve' job.id job.uuid %}">aprovar</button>
 	{% endif %}
 	{% if not job.contact_email_verified %}
 		<!--span class="label label-warning">email não verificado</span-->

@@ -1,5 +1,49 @@
 $(function(){
 
+	$(document).on("click", ".admin-job-approve", function(e){
+		id = $(this).prop("id");
+		url = $(this).attr("url");
+
+		req = $.ajax({
+			url: url,
+			type: 'get',
+			success: function(data)
+			{
+				respId = req.getResponseHeader('id');
+				ele = $("#admin-job-approve-" + respId);
+				ele.text(data);
+				ele.removeClass("btn-warning admin-job-approve");
+				ele.addClass("btn-success disabled");
+			},
+			error: function(a, b, error)
+			{
+				alert("Ocorreu um erro: " + error);
+			}
+		});
+	});
+
+	$(document).on("click", ".admin-job-markspam", function(e){
+		id = $(this).prop("id");
+		url = $(this).attr("url");
+
+		req = $.ajax({
+			url: url,
+			type: 'get',
+			success: function(data)
+			{
+				respId = req.getResponseHeader('id');
+				ele = $("#admin-job-markspam-" + respId);
+				ele.text(data);
+				ele.removeClass("admin-job-markspam");
+				ele.addClass("disabled");
+			},
+			error: function(a, b, error)
+			{
+				alert("Ocorreu um erro: " + error);
+			}
+		});
+	});
+
 	var q = $("#search-term").val();
 
 	var period_days = $("#period-days").val();
@@ -41,7 +85,7 @@ $(function(){
 			},
 			success: function(data)
 			{
-				respJobId = req.getResponseHeader('job-id')
+				respJobId = req.getResponseHeader('job-id');
 				_this = $("div.job-wrapper-summary[job-id=" + respJobId + "]");
 
 				details = _this.children("div.job-details");

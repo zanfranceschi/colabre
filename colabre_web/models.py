@@ -634,9 +634,15 @@ class Job(models.Model):
 	
 	active = models.BooleanField(default=True)
 	
-	def delete(self):
+	spam = models.BooleanField(default=False)
+	
+	def mark_spam(self, *args, **kwargs):
+		self.spam = True
+		super(Job, self).save(*args, **kwargs)
+	
+	def delete(self, *args, **kwargs):
 		self.active = False
-		self.save()
+		super(Job, self).save(*args, **kwargs)
 
 	def set_contact_email_verified(self):
 		if (self.profile is not None and self.profile.user.email == self.contact_email):

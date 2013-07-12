@@ -111,7 +111,10 @@ def admin_approve(id, uuid):
 	approved_job.set_contact_email_verified()
 	approved_job.contact_email_verified = True
 	approved_job.save()
-	
+
+def mark_spam(jobId):
+	job = Job.objects.get(id=jobId)
+	job.mark_spam()
 
 def validate_email(job_id, email, uuid):
 	job = Job.objects.get(id=job_id, contact_email=email, uuid=uuid, contact_email_verified=False)

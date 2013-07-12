@@ -39,6 +39,8 @@ urlpatterns = patterns('colabre_web.views.admin_jobs',
 	url(r'^parcial/buscar/$', 'partial_html_search'),
 	
 	url(r'^parcial/aprovar/(\d+)/(.+)$', 'approve', name='admin_jobs_approve'),
+	
+	url(r'^parcial/marcar-spam/(\d+)$', 'mark_spam', name='admin_jobs_mark_spam'),
 )
 
 def get_template_path(template):
@@ -49,7 +51,22 @@ def get_template_path(template):
 def approve(request, id, uuid):
 	try:
 		jobs.admin_approve(id, uuid)
-		return HttpResponse(u'Vaga aprovada')
+		response = HttpResponse(u'aprovada')
+		response['id'] = id
+		return response
+	except Exception, ex:
+		messages.error(request, ex.message)
+		messages.error(request, traceback.format_exc())
+		return HttpResponse(u'Erro. Recarregue para ver o erro.')
+	
+@login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
+def mark_spam(request, id):
+	try:
+		jobs.mark_spam(id)
+		response = HttpResponse(u'marcada como spam')
+		response['id'] = id
+		return response
 	except Exception, ex:
 		messages.error(request, ex.message)
 		messages.error(request, traceback.format_exc())
