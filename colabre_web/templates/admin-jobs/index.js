@@ -21,6 +21,28 @@ $(function(){
 			}
 		});
 	});
+	
+	$(document).on("click", ".admin-job-disapprove", function(e){
+		id = $(this).prop("id");
+		url = $(this).attr("url");
+
+		req = $.ajax({
+			url: url,
+			type: 'get',
+			success: function(data)
+			{
+				respId = req.getResponseHeader('id');
+				ele = $("#admin-job-disapprove-" + respId);
+				ele.text(data);
+				ele.removeClass("admin-job-disapprove");
+				ele.addClass("disabled");
+			},
+			error: function(a, b, error)
+			{
+				alert("Ocorreu um erro: " + error);
+			}
+		});
+	});
 
 	$(document).on("click", ".admin-job-markspam", function(e){
 		id = $(this).prop("id");
@@ -35,6 +57,28 @@ $(function(){
 				ele = $("#admin-job-markspam-" + respId);
 				ele.text(data);
 				ele.removeClass("admin-job-markspam");
+				ele.addClass("disabled");
+			},
+			error: function(a, b, error)
+			{
+				alert("Ocorreu um erro: " + error);
+			}
+		});
+	});
+	
+	$(document).on("click", ".admin-job-unmarkspam", function(e){
+		id = $(this).prop("id");
+		url = $(this).attr("url");
+
+		req = $.ajax({
+			url: url,
+			type: 'get',
+			success: function(data)
+			{
+				respId = req.getResponseHeader('id');
+				ele = $("#admin-job-unmarkspam-" + respId);
+				ele.text(data);
+				ele.removeClass("admin-job-unmarkspam");
 				ele.addClass("disabled");
 			},
 			error: function(a, b, error)

@@ -639,6 +639,14 @@ class Job(models.Model):
 	def mark_spam(self, *args, **kwargs):
 		self.spam = True
 		super(Job, self).save(*args, **kwargs)
+		
+	def unmark_spam(self, *args, **kwargs):
+		self.spam = False
+		super(Job, self).save(*args, **kwargs)
+		
+	def admin_disapprove(self, *args, **kwargs):
+		self.admin_approved = False
+		super(Job, self).save(*args, **kwargs)
 	
 	def delete(self, *args, **kwargs):
 		self.active = False

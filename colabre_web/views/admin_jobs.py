@@ -39,8 +39,10 @@ urlpatterns = patterns('colabre_web.views.admin_jobs',
 	url(r'^parcial/buscar/$', 'partial_html_search'),
 	
 	url(r'^parcial/aprovar/(\d+)/(.+)$', 'approve', name='admin_jobs_approve'),
+	url(r'^parcial/desaprovar/(\d+)$', 'disapprove', name='admin_jobs_disapprove'),
 	
 	url(r'^parcial/marcar-spam/(\d+)$', 'mark_spam', name='admin_jobs_mark_spam'),
+	url(r'^parcial/desmarcar-spam/(\d+)$', 'unmark_spam', name='admin_jobs_unmark_spam'),
 )
 
 def get_template_path(template):
@@ -61,6 +63,19 @@ def approve(request, id, uuid):
 	
 @login_required
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
+def disapprove(request, id):
+	try:
+		jobs.admin_disapprove(id)
+		response = HttpResponse(u'desaprovada')
+		response['id'] = id
+		return response
+	except Exception, ex:
+		messages.error(request, ex.message)
+		messages.error(request, traceback.format_exc())
+		return HttpResponse(u'Erro. Recarregue para ver o erro.')
+	
+@login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def mark_spam(request, id):
 	try:
 		jobs.mark_spam(id)
@@ -72,6 +87,19 @@ def mark_spam(request, id):
 		messages.error(request, traceback.format_exc())
 		return HttpResponse(u'Erro. Recarregue para ver o erro.')
 
+
+@login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
+def unmark_spam(request, id):
+	try:
+		jobs.unmark_spam(id)
+		response = HttpResponse(u'desmarcada como spam')
+		response['id'] = id
+		return response
+	except Exception, ex:
+		messages.error(request, ex.message)
+		messages.error(request, traceback.format_exc())
+		return HttpResponse(u'Erro. Recarregue para ver o erro.')
 
 def _index_data(request):
 	segments = Job.get_segments_for_search_filter()
