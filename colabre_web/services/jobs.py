@@ -15,8 +15,9 @@ from django.template.loader import render_to_string
 @receiver(post_save, sender=Job, dispatch_uid='dispatcher_send_email_post_save')
 def job_post_save(sender, **kwargs):
 	job = kwargs['instance']
-	send_mail_to_admin_approve(job)
-	#send_mail_to_verify_email(job)
+	if (job.active):
+		send_mail_to_admin_approve(job)
+		#send_mail_to_verify_email(job)
 
 @receiver(job_form_before_instance_saved, sender=JobForm)
 def test(sender, **kwargs):

@@ -705,7 +705,46 @@ class Job(models.Model):
 		total_jobs = paginator.count
 
 		return jobs, is_last_page, total_jobs
+	
+	@classmethod
+	def view_search_admin_jobs(cls, term, job_titles_ids, cities_ids, days, page, limit):
+
+		query = Q()
+	
+		if days > 0:
+			now = datetime.now()
+			ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
+			query = query & Q(creation_date__gte=ref_datetime)
 		
+		if job_titles_ids:
+			query = query & Q(job_title__in=(job_titles_ids))
+			
+		if cities_ids:
+			query = query & Q(city__in=(cities_ids))
+		
+		list = Job.objects.filter(
+			Q(
+				Q(description__icontains=term)
+				 | Q(job_title__name__icontains=term)
+				 | Q(profile__user__username=term)
+			), 
+			Q(active=True),
+			query
+		).order_by("-creation_date")
+
+		jobs = None
+		
+		try:
+			paginator = Paginator(list, limit)
+			jobs = paginator.page(page)
+		except EmptyPage:
+			pass
+		
+		is_last_page = page >= paginator.num_pages
+		total_jobs = paginator.count
+
+		return jobs, is_last_page, total_jobs
+	
 	@classmethod
 	def view_search_public(cls, term, job_titles_ids, cities_ids, days, page, limit):
 		now = datetime.now()

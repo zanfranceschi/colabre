@@ -1,9 +1,6 @@
 {% extends "jobs/partial/job-item.html" %}
-{% block my_jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
+{% block jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
 {% block approved%}
-{% if user.is_superuser %}
-	({% if job.profile %}{{ job.profile.user.username }}{% else %}<i>anônimo</i>{% endif %})
-{% endif %}
 	{% if not job.admin_approved %}
 		<span class="label label-warning">pendente de aprovação</span>
 	{% endif %}
@@ -11,10 +8,10 @@
 		<!--span class="label label-warning">email não verificado</span-->
 	{% endif %}
 {% endblock %}
-{% block my_jobs_buttons %}
+{% block jobs_buttons %}
 <div style="position: absolute; bottom: 5px; right: 5px;">
 	<a alt="estatísticas" title="estatísticas" class="job-action-button btn btn-small btn-primary" href="{% url 'my_jobs_individualstats' job.id %}">estatísticas</a>
-	{% if job.is_editable %}<a alt="edição" title="editar" class="job-action-button job-edit btn btn-small btn-success" href="{% if job.profile.user = user %}{% url 'my_jobs_edit' job.id %}{% else %}{% url 'my_jobs_superuser_edit' job.id %}{% endif %}">editar</a>{% endif %}
+	{% if job.is_editable %}<a alt="edição" title="editar" class="job-action-button job-edit btn btn-small btn-success" href="{% url 'my_jobs_edit' job.id %}">editar</a>{% endif %}
 	<a href="{% url 'my_jobs_confirm_del' job.id %}" class="job-action-button btn btn-small btn-danger">excluir</a>
 </div>
 {% endblock %}

@@ -8,6 +8,8 @@ admin.autodiscover()
 urlpatterns = patterns('colabre_web.views',
 
 	
+	url(r'^admin-vagas/', include('colabre_web.views.admin_jobs')),
+	
 	
 	#url(r'^test/(.+)/$', 'test.test', name='test'),
 	
@@ -23,6 +25,7 @@ urlpatterns = patterns('colabre_web.views',
 	
 	url(r'^meu-perfil/', include('colabre_web.views.my_profile')),
 	url(r'^minhas-vagas/', include('colabre_web.views.my_jobs')),
+	
 	url(r'^meu-curriculo/', include('colabre_web.views.my_resume')),
 	
 	url(r'^cadastro/$', 'registration.index', name='registration_index'),

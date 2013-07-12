@@ -429,6 +429,30 @@ class JobForm(BaseForm):
 		label='Telefone para Contato',
 	)
 	
+	def admin_save(self):
+		job = self.job or Job()
+		
+		job.profile = self.profile or job.profile
+		job.address = self.cleaned_data['address']
+		job.description = self.cleaned_data['description']
+		job.contact_name = self.cleaned_data['contact_name']
+		job.contact_email = self.cleaned_data['contact_email']
+		job.contact_phone = self.cleaned_data['contact_phone']
+		
+		job.segment_name = self.cleaned_data['segment_name']
+		job.job_title_name = self.cleaned_data['job_title_name']
+		job.country_name = self.cleaned_data['country_name']
+		job.region_name = self.cleaned_data['region_name']
+		job.city_name = self.cleaned_data['city_name']
+		job.company_name = self.cleaned_data['company_name']
+		job.set_contact_email_verified()
+		
+		job.admin_approved = True
+		signals.job_form_before_instance_saved.send(sender=JobForm, job=job)
+		job.save()
+
+		return job
+	
 	def save(self):
 		job = self.job or Job()
 		

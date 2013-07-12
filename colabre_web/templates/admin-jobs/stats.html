@@ -1,0 +1,73 @@
+﻿{% extends "_base.html" %}
+{% load bbcode %}
+{% load chartit %}
+{% block title %}Estatísticas das Minhas Vagas{% endblock %}
+
+{% block extra_head %}
+<style>
+	.stats
+	{
+		width: 48%;
+	}
+	#chart
+	{
+		height: 250px;
+	}
+	.stats-row td
+	{
+		border-bottom: 1px solid #ddd;
+		padding: 20px 0 20px 0;
+	}
+	.stats-label
+	{
+
+	}
+	.stats-value
+	{
+		text-align: right;
+	}
+	.filter-wrapper
+	{
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin-right: 10px;
+		float: left;
+	}
+</style>
+
+{% endblock %}
+
+{% block body %}
+	<h1>Estatísticas das Minhas Vagas</h1>
+
+
+	<div style="overflow: auto; border: 0px solid #333; padding: 0px;">
+
+		<div id="filter-segments" class="filter-wrapper">
+			{% for segment in segments %}
+				<input type="checkbox" value="{{ segment.id }}" id="segment-{{ segment.id }}" /> <label for="segment-{{ segment.id }}">{{ segment.name }}</label> <br />
+			{% endfor %}
+		</div>
+
+		<div id="filter-job_titles" class="filter-wrapper">
+			{% for job_title in job_titles %}
+				<input type="checkbox" value="{{ job_title.id }}" segment-id="segment-{{ segment.id }}" id="job_title-{{ job_title.id }}" /> <label for="job_title-{{ job_title.id }}">{{ job_title.name }}</label> <br />
+			{% endfor %}
+		</div>
+
+		<div id="filter-jobs" class="filter-wrapper">
+			{% for job in jobs %}
+				<input type="checkbox" value="{{ job.id }}" id="job-{{ job.id }}" /> <label for="job-{{ job.id }}">{{ job }}</label> <br />
+			{% endfor %}
+		</div>
+
+	</div>
+
+
+	{{ charts|load_charts:"chart1" }}
+	<div id="chart1"> </div>
+	
+
+<br style="clear: both;" />
+
+{% endblock %}
