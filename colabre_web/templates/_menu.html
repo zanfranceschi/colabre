@@ -48,6 +48,7 @@
 					{% endif %}
 					{% if user.is_superuser %}
 					<li class="hidden-desktop"><a href="/admin/">Administração</a></li>
+					<li class="hidden-desktop"><a href="{% url 'admin_jobs_index' %}">Admin Vagas</a></li>
 					{% endif %}
 					<li class="hidden-desktop"><a href="{% url 'my_profile_index' %}">{% if not user.get_profile.is_verified %}<i class="icon-exclamation-sign icon-white"></i>{% endif %} <i class="icon-user icon-white"></i> Meu perfil</a></li>
 					<li class="hidden-desktop"><a href="{% url 'logout' %}" id="logout"><i class="icon-off icon-white"></i> Sair</a></li>
