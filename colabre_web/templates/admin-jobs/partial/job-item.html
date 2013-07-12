@@ -11,7 +11,7 @@
 
 	{% if not job.admin_approved and not job.spam %}
 		<button class="btn btn-mini btn-warning admin-job-approve" id="admin-job-approve-{{ job.id }}" url="{% url 'admin_jobs_approve' job.id job.uuid %}">aprovar</button>
-	{% else %}
+	{% elif not job.spam %}
 		<button class="btn btn-mini btn-warning admin-job-disapprove" id="admin-job-disapprove-{{ job.id }}" url="{% url 'admin_jobs_disapprove' job.id %}">desaprovar</button>
 	{% endif %}
 	{% if not job.contact_email_verified %}
