@@ -739,8 +739,9 @@ class Job(models.Model):
 		
 		user_term = term
 		match = re.match("(\(.+\))", user_term)
-		for group in match.groups():
-			user_term = user_term.replace(group, '').strip()
+		if match is not None:
+			for group in match.groups():
+				user_term = user_term.replace(group, '').strip()
 
 		user_query = Q(
 				   Q(description__icontains=user_term)
