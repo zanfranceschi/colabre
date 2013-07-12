@@ -417,7 +417,7 @@ class JobForm(BaseForm):
 		label='Nome do Contato',
 	)
 	
-	contact_email = forms.CharField(
+	contact_email = forms.EmailField(
 		max_length=254,
 		required=True,
 		label='Email para Contato',
