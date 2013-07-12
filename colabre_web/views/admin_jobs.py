@@ -45,6 +45,7 @@ def get_template_path(template):
 	return 'admin-jobs/%s' % template
 
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def approve(request, id, uuid):
 	try:
 		jobs.admin_approve(id, uuid)
@@ -62,11 +63,13 @@ def _index_data(request):
 	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
 	
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def index(request):
 	context = _index_data(request)
 	return render(request, get_template_path('index.html'), context)
 
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def individual_stats(request, id):
 	job = None
 	try:
@@ -305,10 +308,12 @@ def individual_stats(request, id):
 	
 
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def stats(request):
 	pass
 
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def partial_details(request, id, search_term=None):
 	queryset = JobStatistics.objects.filter(
 												job_id=id, 
@@ -418,6 +423,7 @@ def partial_details(request, id, search_term=None):
 	return response
 
 @login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def partial_html_search(request):
 	if request.method == 'POST':
 		
@@ -465,7 +471,7 @@ def edit(request, job_id):
 	
 	
 @login_required
-@user_passes_test(is_verified, login_url=is_not_verified_url)
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def confirm_del(request, job_id):
 	try:	
 		job = Job.objects.get(id=job_id)
@@ -475,7 +481,7 @@ def confirm_del(request, job_id):
 
 
 @login_required
-@user_passes_test(is_verified, login_url=is_not_verified_url)
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def delete(request, job_id):
 	context = {}
 	try:
