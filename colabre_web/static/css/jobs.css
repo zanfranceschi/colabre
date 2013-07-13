@@ -1,4 +1,4 @@
-﻿.job-details
+.job-details
 {
 	display: none;
 }
@@ -124,4 +124,15 @@
 	text-align: right;
 	font-size: 75%;
 	float: right;
+}
+
+
+.job-spam
+{
+	background-color: #f4abab;
+}
+
+.job-not-approved
+{
+	background-color: #f9ee93;
 }

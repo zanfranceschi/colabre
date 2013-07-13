@@ -1,5 +1,5 @@
 {% extends "jobs/partial/job-item.html" %}
-{% block jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
+{% block jobs_classes %}my-job {% if not job.admin_approved %}job-not-approved{% endif %} {% if job.spam %}job-spam{% endif %} {% if job.is_editable %}job-editable{% endif %}{% endblock %}
 {% block approved%}
 	({% if job.profile %}{{ job.profile.user.username }}{% else %}<i>anônimo</i>{% endif %})
 
