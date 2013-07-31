@@ -1,10 +1,10 @@
 {% extends "_base.html" %}
 {% load bbcode %}
 {% load chartit %}
-{% block title %}Estatísticas de Vagas{% endblock %}
+{% block title %}EstatÃ­sticas de Vagas{% endblock %}
 {% block body %}
 
-<h1>Estatísticas</h1>
+<h1>EstatÃ­sticas</h1>
 
 <div class="is-padded20">
 	<p><strong><a href="{% url 'my_jobs_edit' job.id %}">{{ job.job_title }} ({{ job.job_title.segment.name }})</a></strong> - {{ job.city.full_name }} - publicada em <strong>{{ job.creation_date }}</strong>.</p>
@@ -14,23 +14,23 @@
 	<div class="span3">
 		<table class="table">
 			<tr class="stats-row">
-				<td class="stats-label">Visualizações hoje</td>
+				<td class="stats-label">VisualizaÃ§Ãµees hoje</td>
 				<td class="stats-value">{{ stats_count_today }}</td>
 			</tr>
 			<tr class="stats-row">
-				<td class="stats-label">Visualizações ontem</td>
+				<td class="stats-label">VisualizaÃ§Ãµes ontem</td>
 				<td class="stats-value">{{ stats_count_yesterday }}</td>
 			</tr>
 			<tr class="stats-row">
-				<td class="stats-label">Visualizações nesta semana</td>
+				<td class="stats-label">VisualizaÃ§Ãµes nesta semana</td>
 				<td class="stats-value">{{ stats_count_current_week }}</td>
 			</tr>
 			<tr class="stats-row">
-				<td class="stats-label">Visualizações neste mês</td>
+				<td class="stats-label">VisualizaÃ§Ãµes neste mÃ¢s</td>
 				<td class="stats-value">{{ stats_count_current_month }}</td>
 			</tr>
 			<tr class="stats-row">
-				<td class="stats-label">Total de visualizações</td>
+				<td class="stats-label">Total de visualizaÃ§Ãµes</td>
 				<td class="stats-value">{{ stats_count_total }}</td>
 			</tr>
 		</table>
@@ -40,7 +40,7 @@
 		<div id="chart"></div>
 		{% else %}
 		<div class="alert alert-block alert-warning">
-			Ainda não há dados suficientes para mostrarmos o gráfico com 
+			Ainda nÃ£o hÃ¡ dados suficientes para mostrarmos o grÃ¡fico com 
 			os termos de busca que mais levaram a esta vaga.
 		</div>
 		{% endif %}
