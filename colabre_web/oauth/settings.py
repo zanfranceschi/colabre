@@ -1,16 +1,5 @@
 from colabre.secrets import *
 
-HTTP_USE_PROXY = True
-
-if HTTP_USE_PROXY:
-    import urllib2
-    HTTP_PROXY = SECRETS_HTTP_PROXY
-    proxy = urllib2.ProxyHandler({'http': HTTP_PROXY, 'https' : HTTP_PROXY})
-    auth = urllib2.HTTPBasicAuthHandler()
-    opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-    urllib2.install_opener(opener)
-
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'social_auth.backends.contrib.linkedin.LinkedinBackend',
