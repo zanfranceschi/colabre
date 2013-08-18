@@ -46,7 +46,7 @@
 	}
 	.hero-unit
 	{
-		padding: 20px 60px 60px 60px !important;
+		padding: 20px 60px 0px 60px !important;
 		text-align: left !important;
 	}
 	.hero-unit h1
@@ -201,6 +201,11 @@ li.search-filter
 .is-padded20
 {
 	padding: 20px;
+}
+
+.is-padded30
+{
+	padding: 30px;
 }
 
 .wrapper-summary button.show-details, img.show-details-loading

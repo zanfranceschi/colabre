@@ -4,11 +4,27 @@
 {% block title %}Início{% endblock %}
 {% block body %}
 
-<div class="hero-unit">
-	<h1>O Colabre é um serviço gratuito de <a href="{% url 'jobs_index' %}">busca</a> e <a href="{% url 'jobs_create' %}">publicação</a> de oportunidades de emprego.</h1>
-</div>
-
 <div class="row">
+	<div class="span12">
+		<h1>
+			O Colabre é um serviço gratuito e sem burocracia de 
+			<a href="{% url 'jobs_index' %}">busca</a>
+			e <a href="{% url 'jobs_create' %}">publicação</a>
+			de oportunidades de emprego.
+		</h1>
+	</div>
+	
+	<div class="span12" style="padding: 60px 0 40px 0;">
+		<form action="{% url 'jobs_index' %}" method="get">
+			<div class="input-append" style="width: 100% !important;">
+				<input name="q" type="text" placeholder="Digite os termos para a busca, por exemplo: são paulo analista de sistemas" value="{{ initial_query }}" class="span6" id="search-term" style="width: 70% !important;">
+				<button id="btn-search" type="submit" class="btn btn-search">
+					<span class="visible-phone">Buscar</span>
+					<span class="hidden-phone">Buscar Vagas</span>
+				</button>
+			</div>
+		</form>
+	</div>
 
 	<div class="span4 feature">
 		<h3>Sem burocracia</h3>
@@ -44,10 +60,11 @@
 <div class="row">
 
 	<div class="span4 feature">
-		<h3>Gráficos e métricas</h3>
-		<img src="{{ STATIC_URL }}img/home/chart.png" alt="" />
-		<p>Os profissionais de áreas de recrutamento cadastrados no Colabre contam com gráficos e métricas de acesso
-			para análise de informações que ajudam a deixar as vagas mais atraentes e de acordo com os termos de busca mais utilizados.</p>
+		<h3>Smartphones e tablets</h3>
+		<img src="{{ STATIC_URL }}img/home/responsive.png" alt="" />
+		<p>O design do Colabre foi feito para também funcionar em smartphones e tablets para
+			que você possa utilizar os nossos serviços onde estiver com qualidade.
+		</p>
 	</div>
 
 	<div class="span4 feature">

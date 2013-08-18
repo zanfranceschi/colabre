@@ -82,7 +82,10 @@ def partial_html_search(request):
 		return HttpResponse('')
 
 def index(request):
-	return render(request, get_template_path('index.html'))
+	initial_query = ''
+	if ('q' in request.GET):
+		initial_query = request.GET['q']
+	return render(request, get_template_path('index.html'), { 'initial_query' : initial_query })
 
 def create(request):
 	template = None
