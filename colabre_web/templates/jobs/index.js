@@ -8,7 +8,7 @@ $(function(){
 		jobId = $(this).attr("job-id");
 
 		req = $.ajax({
-			url: '/vagas/parcial/detalhar/' + jobId + '/' + q.replace('#', '%23') + '/',
+			url: '/vagas/parcial/detalhar/' + jobId + '/' + q + '/',
 			type: 'get',
 			beforeSend: function()
 			{
@@ -117,19 +117,8 @@ $(function(){
 
 	var send_search = function(callback)
 	{
-		job_titles = [];
-		_locations = [];
-		$(".jobtitle-item:checked").each(function(){
-			job_titles.push($(this).val());
-		});
-		$(".city-item:checked").each(function(){
-			_locations.push($(this).val());
-		});
 		data = {
 			term: q,
-			job_titles: job_titles.join("-"),
-			cities: _locations.join("-"),
-			days: $("#period-days").val(),
 			page: page,
 			csrfmiddlewaretoken: '{{ csrf_token }}'
 		};

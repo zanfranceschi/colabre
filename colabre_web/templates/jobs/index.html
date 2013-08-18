@@ -7,22 +7,14 @@
 
 {% block body %}
 
-<h1 class="search-title text-center">Buscar Vagas</h1>
-
-<div class="row">
-	<div class="span4">
-		<!-- filters -->
-		{% block filter %}
-		{#% cache 600 jobs_search_filters %#}
-		{% include "jobs/_filters.html" %}
-		{#% endcache %#}
-		{% endblock %}
-		<!-- /filters -->
-	</div>
-	<div class="span8">
+<div class="row" style="margin-top: 20px;">
+	<div class="span12">
 		<div class="input-append" style="width: 100% !important;">
-			<input type="text" class="span6" id="search-term" style="width: 70% !important;">
-			<button id="btn-search" type="button" class="btn btn-search">Buscar</button>
+			<input type="text" placeholder="Digite os termos para a busca, por exemplo: são paulo analista de sistemas" value="{{ initial_query }}" class="span6" id="search-term" style="width: 70% !important;">
+			<button id="btn-search" type="button" class="btn btn-search">
+				<span class="visible-phone">Buscar</span>
+				<span class="hidden-phone">Buscar Vagas</span>
+			</button>
 		</div>
 		
 		<!-- content -->

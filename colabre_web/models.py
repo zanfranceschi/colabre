@@ -686,26 +686,40 @@ class Job(models.Model):
 		return u"{0} - {1} ({2})".format(self.creation_date.date().strftime("%Y/%m/%d"), self.job_title.name, self.city)
 
 	@classmethod
-	def view_search_my_jobs(cls, profile, term, job_titles_ids, cities_ids, days, page, limit):
+	def search(cls, term, page, limit, *args, **kwargs):
+		term = term.replace(",", "")
+		findterms = re.compile(r'"([^"]+)"|(\S+)').findall
+		normspace = re.compile(r'\s{2,}').sub
+		terms = [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(term)]
 		
-		query = Q(profile=profile)
+		query = Q()
 		
-		if days > 0:
-			now = datetime.now()
-			ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
-			query = query & Q(creation_date__gte=ref_datetime)
-		
-		if job_titles_ids:
-			query = query & Q(job_title__in=(job_titles_ids))
+		if term:
+			search_fields = [
+						'description',
+						'job_title__name',
+						'job_title__segment__name',
+						'city__name',
+						'city__region__name',
+						'city__region__code',
+						'city__region__country__name',
+						'company__name',
+						]
+			query = None
+			for term in terms:
+				or_query = None # Query to search for a given term in each field
+				for field_name in search_fields:
+					q = Q(**{"%s__icontains" % field_name: term})
+					if or_query is None:
+						or_query = q
+					else:
+						or_query = or_query | q
+				if query is None:
+					query = or_query
+				else:
+					query = query & or_query
 			
-		if cities_ids:
-			query = query & Q(city__in=(cities_ids))
-		
-		list = Job.objects.filter(
-			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
-			Q(active=True),
-			query
-		).order_by("-creation_date")
+		list = cls.objects.filter(query, *args, **kwargs).order_by("-creation_date")
 
 		jobs = None
 		
@@ -719,103 +733,49 @@ class Job(models.Model):
 		total_jobs = paginator.count
 
 		return jobs, is_last_page, total_jobs
+
+	@classmethod
+	def view_search_my_jobs(cls, profile, term, page, limit):
+		return cls.search(term, page, limit, active=True, profile=profile)
 	
 	@classmethod
-	def view_search_admin_jobs(cls, term, job_titles_ids, cities_ids, days, page, limit):
-
-		query = Q()
-		
-		if days > 0:
-			now = datetime.now()
-			ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
-			query = query & Q(creation_date__gte=ref_datetime)
-		
-		if job_titles_ids:
-			query = query & Q(job_title__in=(job_titles_ids))
-			
-		if cities_ids:
-			query = query & Q(city__in=(cities_ids))
-
-		
+	def view_search_admin_jobs(cls, term, page, limit):
 		user_term = term
 		match = re.match("(\(.+\))", user_term)
 		if match is not None:
 			for group in match.groups():
 				user_term = user_term.replace(group, '').strip()
 
-		user_query = Q(
-				   Q(description__icontains=user_term)
-				 | Q(job_title__name__icontains=user_term)
-				 | Q(profile__user__username=user_term)
-			)
-
-		admin_query = Q()
+		admin_query= {'active' : True}
 
 		if ("(spam)" in term):
-			admin_query = admin_query & Q(spam=True)
+			admin_query.update({'spam': True})
 			
-		if ("(not spam)" in term):
-			admin_query = admin_query & Q(spam=False)
+		if ("(not spam)" in term or "(!spam)" in term):
+			admin_query.update({'spam' : False})
 			
 		if ("(approved)" in term):
-			admin_query = admin_query & Q(admin_approved=True) 
+			admin_query.update({'admin_approved': True}) 
 		
-		if ("(disapproved)" in term):
-			admin_query = admin_query & Q(admin_approved=False)
+		if ("(not approved)" in term or "(!approved)" in term):
+			admin_query.update({'admin_approved' : False})
+		
+		if ("(anonymous)" in term):
+			admin_query.update({'profile' : None})
 			
-		list = Job.objects.filter(
-			admin_query,
-			user_query, 
-			Q(active=True),
-			query
-		).order_by("-creation_date")
-
-		jobs = None
-		
-		try:
-			paginator = Paginator(list, limit)
-			jobs = paginator.page(page)
-		except EmptyPage:
-			pass
-		
-		is_last_page = page >= paginator.num_pages
-		total_jobs = paginator.count
-
-		return jobs, is_last_page, total_jobs
+		custom_query_match = re.match("(\(query (.+)=(.+)\))", term)
+		custom_query = Q()
+		if (custom_query_match is not None):
+			key = custom_query_match.groups()[1].strip()
+			value = custom_query_match.groups()[2].strip()
+			custom_query = Q(**{key : value})
+			
+		return cls.search(user_term, page, limit, *(custom_query,), **admin_query)
 	
 	@classmethod
-	def view_search_public(cls, term, job_titles_ids, cities_ids, days, page, limit):
-		now = datetime.now()
-		ref_datetime = datetime(now.year, now.month, now.day) - timedelta(days=days)
-		
-		query = Q(active=True) & Q(admin_approved=True) & Q(contact_email_verified=True) & Q(creation_date__gte=ref_datetime)
-		
-		if job_titles_ids:
-			query = query & Q(job_title__in=(job_titles_ids))
-			
-		if cities_ids:
-			query = query & Q(city__in=(cities_ids))
-		
-		list = Job.objects.filter(
-			Q(Q(description__icontains=term) | Q(job_title__name__icontains=term)), 
-			query
-		).order_by("-creation_date")
+	def view_search_public(cls, term, page, limit):
+		return cls.search(term, page, limit, active=True, admin_approved=True)
 
-		jobs = None
-		
-		try:
-			paginator = Paginator(list, limit)
-			jobs = paginator.page(page)
-		except EmptyPage:
-			pass
-		
-		is_last_page = page >= paginator.num_pages
-		total_jobs = paginator.count
-
-		#print >> sys.stderr, "page: %r" % page
-		return jobs, is_last_page, total_jobs
-	
-	
 	@classmethod
 	def get_countries_for_search_filter(cls):
 		query = """select

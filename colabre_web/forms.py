@@ -448,7 +448,6 @@ class JobForm(BaseForm):
 		job.set_contact_email_verified()
 		
 		job.admin_approved = True
-		signals.job_form_before_instance_saved.send(sender=JobForm, job=job)
 		job.save()
 
 		return job
@@ -477,8 +476,8 @@ class JobForm(BaseForm):
 				job.admin_approved = False
 		
 		signals.job_form_before_instance_saved.send(sender=JobForm, job=job)
-		
 		job.save()
+		signals.job_form_instance_saved.send(sender=JobForm, job=job)
 
 		return job
 	

@@ -1,27 +1,36 @@
 {% extends "jobs/partial/job-item.html" %}
-{% block jobs_classes %}my-job {% if not job.admin_approved %}job-not-approved{% endif %} {% if job.spam %}job-spam{% endif %} {% if job.is_editable %}job-editable{% endif %}{% endblock %}
-{% block approved%}
+{% block jobs_classes %}my-job {% if job.is_editable %}job-editable{% endif %}{% endblock %}
+{% block approved %}
 	({% if job.profile %}{{ job.profile.user.username }}{% else %}<i>anônimo</i>{% endif %})
 
-	{% if job.spam %}
-		<button class="btn btn-mini btn-danger admin-job-unmarkspam" id="admin-job-unmarkspam-{{ job.id }}" url="{% url 'admin_jobs_unmark_spam' job.id %}">desmarcar como spam</button>
-	{% else %}
-		<button class="btn btn-mini btn-danger admin-job-markspam" id="admin-job-markspam-{{ job.id }}" url="{% url 'admin_jobs_mark_spam' job.id %}">marcar como spam</button>
+	{% if not job.admin_approved %}
+		<span class="label label-important">não aprovada</span>
 	{% endif %}
 
-	{% if not job.admin_approved and not job.spam %}
-		<button class="btn btn-mini btn-warning admin-job-approve" id="admin-job-approve-{{ job.id }}" url="{% url 'admin_jobs_approve' job.id job.uuid %}">aprovar</button>
-	{% elif not job.spam %}
-		<button class="btn btn-mini btn-warning admin-job-disapprove" id="admin-job-disapprove-{{ job.id }}" url="{% url 'admin_jobs_disapprove' job.id %}">desaprovar</button>
+	{% if job.spam %}
+		<span class="label label-important">spam</span>
 	{% endif %}
+
 	{% if not job.contact_email_verified %}
 		<!--span class="label label-warning">email não verificado</span-->
 	{% endif %}
 {% endblock %}
 {% block jobs_buttons %}
 <div style="position: absolute; bottom: 5px; right: 5px;">
-	<a alt="estatísticas" title="estatísticas" class="job-action-button btn btn-small btn-primary" href="{% url 'admin_jobs_individualstats' job.id %}">estatísticas</a>
-	<a alt="edição" title="editar" class="job-action-button job-edit btn btn-small btn-success" href="{% url 'admin_jobs_edit' job.id %}">editar</a>
-	<a href="{% url 'admin_jobs_confirm_del' job.id %}" class="job-action-button btn btn-small btn-danger">excluir</a>
+	{% if not job.admin_approved %}
+		<button class="btn btn-mini btn-warning admin-job-approve" id="admin-job-approve-{{ job.id }}" url="{% url 'admin_jobs_approve' job.id job.uuid %}">aprovar</button>
+	{% else %}
+		<button class="btn btn-mini btn-warning admin-job-disapprove" id="admin-job-disapprove-{{ job.id }}" url="{% url 'admin_jobs_disapprove' job.id %}">desaprovar</button>		
+	{% endif %}
+	
+	{% if job.spam %}
+		<button class="btn btn-mini btn-danger admin-job-unmarkspam" id="admin-job-unmarkspam-{{ job.id }}" url="{% url 'admin_jobs_unmark_spam' job.id %}">não é spam</button>
+	{% else %}
+		<button class="btn btn-mini btn-danger admin-job-markspam" id="admin-job-markspam-{{ job.id }}" url="{% url 'admin_jobs_mark_spam' job.id %}">é spam</button>
+	{% endif %}
+	
+	<a style="margin-left: 0;" alt="estatísticas" title="estatísticas" class="hidden-phone job-action-button btn btn-mini btn-primary" href="{% url 'admin_jobs_individualstats' job.id %}">estatísticas</a>
+	<a style="margin-left: 0;" alt="edição" title="editar" class="job-action-button job-edit btn btn-mini btn-success" href="{% url 'admin_jobs_edit' job.id %}">editar</a>
+	<a style="margin-left: 0;" href="{% url 'admin_jobs_confirm_del' job.id %}" class="job-action-button btn btn-mini btn-danger">x</a>
 </div>
 {% endblock %}

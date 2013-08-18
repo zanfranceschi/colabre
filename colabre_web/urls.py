@@ -11,7 +11,7 @@ urlpatterns = patterns('colabre_web.views',
 	url(r'^admin-vagas/', include('colabre_web.views.admin_jobs')),
 	
 	
-	#url(r'^test/(.+)/$', 'test.test', name='test'),
+	url(r'^test/$', 'test.test', name='test'),
 	
 	url(r'^auxiliares/', include('colabre_web.views.generic')),
 	

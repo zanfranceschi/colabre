@@ -1,4 +1,4 @@
-﻿{% extends "_base.html" %}
+{% extends "_base.html" %}
 {% load url from future %}
 {% block title %}Cadastre-se{% endblock %}
 {% block extra_head %}
@@ -29,13 +29,9 @@
 	{% csrf_token %}
 	{% include "_form.html" %}
 
-	<div class="control-group">
-		<div class="controls">
-			<div class="label label-info is-padded10">
-				Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
-				<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
-			</div>
-		</div>
+	<div class="alert">
+		Ao clicar em "cadastre-se" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
+		<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
 	</div>
 
 	<div class="form-actions">

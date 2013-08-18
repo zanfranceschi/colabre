@@ -455,25 +455,13 @@ def partial_details(request, id, search_term=None):
 @login_required
 def partial_html_search(request):
 	if request.method == 'POST':
-		
-		job_titles = request.POST['job_titles']
-		cities = request.POST['cities']
 		term = request.POST['term']
-		days = request.POST['days']
 		page = request.POST['page']
-		
-		job_titles_ids = None
-		if job_titles:
-			job_titles_ids = [int(n) for n in job_titles.split("-")]
-		
-		cities_ids = None
-		if cities:
-			cities_ids = [int(n) for n in cities.split("-")]
-		
-		jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, job_titles_ids, cities_ids, int(days), page, 30)
+		jobs, is_last_page, total_jobs = Job.view_search_my_jobs(request.user.get_profile(), term, page, 30)
 		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	else:
 		return HttpResponse('')
+
 	
 
 @login_required

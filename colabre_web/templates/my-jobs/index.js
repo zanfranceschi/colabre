@@ -2,27 +2,6 @@ $(function(){
 
 	var q = $("#search-term").val();
 
-	var period_days = $("#period-days").val();
-
-	$("#period-days").change(function(){
-		period_days = $(this).val();
-	});
-
-	$("#filter-period-all").change(function(){
-		checked = $(this).prop("checked");
-
-		if (checked)
-		{
-			$("#period-days").prop("disabled", true);
-			period_days = -1;
-		}
-		else
-		{
-			$("#period-days").removeAttr("disabled");
-			period_days = $("#period-days").val();
-		}
-	});
-
 	// load content and toggle visibility
 	$(document).on("click", ".job-wrapper-summary button.show-details" , function(){
 
@@ -110,19 +89,8 @@ $(function(){
 
 	var send_search = function(callback)
 	{
-		job_titles = [];
-		_locations = [];
-		$(".jobtitle-item:checked").each(function(){
-			job_titles.push($(this).val());
-		});
-		$(".city-item:checked").each(function(){
-			_locations.push($(this).val());
-		});
 		data = {
 			term: q,
-			job_titles: job_titles.join("-"),
-			cities: _locations.join("-"),
-			days: period_days,
 			page: page,
 			csrfmiddlewaretoken: '{{ csrf_token }}'
 		};

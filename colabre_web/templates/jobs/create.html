@@ -7,6 +7,13 @@
 		{% csrf_token %}
 		{% include '_form.html' %}
 
+		{% if user.is_anonymous %}
+		<div class="alert">
+			Ao clicar em "Salvar" ou submeter este formulário de outra forma, você declara que leu e entendeu nossa
+			<a href="/legal/#politica">política de privacidade</a> e <a href="/legal/#termos">termos de uso</a>.
+		</div>
+		{% endif %}
+
 		<div class="form-actions">
 			<button type="submit" class="btn btn-large btn-primary">Salvar</button>
 		</div>

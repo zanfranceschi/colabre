@@ -52,8 +52,8 @@ def get_template_path(template):
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def approve(request, id, uuid):
 	try:
-		jobs.admin_approve(id, uuid)
-		response = HttpResponse(u'aprovada')
+		job = jobs.admin_approve(id, uuid)
+		response = render(request, get_template_path("partial/job-item.html"), { 'job' : job })
 		response['id'] = id
 		return response
 	except Exception, ex:
@@ -65,8 +65,8 @@ def approve(request, id, uuid):
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def disapprove(request, id):
 	try:
-		jobs.admin_disapprove(id)
-		response = HttpResponse(u'desaprovada')
+		job = jobs.admin_disapprove(id)
+		response = render(request, get_template_path("partial/job-item.html"), { 'job' : job })
 		response['id'] = id
 		return response
 	except Exception, ex:
@@ -78,8 +78,8 @@ def disapprove(request, id):
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def mark_spam(request, id):
 	try:
-		jobs.mark_spam(id)
-		response = HttpResponse(u'marcada como spam')
+		job = jobs.mark_spam(id)
+		response = render(request, get_template_path("partial/job-item.html"), { 'job' : job })
 		response['id'] = id
 		return response
 	except Exception, ex:
@@ -92,8 +92,8 @@ def mark_spam(request, id):
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def unmark_spam(request, id):
 	try:
-		jobs.unmark_spam(id)
-		response = HttpResponse(u'desmarcada como spam')
+		job = jobs.unmark_spam(id)
+		response = render(request, get_template_path("partial/job-item.html"), { 'job' : job })
 		response['id'] = id
 		return response
 	except Exception, ex:
@@ -101,17 +101,10 @@ def unmark_spam(request, id):
 		messages.error(request, traceback.format_exc())
 		return HttpResponse(u'Erro. Recarregue para ver o erro.')
 
-def _index_data(request):
-	segments = Job.get_segments_for_search_filter()
-	countries = Job.get_countries_for_search_filter()
-	days = [3, 7, 30, 60, 90, 120, 150]
-	return { 'countries' : countries, 'days' : days, 'segments' :  segments }
-	
 @login_required
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def index(request):
-	context = _index_data(request)
-	return render(request, get_template_path('index.html'), context)
+	return render(request, get_template_path('index.html'), { 'initial_query' : "(query {0}={1})".format("creation_date__gt", datetime.date.today().strftime("%Y-%m-%d"))})
 
 @login_required
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
@@ -472,21 +465,10 @@ def partial_details(request, id, search_term=None):
 def partial_html_search(request):
 	if request.method == 'POST':
 		
-		job_titles = request.POST['job_titles']
-		cities = request.POST['cities']
 		term = request.POST['term']
-		days = request.POST['days']
 		page = request.POST['page']
 		
-		job_titles_ids = None
-		if job_titles:
-			job_titles_ids = [int(n) for n in job_titles.split("-")]
-		
-		cities_ids = None
-		if cities:
-			cities_ids = [int(n) for n in cities.split("-")]
-		
-		jobs, is_last_page, total_jobs = Job.view_search_admin_jobs(term, job_titles_ids, cities_ids, int(days), page, 30)
+		jobs, is_last_page, total_jobs = Job.view_search_admin_jobs(term, page, 30)
 		return render(request, get_template_path("partial/jobs.html"), {'total_jobs' : total_jobs, 'jobs' : jobs, 'is_last_page': is_last_page, 'q' : term, 'page' : page})
 	else:
 		return HttpResponse('')
@@ -502,7 +484,6 @@ def edit(request, job_id):
 		if form.is_valid():
 			form.admin_save()
 			template = get_template_path('index.html')
-			context = _index_data(request)
 			messages.success(request, u'Vaga atualizada.')
 			return redirect(reverse('colabre_web.views.admin_jobs.index'))
 		else:
@@ -533,7 +514,6 @@ def delete(request, job_id):
 		job = Job.objects.get(id=job_id)
 		job.delete()
 		messages.success(request, u'Vaga excluída.')
-		context = _index_data(request)
 	except Job.DoesNotExist:
 		pass
-	return render(request, get_template_path('index.html'), context)
+	return render(request, get_template_path('index.html'))

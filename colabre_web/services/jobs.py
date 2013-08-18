@@ -6,47 +6,52 @@ from urlparse import urljoin
 from django.core.urlresolvers import reverse
 from colabre.settings import HOST_ROOT_URL, EMAIL_CONTACT
 from colabre_web.services import email
-from django.db.models.signals import post_save
-from colabre_web.signals import job_form_before_instance_saved
+#from django.db.models.signals import post_save
+from colabre_web.signals import job_form_instance_saved
 from django.dispatch import receiver
 from colabre_web.forms import JobForm
 from django.template.loader import render_to_string
 
-@receiver(post_save, sender=Job, dispatch_uid='dispatcher_send_email_post_save')
-def job_post_save(sender, **kwargs):
-	job = kwargs['instance']
+@receiver(job_form_instance_saved, sender=JobForm)
+def job_form_instance_saved(sender, job, **kwargs):
 	if (job.active):
 		send_mail_to_admin_approve(job)
-		#send_mail_to_verify_email(job)
-
-@receiver(job_form_before_instance_saved, sender=JobForm)
-def test(sender, **kwargs):
-	pass
 	
 
 def send_mail_to_admin_approve(job):
 	if (not job.admin_approved):
+		
+		profile = u'Anônimo'
+		if (job.profile is not None):
+			profile = job.profile.user.username
+			
+		company = ''
+		if (job.company is not None):
+			company = job.company.name
+		
 		message = u"""
-public				{0}
-segment				{1}
-title				{2}
-country				{3}
-region				{4}
-city				{5}
-address				{6}
-contact name		{7}
-contact email		{8}
-contact phone		{9}
+perfil			{0}
+segment			{1}
+title			{2}
+country			{3}
+region			{4}
+city			{5}
+address			{6}
+contact name	{7}
+contact email	{8}
+contact phone	{9}
+company			{10}
 description:
 ---
-{10}
+{11}
 ---
 
-ver: {11}
+aprovar: {13}
 
-aprovar: {12}
+
+ver: {12}
 """.format(
-		job.profile is not None,
+		profile,
 		job.job_title.segment.name,
 		job.job_title.name,
 		job.city.region.country.name,
@@ -56,6 +61,7 @@ aprovar: {12}
 		job.contact_name,
 		job.contact_email,
 		job.contact_phone,
+		company,
 		job.description,
 		urljoin(
 			HOST_ROOT_URL,
@@ -111,18 +117,22 @@ def admin_approve(id, uuid):
 	approved_job.set_contact_email_verified()
 	approved_job.contact_email_verified = True
 	approved_job.save()
+	return approved_job
 	
 def admin_disapprove(id):
 	job = Job.objects.get(id=id)
 	job.admin_disapprove()
+	return job 
 
 def mark_spam(jobId):
 	job = Job.objects.get(id=jobId)
 	job.mark_spam()
+	return job
 	
 def unmark_spam(jobId):
 	job = Job.objects.get(id=jobId)
 	job.unmark_spam()
+	return job
 
 def validate_email(job_id, email, uuid):
 	job = Job.objects.get(id=job_id, contact_email=email, uuid=uuid, contact_email_verified=False)

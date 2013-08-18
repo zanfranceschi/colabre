@@ -35,7 +35,7 @@ DATABASES = {
 
 STATIC_URL = '/static/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-HOST_ROOT_URL = 'http://127.0.0.1:8000'
+HOST_ROOT_URL = 'http://127.0.0.1:8000/'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'zzzz'
 EMAIL_HOST_PASSWORD = 'zzzz'
@@ -173,7 +173,7 @@ LOGGING = {
 				'level': 'ERROR',
 				'class': 'logging.FileHandler',
 				#'filename' : '/home/ubuntu/logs/django.log',
-				'filename' : 'C:/Users/zanfranceschi/Projects/Colabre/svn/django.log',
+				'filename' : 'C:/temp/django.log',
 		}
     },
 	
