@@ -486,6 +486,10 @@ def edit(request, job_id):
 				if (not edited_job.admin_approved):
 					messages.success(request, 
 						u'Sua vaga foi submetida para aprovação.')
+				else:
+					messages.success(request, 
+						u'Sua vaga foi atualizada com sucesso.')
+				
 				return redirect(reverse('colabre_web.views.my_jobs.index'))
 			else:
 				template = get_template_path('edit.html')
