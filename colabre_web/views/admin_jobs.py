@@ -37,6 +37,7 @@ urlpatterns = patterns('colabre_web.views.admin_jobs',
 	
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='admin_jobs_partial_details'),
 	url(r'^parcial/buscar/$', 'partial_html_search'),
+	url(r'^parcial/buscar-quantidade-novas-vagas-hoje/$', 'partial_html_search_new_count'),
 	
 	url(r'^parcial/aprovar/(\d+)/(.+)$', 'approve', name='admin_jobs_approve'),
 	url(r'^parcial/desaprovar/(\d+)$', 'disapprove', name='admin_jobs_disapprove'),
@@ -473,6 +474,15 @@ def partial_html_search(request):
 	else:
 		return HttpResponse('')
 	
+@login_required
+@user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
+def partial_html_search_new_count(request):
+	if request.method == 'POST':
+		today = datetime.date.today()
+		return HttpResponse(Job.objects.filter(creation_date__gte=today, admin_approved=False).count())
+	else:
+		return HttpResponse('ERROR')
+
 @login_required
 @user_passes_test(lambda user: user.is_superuser, login_url=is_not_verified_url)
 def edit(request, job_id):

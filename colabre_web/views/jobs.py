@@ -102,7 +102,10 @@ def create(request):
 			if (not created_job.admin_approved):
 				messages.success(request, 
 					u'Sua vaga foi submetida para aprovação.')
-				
+			else:
+				messages.success(request, 
+					u'Sua vaga criada e publicada com sucesso.')
+
 			if (profile is not None):
 				return redirect(reverse('colabre_web.views.my_jobs.index'))
 			else:

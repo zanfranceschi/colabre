@@ -470,7 +470,14 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
 		
-		if (job.id is not None):
+
+		# if there is an approved job with such contact email
+		# approved it automatically
+		validated_email = Job.objects.filter(admin_approved=True, contact_email=job.contact_email).exists() 
+		if(validated_email):
+			job.admin_approved = True
+
+		if (job.id is not None and not job.admin_approved):
 			original = Job.objects.get(id=job.id)
 			if (original.description != job.description):
 				job.admin_approved = False

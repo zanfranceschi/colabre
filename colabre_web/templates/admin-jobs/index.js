@@ -1,5 +1,15 @@
 $(function(){
 
+	var setTitle = function()
+	{
+		data = {
+			csrfmiddlewaretoken: '{{ csrf_token }}'
+		};
+		search("/admin-vagas/parcial/buscar-quantidade-novas-vagas-hoje/", 'post', data, function(result){
+			document.title = '(' + result + ') Colabre | Admin Vagas';
+		});
+	};
+
 	$(document).on("click", ".admin-job-approve", function(e){
 		id = $(this).prop("id");
 		url = $(this).attr("url");
@@ -11,6 +21,7 @@ $(function(){
 			{
 				respId = req.getResponseHeader('id');
 				$("div.job[job-id="+respId+"]").replaceWith(data);
+				setTitle();
 			},
 			error: function(a, b, error)
 			{
@@ -30,6 +41,7 @@ $(function(){
 			{
 				respId = req.getResponseHeader('id');
 				$("div.job[job-id="+respId+"]").replaceWith(data);
+				setTitle();
 			},
 			error: function(a, b, error)
 			{
@@ -151,6 +163,7 @@ $(function(){
 		$("#search-search-info").show();
 		$("#search-result").html(result);
 		page++;
+		setTitle();
 	};
 
 	var display_result_append = function(result)
@@ -161,6 +174,7 @@ $(function(){
 		$("#search-result").append(result);
 		page++;
 		lock = false;
+		setTitle();
 	};
 
 	var send_search = function(callback)
@@ -211,4 +225,9 @@ $(function(){
 	$("#search-term").focus();
 
 	send_search(display_result);
+	
+	var auto_search_timer = setInterval(function(){
+		setTitle();
+	}, 1 * 1000 * 60);
+		
 });
