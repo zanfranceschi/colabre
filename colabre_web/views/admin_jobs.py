@@ -479,7 +479,7 @@ def partial_html_search(request):
 def partial_html_search_new_count(request):
 	if request.method == 'POST':
 		today = datetime.date.today()
-		return HttpResponse(Job.objects.filter(creation_date__gte=today, admin_approved=False).count())
+		return HttpResponse(Job.objects.filter(active=True, creation_date__gte=today, admin_approved=False).count())
 	else:
 		return HttpResponse('ERROR')
 
