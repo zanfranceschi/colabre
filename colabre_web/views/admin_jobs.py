@@ -513,7 +513,7 @@ def confirm_del(request, job_id):
 		job = Job.objects.get(id=job_id)
 		return render(request, get_template_path('confirm-del.html'), {'job' : job})
 	except Job.DoesNotExist:
-		return render(request, get_template_path('index.html'))
+		return redirect(reverse('colabre_web.views.admin_jobs.index'))
 
 
 @login_required
@@ -526,4 +526,4 @@ def delete(request, job_id):
 		messages.success(request, u'Vaga excluída.')
 	except Job.DoesNotExist:
 		pass
-	return render(request, get_template_path('index.html'))
+	return redirect(reverse('colabre_web.views.admin_jobs.index'))
