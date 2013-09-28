@@ -1,5 +1,6 @@
 ﻿from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf.urls import patterns, url
 import logging
@@ -25,6 +26,5 @@ def job_approve(request, id, uuid):
 	except Exception, ex:
 		messages.error(request, ex.message)
 		messages.error(request, traceback.format_exc())
-	
-	return render(request, "colabre-admin/index.html")
+	return redirect(reverse('colabre_web.views.admin_jobs.index'))
 	
