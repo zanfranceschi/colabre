@@ -35,32 +35,66 @@
 			width: 100% !important;
 		}
 	}
+
+	.upper-menu
+	{
+		padding: 10px 0 10px 0; 
+		white-space: nowrap;
+		margin-bottom: 0;
+	}
+	.upper-menu a
+	{
+		margin-left: 10px;
+	}
+	@media (max-width: 480px)
+	{
+		.upper-menu
+		{
+			margin-bottom: 30px;
+		}		
+	}
 </style>
 {% endblock %}
-{% block menu %}{% endblock menu %}
+{% block menu %}
+
+
+{% endblock menu %}
 {% block body %}
 
-<div style="text-align: center;">
-	
-	<img class="logo" src="{{ STATIC_URL }}img/logo-home.png" alt="" />
+<div class="upper-menu pull-right">	
+	{% if user.is_authenticated %}
+		<a href="{% url 'my_profile_index' %}" class="">meu perfil</a>
+		<a href="{% url 'logout' %}" class="">logout</a>
+	{% else %}
+		<a href="{% url 'login' %}" class="">login</a>
+		<a href="{% url 'registration_index' %}" class="">cadastre-se</a>	
+	{% endif %}
+	<a href="{% url 'about' %}" class="">sobre</a>
+	<a href="{% url 'open_contact' %}" class="">contato</a>
+</div>
+
+<div style="text-align: center; clear: both;">
+		
+	<img class="logo" src="{{ STATIC_URL }}img/logo-home.png" alt="" style="" />
 	
 	<form action="{% url 'jobs_index' %}" method="get" class="home-search">
-			<div class="input-append home-search-wrapper">
-				<input 
-					name="q" 
-					type="text" 
-					placeholder="Digite sua busca. Por exemplo: são paulo analista de sistemas" 
-					value="{{ initial_query }}" 
-					class="span6 home-search-text-input" 
-					id="search-term">
-				<button id="btn-search" type="submit" class="btn btn-search home-search-button">
-					<span class="visible-phone">Buscar</span>
-					<span class="hidden-phone">Buscar Vagas</span>
-				</button>
-			</div>
-		</form>
+		<div class="input-append home-search-wrapper">
+			<input 
+				name="q" 
+				type="text" 
+				placeholder="Digite sua busca. Por exemplo: são paulo analista de sistemas" 
+				value="{{ initial_query }}" 
+				class="span6 home-search-text-input" 
+				id="search-term">
+			<button id="btn-search" type="submit" class="btn btn-search home-search-button">
+				<span class="visible-phone">Buscar</span>
+				<span class="hidden-phone">Buscar Vagas</span>
+			</button>
+		</div>
+	</form>
 		
-		<a href="{% url 'jobs_create' %}" class="btn btn-primary">publicar uma vaga</a>
+	<a href="{% url 'jobs_create' %}" class="btn btn-primary">publicar uma vaga</a>
+
 </div>
 
 
