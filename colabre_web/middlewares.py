@@ -5,7 +5,7 @@ import logging
 from django.shortcuts import render
 from django.http import HttpResponse
 from statistics.models import ResumeStatistics, JobStatistics
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, Resolver404
 import datetime
 import sys
 
@@ -32,6 +32,8 @@ class StatisticsMiddleware:
 				if (self.has_not_been_logged('resume' + resume_id + search_term, request)):
 					log = ResumeStatistics(resume_id=resume_id, search_term=search_term, session_key=request.session.session_key)
 					log.save()
+		except Resolver404:
+			pass
 		except:
 			logger.exception("-- colabre_web/middlewares.py, StatisticsMiddleware.log_resume_request --")
 			
@@ -45,6 +47,8 @@ class StatisticsMiddleware:
 				if (self.has_not_been_logged('job' + job_id + search_term, request)):
 					log = JobStatistics(job_id=job_id, search_term=search_term, session_key=request.session.session_key)
 					log.save()
+		#except Resolver404:
+	#		pass
 		except:
 			logger.exception("-- colabre_web/middlewares.py, StatisticsMiddleware.log_job_request --")
 			

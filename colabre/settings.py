@@ -3,7 +3,7 @@ import os
 EMAIL_SUPPORT = 'suporte@colabre.org'
 EMAIL_CONTACT = 'contato@colabre.org'
 
-_PROJECT_DIR = os.path.dirname(os.path.abspath(__file__)).replace('colabre', 'colabre_web').replace('\\', '/')
+_PROJECT_DIR = '/home/zanfranceschi/colabre-dev/svn/branches/development/'
 
 def abs_path(_dir, forwardslash=True):
 	result = os.path.join(_PROJECT_DIR, _dir)
@@ -16,18 +16,18 @@ DATABASE_ROUTERS = [
 
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		'NAME': 'colabre',                      # Or path to database file if using sqlite3.
-		'USER': 'root',                      # Not used with sqlite3.
-		'PASSWORD': 'root',                  # Not used with sqlite3.
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'colabre_dev',
+		'USER': 'root',
+		'PASSWORD': '123',                  # Not used with sqlite3.
 		'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
 		'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
 	},
 	'stats': {
 		'ENGINE': 'django.db.backends.mysql', 	# Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		'NAME': 'colabre_stats',                      # Or path to database file if using sqlite3.
+		'NAME': 'colabre_stats_dev',                      # Or path to database file if using sqlite3.
 		'USER': 'root',                      # Not used with sqlite3.
-		'PASSWORD': 'root',                  # Not used with sqlite3.
+		'PASSWORD': '123',                  # Not used with sqlite3.
 		'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
 		'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
 	}
@@ -47,9 +47,7 @@ EMAIL_FROM = 'no-reply@colabre.org'
 
 USE_REAL_USER_NOTIFICATION = True
 
-STATIC_ROOT = abs_path('static')
-
-UPLOAD_DIR = abs_path('uploads').replace('_web', '')
+STATIC_ROOT = os.path.join(_PROJECT_DIR, 'colabre_web/static/')
 
 FILE_CHARSET = 'utf-8'
 DEFAULT_CHARSET = 'utf-8'
@@ -172,8 +170,7 @@ LOGGING = {
 		'file':{
 				'level': 'ERROR',
 				'class': 'logging.FileHandler',
-				#'filename' : '/home/ubuntu/logs/django.log',
-				'filename' : 'C:/temp/django.log',
+				'filename' : '/home/zanfranceschi/colabre-dev/logs/django_error.log',
 		}
     },
 	

@@ -27,7 +27,8 @@ class JobStatistics(models.Model, Statistics):
 		
 		job = Job.objects.get(id=self.job_id)
 		
-		self.profile_id = job.profile.id
+		if (job.profile):
+			self.profile_id = job.profile.id
 		self.job_creation_date = job.creation_date
 		self.segment_id = job.job_title.segment.id
 		self.segment_name = job.job_title.segment.name

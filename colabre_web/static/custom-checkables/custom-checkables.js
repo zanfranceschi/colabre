@@ -16,15 +16,7 @@ $(function() {
 	
 	$(document).on("click", "a.checkable-checkbox, a.checkable-radio", function() {
 		eleId = $(this).attr("cc-data-target");
-		
-		if ($(this).parent().prop("tagName") == "LABEL") // nested
-		{
-			$(eleId).prop("checked", $(eleId).prop("checked"));
-		}
-		else
-		{
-			$(eleId).trigger("click");
-		}
+		$(eleId).trigger("click");
 	});
 	
 	$(document).on("change", ":checkbox", function(){
