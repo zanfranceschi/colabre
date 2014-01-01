@@ -17,7 +17,7 @@ from colabre_web.statistics.models import *
 from django.conf.urls import patterns, url
 import logging
 from urlparse import urljoin
-from colabre_web import services
+from colabre_web import services, utils
 
 logger = logging.getLogger('app')
 
@@ -95,7 +95,7 @@ def create(request):
 
 	context = {}
 	if request.method == 'POST':
-		form = JobForm(request.POST, profile=profile)
+		form = JobForm(request.POST, profile=profile, ip=utils.get_client_ip(request))
 		if form.is_valid():
 			created_job = form.save()
 			template = get_template_path('index.html')
@@ -104,7 +104,7 @@ def create(request):
 					u'Sua vaga foi submetida para aprovação.')
 			else:
 				messages.success(request, 
-					u'Sua vaga criada e publicada com sucesso.')
+					u'Sua vaga foi criada e publicada com sucesso.')
 
 			if (profile is not None):
 				return redirect(reverse('colabre_web.views.my_jobs.index'))

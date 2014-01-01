@@ -432,6 +432,8 @@ class JobForm(BaseForm):
 	def admin_save(self):
 		job = self.job or Job()
 		
+		job.created_from_ip = self.ip
+		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -455,6 +457,8 @@ class JobForm(BaseForm):
 	def save(self):
 		job = self.job or Job()
 		
+		job.created_from_ip = self.ip
+		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -470,7 +474,6 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
 		
-
 		# if there is an approved job with such contact email
 		# approved it automatically
 		validated_email = Job.objects.filter(admin_approved=True, contact_email=job.contact_email).exists() 
@@ -491,6 +494,7 @@ class JobForm(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
 		self.job = kwargs.pop('job', None)
+		self.ip = kwargs.pop('ip', None)
 		super(JobForm, self).__init__(*args, **kwargs)
 		self.fields.keyOrder = [
 							'segment_name', 

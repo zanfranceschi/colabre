@@ -13,3 +13,12 @@ def get_week_days_range(year, week):
 		d = d - timedelta(d.weekday())
 	dlt = timedelta(days = (week-1)*7)
 	return d + dlt, d + dlt + timedelta(days=6)
+
+
+def get_client_ip(request):
+	x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+	if x_forwarded_for:
+		ip = x_forwarded_for.split(',')[0]
+	else:
+		ip = request.META.get('REMOTE_ADDR')
+	return ip
