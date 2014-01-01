@@ -638,6 +638,8 @@ class Job(models.Model):
 	
 	spam = models.BooleanField(default=False)
 	
+	created_from_ip = models.CharField(max_length=15, null=True)
+	
 	def mark_spam(self, *args, **kwargs):
 		self.spam = True
 		super(Job, self).save(*args, **kwargs)

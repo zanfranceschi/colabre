@@ -47,8 +47,8 @@ class StatisticsMiddleware:
 				if (self.has_not_been_logged('job' + job_id + search_term, request)):
 					log = JobStatistics(job_id=job_id, search_term=search_term, session_key=request.session.session_key)
 					log.save()
-		except Resolver404:
-			pass
+		#except Resolver404:
+	#		pass
 		except:
 			logger.exception("-- colabre_web/middlewares.py, StatisticsMiddleware.log_job_request --")
 			

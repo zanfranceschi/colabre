@@ -105,7 +105,7 @@ class UserProfileFormOAuth(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.user = kwargs.pop('user', None)
 		super(UserProfileFormOAuth, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['country_name', 'region_name', 'city_name', 'profile_type', 'birthday', 'gender']
+		self.fields.keyOrder = ['country_name', 'region_name', 'city_name', 'birthday', 'gender']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
 			
@@ -121,7 +121,7 @@ class UserProfileFormOAuth(BaseForm):
 				'country_name' : country,
 				'region_name' :  region,
 				'city_name' : profile.city,
-				'profile_type' : profile.profile_type or 'JS',
+				#'profile_type' : profile.profile_type or 'JS',
 				'birthday' :  profile.birthday,
 				'gender' :  profile.gender,
 			}
@@ -150,6 +150,7 @@ class UserProfileFormOAuth(BaseForm):
 		label='Cidade'
 	)
 
+	"""
 	profile_type = forms.ChoiceField(
 		required=True,
 		label='Tipo de Perfil',
@@ -158,6 +159,7 @@ class UserProfileFormOAuth(BaseForm):
 		choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')),
 		widget=forms.RadioSelect(),
 	)
+	"""
 	
 	birthday = forms.DateField(
 		required=True,
@@ -174,7 +176,7 @@ class UserProfileFormOAuth(BaseForm):
 	def save(self, commit=True):
 		UserProfile.update_profile_oauth(
 			self.user, 
-			self.cleaned_data['profile_type'],
+			'JP', #self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
 			self.cleaned_data['country_name'],
@@ -185,12 +187,12 @@ class UserProfileFormOAuth(BaseForm):
 class UserProfileFormColabre(UserProfileFormOAuth):
 	def __init__(self, *args, **kwargs):
 		super(UserProfileFormColabre, self).__init__(*args, **kwargs)
-		self.fields.keyOrder = ['first_name', 'last_name', 'country_name', 'region_name', 'city_name', 'email', 'profile_type', 'birthday', 'gender', 'password']
+		self.fields.keyOrder = ['first_name', 'last_name', 'country_name', 'region_name', 'city_name', 'email', 'birthday', 'gender', 'password']
 		if self.user:
 			profile = UserProfile.objects.get(user=self.user)
 			data = {
 				'email' : profile.user.email,
-				'profile_type' : profile.profile_type or 'JS',
+				#'profile_type' : profile.profile_type or 'JS',
 				'first_name' : profile.user.first_name,
 				'last_name' : profile.user.last_name,
 				'birthday' :  profile.birthday,
@@ -237,7 +239,7 @@ class UserProfileFormColabre(UserProfileFormOAuth):
 			self.cleaned_data['first_name'],
 			self.cleaned_data['last_name'],
 			self.cleaned_data['email'],
-			self.cleaned_data['profile_type'],
+			'JP', #self.cleaned_data['profile_type'],
 			self.cleaned_data['gender'],
 			self.cleaned_data['birthday'],
 			self.cleaned_data['country_name'],
@@ -432,6 +434,8 @@ class JobForm(BaseForm):
 	def admin_save(self):
 		job = self.job or Job()
 		
+		job.created_from_ip = self.ip
+		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -447,7 +451,7 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
 		
-		job.admin_approved = True
+		# job.admin_approved = True
 		job.save()
 
 		return job
@@ -455,6 +459,8 @@ class JobForm(BaseForm):
 	def save(self):
 		job = self.job or Job()
 		
+		job.created_from_ip = self.ip
+		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -470,7 +476,6 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
 		
-
 		# if there is an approved job with such contact email
 		# approved it automatically
 		validated_email = Job.objects.filter(admin_approved=True, contact_email=job.contact_email).exists() 
@@ -491,6 +496,7 @@ class JobForm(BaseForm):
 	def __init__(self, *args, **kwargs):
 		self.profile = kwargs.pop('profile', None)
 		self.job = kwargs.pop('job', None)
+		self.ip = kwargs.pop('ip', None)
 		super(JobForm, self).__init__(*args, **kwargs)
 		self.fields.keyOrder = [
 							'segment_name', 

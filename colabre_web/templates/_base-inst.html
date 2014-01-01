@@ -1,0 +1,24 @@
+{% extends "_base.html" %}
+{% block extra_head %}
+	<link href="{{ STATIC_URL }}css/inst.css" rel="stylesheet">
+	{% block extra_head-inst %}
+	{% endblock extra_head-inst %}
+{% endblock %}
+{% block menu %}{% endblock menu %}
+{% block messages %}{% endblock messages %}
+{% block body %}
+<div class="inst-menu">
+	<a href="{% url 'home_index' %}">
+		<img src="{{ STATIC_URL }}img/logo.png" alt="logo" />
+	</a>
+	
+	<div class="inst-menu-links pull-right">
+		{% include "_inst-menu-links.html" %}
+	</div>
+</div>
+
+{% include "_message.html" %}
+
+{% block body-inst %}
+{% endblock body-inst %}
+{% endblock body %}

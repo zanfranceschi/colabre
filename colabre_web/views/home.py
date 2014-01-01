@@ -15,5 +15,8 @@ def index(request):
 	return render(request, get_template_path("index.html"))
 	#return HttpResponseRedirect(reverse('colabre_web.views.jobs.index'))
 
+def about(request):
+	return render(request, get_template_path("about.html"))
+
 def legal(request):
 	return render(request, get_template_path("legal.html"))

@@ -1,2 +1,6 @@
 ﻿{% extends "jobs/partial/details.html" %}
+{% block extra_fields %}
+	<dt>IP</dt>
+	<dd>{{ job.created_from_ip }}</dd>
+{% endblock %}
 {% block view_count %}{% endblock %}

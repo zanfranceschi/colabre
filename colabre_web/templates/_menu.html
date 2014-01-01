@@ -20,35 +20,17 @@
 				<ul class="nav pull-right">
 				{% if user.is_authenticated %}
 				<!-- logged in -->
-					{% if user.get_profile.profile_type == 'JS' %}
-					<li><a href="{% url 'my_resume_index' %}">Meu Currículo</a></li>
-					<li class="hidden-desktop"><a href="{% url 'my_resume_stats' %}">Estatísticas do Meu Currículo</a></li>
-					{% elif user.get_profile.profile_type == 'JP' %}
-					<li><a href="{% url 'my_jobs_index' %}">Minhas Vagas</a></li>
-					<li><a href="{% url 'my_jobs_create' %}">Nova Vaga</a></li>
-					{% else %}
-					<li><a href="{% url 'my_profile_index' %}"><i class="icon-exclamation-sign icon-white"></i> Por favor, complete seu perfil</a></li>
+					{% if user.get_profile.profile_type == '' %}
+					<li><a href="{% url 'my_profile_index' %}"><i class="icon-exclamation-sign icon-white"></i> Complete seu perfil</a></li>
 					{% endif %}
+					<li><a href="{% url 'my_jobs_index' %}">Minhas Vagas</a></li>
 					<li class="divider-vertical"></li>
 					
 					<!-- Smaller devices only -->
 					
-					{% if user.get_profile.profile_type == 'JP' %}
-					<li class="hidden-desktop"><a href="{% url 'my_resume_index' %}">Meu Currículo</a></li>
-					<li class="hidden-desktop"><a href="{% url 'my_resume_stats' %}">Estatísticas do Meu Currículo</a></li>
-					{% elif user.get_profile.profile_type == 'JS' %}
-					<li class="hidden-desktop"><a href="{% url 'my_jobs_index' %}">Minhas Vagas</a></li>
-					<li class="hidden-desktop"><a href="{% url 'my_jobs_create' %}">Nova Vaga</a></li>
-					{% else %}
-					<li class="hidden-desktop"><a href="{% url 'my_resume_index' %}">Meu Currículo</a></li>
-					<li class="hidden-desktop"><a href="{% url 'my_resume_stats' %}">Estatísticas do Meu Currículo</a></li>
-					<li class="hidden-desktop divider"></li>
-					<li class="hidden-desktop"><a href="{% url 'my_jobs_index' %}">Minhas Vagas</a></li>
-					<li class="hidden-desktop"><a href="{% url 'my_jobs_create' %}">Nova Vaga</a></li>
-					{% endif %}
 					{% if user.is_superuser %}
-					<li class="hidden-desktop"><a href="/admin/">Administração</a></li>
 					<li class="hidden-desktop"><a href="{% url 'admin_jobs_index' %}">Admin Vagas</a></li>
+					<li class="hidden-desktop"><a href="/admin/">Administração</a></li>
 					{% endif %}
 					<li class="hidden-desktop"><a href="{% url 'my_profile_index' %}">{% if not user.get_profile.is_verified %}<i class="icon-exclamation-sign icon-white"></i>{% endif %} <i class="icon-user icon-white"></i> Meu perfil</a></li>
 					<li class="hidden-desktop"><a href="{% url 'logout' %}" id="logout"><i class="icon-off icon-white"></i> Sair</a></li>
@@ -59,22 +41,6 @@
 						<a class="dropdown-toggle" href="#" data-toggle="dropdown">{{ user.first_name }} <strong class="caret"></strong></a>
 						<ul class="dropdown-menu">
   							<li><a href="{% url 'my_profile_index' %}">{% if not user.get_profile.is_verified %}<i class="icon-exclamation-sign"></i>{% endif %} <i class="icon-user"></i> meu perfil</a></li>
-  							<li class="divider"></li>
-  							{% if user.get_profile.profile_type == 'JP' %}
-							<li><a href="{% url 'my_resume_index' %}">meu currículo</a></li>
-							<li><a href="{% url 'my_resume_stats' %}">estatísticas do meu currículo</a></li>
-							{% elif user.get_profile.profile_type == 'JS' %}
-							<li><a href="{% url 'my_resume_stats' %}">estatísticas do meu currículo</a></li>
-							<li class="divider"></li>
-							<li><a href="{% url 'my_jobs_index' %}">minhas vagas</a></li>
-							<li><a href="{% url 'my_jobs_create' %}">nova vaga</a></li>
-							{% else %}
-							<li><a href="{% url 'my_resume_index' %}">meu currículo</a></li>
-							<li><a href="{% url 'my_resume_stats' %}">estatísticas do meu currículo</a></li>
-							<li class="divider"></li>
-							<li><a href="{% url 'my_jobs_index' %}">minhas vagas</a></li>
-							<li><a href="{% url 'my_jobs_create' %}">nova vaga</a></li>
-							{% endif %}
   							{% if user.is_superuser %}
   							<li class="divider"></li>
   							<li><a href="{% url 'admin_jobs_index' %}">admin vagas</a></li>
@@ -98,35 +64,3 @@
 	</div>
 </div>
 
-
-
-
-<!--div id="menu">
-	<a href="{% url 'home_index' %}"><img src="{{ STATIC_URL }}img/logo.png" alt="logo" /></a>
-
-	<a href="{% url 'jobs_index' %}" class="menu-link">vagas</a>
-	<a href="{% url 'resumes_index' %}" class="menu-link">profissionais</a>
-
-	<div id="profile-header">
-	{% if user.is_authenticated %}
-		{% if user.get_profile.profile_type == 'JS' %}
-			<a href="{% url 'my_resume_index' %}">meu currículo</a> |
-			<a href="{% url 'my_resume_stats' %}">estatísticas do meu currículo</a> |
-		{% elif user.get_profile.profile_type == 'JP' %}
-			<a href="{% url 'my_jobs_index' %}">minhas vagas</a> |
-			<a href="{% url 'my_jobs_create' %}">nova vaga</a> |
-		{% else %}
-			<a href="{% url 'my_resume_index' %}">meu currículo</a> |
-			<a href="{% url 'my_resume_stats' %}">estatísticas do meu currículo</a> |
-			<a href="{% url 'my_jobs_index' %}">minhas vagas</a> |
-			<a href="{% url 'my_jobs_create' %}">nova vaga</a> |
-		{% endif %}
-		<a href="{% url 'my_profile_index' %}">perfil - {{ user.first_name }}</a>{% if not user.get_profile.is_verified %} <img src="{{ STATIC_URL }}img/exclamation-icon-16.png" title-position="bottom center" title="email não verificado" alt="" align="absmiddle" /> {% endif %} |
-		{% if user.is_superuser %} <a href="/admin/">admin</a> | {% endif %}
-		<a href="{% url 'logout' %}" id="logout">sair</a>
-	{% else %}
-		<a href="{% url 'login' %}">login</a> |
-		<a href="{% url 'registration_index' %}">cadastre-se</a>
-	{% endif %}
-	</div>
-</div-->

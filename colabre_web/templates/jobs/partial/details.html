@@ -24,6 +24,7 @@
 		<dt>Telefone</dt>
 		<dd>{{ job.contact_phone }}</dd>
 		{% endif %}
+		{% block extra_fields %}{% endblock %}
 	</dl>
 
 {% block view_count %}

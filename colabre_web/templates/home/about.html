@@ -1,0 +1,67 @@
+{% extends "_base-inst.html" %}
+{% block title %}Sobre{% endblock %}
+{% block body-inst %}
+
+
+<div class="row">
+	
+	<div class="span4 feature">
+		<h3>O que é o Colabre?</h3>
+		<img src="{{ STATIC_URL }}img/home/colabre.png" alt="" />
+		<p>
+			O Colabre é um serviço gratuito e sem burocracia de 
+			<a href="{% url 'jobs_index' %}">busca</a>
+			e <a href="{% url 'jobs_create' %}">publicação</a>
+			de oportunidades de emprego. Um dos nossos principais
+			valores é de que quem está buscando um emprego não deve
+			pagar por isso!
+		</p>
+	</div>
+	
+	<div class="span4 feature">
+		<h3>Serviço 100% gratuito</h3>
+		<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
+		<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa
+		para fazer você pagar pelo serviço. É realmente gratuito!</p>
+	</div>
+	
+	<div class="span4 feature">
+		<h3>Sem burocracia</h3>
+		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
+		<p>
+			É super rápido e direto <a href="{% url 'jobs_create' %}">publicar uma vaga</a>. Não é necessário se cadastrar!
+			Nós fazemos de tudo para oferecer um serviço de qualidade e sem burocracia.
+		</p>
+	</div>
+
+</div>
+
+<hr />
+
+<div class="row">
+
+	<div class="span4 feature">
+		<h3>Integração com LinkedIn</h3>
+		<img src="{{ STATIC_URL }}img/home/linkedin.png" alt="" />
+		<p>Se você optar por se cadastrar (recomendado para profissionais de áreas de recrutamento),
+			poderá usar sua conta do
+			{% if not user.is_authenticated %}<a href="{% url 'socialauth_begin' backend='linkedin' %}">LinkedIn</a>{% else %}LinkedIn{% endif %}
+			para não precisar lembrar de mais uma senha.
+		</p>
+	</div>
+
+	<div class="span4 feature">
+		<h3>Smartphones e tablets</h3>
+		<img src="{{ STATIC_URL }}img/home/responsive.png" alt="" />
+		<p>O design do Colabre foi feito para também funcionar em smartphones e tablets para
+			que você possa utilizar os nossos serviços onde estiver com qualidade.
+		</p>
+	</div>
+
+	<div class="span4 feature">
+		<h3>#colabre</h3>
+		<img src="{{ STATIC_URL }}img/home/twitter.png" alt="" />
+		<p>Siga-nos no Twitter em <a style="text-decoration: none;" href="http://twitter.com/colabre">@colabre</a>! Você também pode usar a hashtag <b>#colabre</b> para falar com a gente.</p>
+	</div>
+</div>
+{% endblock body-inst %}

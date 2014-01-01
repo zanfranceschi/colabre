@@ -19,6 +19,8 @@ urlpatterns = patterns('colabre_web.views',
 	
 	url(r'^inicio/', include('colabre_web.views.home')),
 	
+	url(r'^sobre/', 'home.about', name='about'),
+	
 	url(r'^login/$', 'auth.login_', name='login'),
 	url(r'^autenticar/$', 'auth.authenticate_', name='authenticate'),
 	url(r'^logout/$', 'auth.logout_', name='logout'),
