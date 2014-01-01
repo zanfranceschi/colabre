@@ -2,30 +2,29 @@
 {% block title %}Sobre{% endblock %}
 {% block body-inst %}
 
-<h1>O que é o Colabre?</h1>
-<p>
-	O Colabre é um serviço gratuito e sem burocracia de 
-	<a href="{% url 'jobs_index' %}">busca</a>
-	e <a href="{% url 'jobs_create' %}">publicação</a>
-	de oportunidades de emprego.
-</p>
-
-<h2>Missão</h2>
-<p>
-assss
-</p>
-
-<h2>Visão</h2>
-<p>
-assss
-</p>
-
-<h2>Valores</h2>
-<p>
-assss
-</p>
 
 <div class="row">
+	
+	<div class="span4 feature">
+		<h3>O que é o Colabre?</h3>
+		<img src="{{ STATIC_URL }}img/home/colabre.png" alt="" />
+		<p>
+			O Colabre é um serviço gratuito e sem burocracia de 
+			<a href="{% url 'jobs_index' %}">busca</a>
+			e <a href="{% url 'jobs_create' %}">publicação</a>
+			de oportunidades de emprego. Um dos nossos principais
+			valores é de que quem está buscando um emprego não deve
+			pagar por isso!
+		</p>
+	</div>
+	
+	<div class="span4 feature">
+		<h3>Serviço 100% gratuito</h3>
+		<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
+		<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa
+		para fazer você pagar pelo serviço. É realmente gratuito!</p>
+	</div>
+	
 	<div class="span4 feature">
 		<h3>Sem burocracia</h3>
 		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
@@ -35,13 +34,11 @@ assss
 		</p>
 	</div>
 
+</div>
 
-	<div class="span4 feature">
-		<h3>Serviço 100% gratuito</h3>
-		<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
-		<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa
-		para fazer você pagar pelo serviço. É realmente gratuito.</p>
-	</div>
+<hr />
+
+<div class="row">
 
 	<div class="span4 feature">
 		<h3>Integração com LinkedIn</h3>
@@ -52,12 +49,6 @@ assss
 			para não precisar lembrar de mais uma senha.
 		</p>
 	</div>
-
-</div>
-
-<hr />
-
-<div class="row">
 
 	<div class="span4 feature">
 		<h3>Smartphones e tablets</h3>
@@ -71,16 +62,6 @@ assss
 		<h3>#colabre</h3>
 		<img src="{{ STATIC_URL }}img/home/twitter.png" alt="" />
 		<p>Siga-nos no Twitter em <a style="text-decoration: none;" href="http://twitter.com/colabre">@colabre</a>! Você também pode usar a hashtag <b>#colabre</b> para falar com a gente.</p>
-	</div>
-	<div class="span4 feature">
-		<h3>Últimos Tuítes</h3>
-		<a
-		data-chrome="nofooter transparent noheader"
-		class="twitter-timeline"
-		height="350"
-		href="https://twitter.com/colabre"
-		data-widget-id="334845933298790400">Tweets by @colabre</a>
-		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	</div>
 </div>
 {% endblock body-inst %}
