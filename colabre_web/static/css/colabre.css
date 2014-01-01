@@ -114,6 +114,12 @@ ul.nav li.menu-main a
 	margin-top: 50px;
 }
 
+#footer a
+{
+	padding-left: 3px;
+	padding-right: 3px; 
+}
+
 .required[type=text],
 .required[type=password],
 .required[type=email],

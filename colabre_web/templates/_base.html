@@ -49,10 +49,12 @@
 {% block menu %}{% include "_menu.html" %}{% endblock menu %}
 {#% block feedback %}{% include "_feedback.html" %}{% endblock %#}
 <div class="container">
-	{% include "_message.html" %}
+	{% block messages %}
+		{% include "_message.html" %}
+	{% endblock messages %}
 	{% block body %}{% endblock body %}
 	{% block footer %}
-	{% include "_footer-full.html" %}
+	{% include "_footer.html" %}
 	{% endblock footer %}
 </div>
 

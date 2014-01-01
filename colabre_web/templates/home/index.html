@@ -1,86 +1,38 @@
 {% extends "_base.html" %}
 {% load url from future %}
-{% load chartit %}
 {% block title %}Início{% endblock %}
+{% block extra_head %}
+	<link href="{{ STATIC_URL }}css/home.css" rel="stylesheet">
+{% endblock %}
+{% block menu %}{% endblock menu %}
 {% block body %}
 
-<div class="row">
-	<div class="span12">
-		<h1>
-			O Colabre é um serviço gratuito e sem burocracia de 
-			<a href="{% url 'jobs_index' %}">busca</a>
-			e <a href="{% url 'jobs_create' %}">publicação</a>
-			de oportunidades de emprego.
-		</h1>
-	</div>
-	
-	<div class="span12" style="padding: 60px 0 40px 0;">
-		<form action="{% url 'jobs_index' %}" method="get">
-			<div class="input-append" style="width: 100% !important;">
-				<input name="q" type="text" placeholder="Digite os termos para a busca, por exemplo: são paulo analista de sistemas" value="{{ initial_query }}" class="span6" id="search-term" style="width: 70% !important;">
-				<button id="btn-search" type="submit" class="btn btn-search">
-					<span class="visible-phone">Buscar</span>
-					<span class="hidden-phone">Buscar Vagas</span>
-				</button>
-			</div>
-		</form>
-	</div>
-
-	<div class="span4 feature">
-		<h3>Sem burocracia</h3>
-		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
-		<p>
-			É super rápido e direto <a href="{% url 'jobs_create' %}">publicar uma vaga</a>. Não é necessário se cadastrar!
-			Nós fazemos de tudo para oferecer um serviço de qualidade e sem burocracia.
-		</p>
-	</div>
-
-
-	<div class="span4 feature">
-		<h3>Serviço 100% gratuito</h3>
-		<img src="{{ STATIC_URL }}img/home/free.png" alt="" />
-		<p>No Colabre não existe trial, tantos dias gratuitos ou outra tentativa
-		para fazer você pagar pelo serviço. É realmente gratuito.</p>
-	</div>
-
-	<div class="span4 feature">
-		<h3>Integração com LinkedIn</h3>
-		<img src="{{ STATIC_URL }}img/home/linkedin.png" alt="" />
-		<p>Se você optar por se cadastrar (recomendado para profissionais de áreas de recrutamento),
-			poderá usar sua conta do
-			{% if not user.is_authenticated %}<a href="{% url 'socialauth_begin' backend='linkedin' %}">LinkedIn</a>{% else %}LinkedIn{% endif %}
-			para não precisar lembrar de mais uma senha.
-		</p>
-	</div>
-
+<div class="upper-menu pull-right">	
+	{% include "_inst-menu-links.html" %}
 </div>
 
-<hr />
-
-<div class="row">
-
-	<div class="span4 feature">
-		<h3>Smartphones e tablets</h3>
-		<img src="{{ STATIC_URL }}img/home/responsive.png" alt="" />
-		<p>O design do Colabre foi feito para também funcionar em smartphones e tablets para
-			que você possa utilizar os nossos serviços onde estiver com qualidade.
-		</p>
-	</div>
-
-	<div class="span4 feature">
-		<h3>#colabre</h3>
-		<img src="{{ STATIC_URL }}img/home/twitter.png" alt="" />
-		<p>Siga-nos no Twitter em <a style="text-decoration: none;" href="http://twitter.com/colabre">@colabre</a>! Você também pode usar a hashtag <b>#colabre</b> para falar com a gente.</p>
-	</div>
-	<div class="span4 feature">
-		<h3>Últimos Tuítes</h3>
-		<a
-		data-chrome="nofooter transparent noheader"
-		class="twitter-timeline"
-		height="350"
-		href="https://twitter.com/colabre"
-		data-widget-id="334845933298790400">Tweets by @colabre</a>
-		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<div class="home-wrapper">
+	
+	<img class="logo" src="{{ STATIC_URL }}img/logo-home.png" alt="" />
+	
+	<form action="{% url 'jobs_index' %}" method="get" class="home-search">
+		<div class="input-append home-search-wrapper">
+			<input 
+				name="q" 
+				type="text" 
+				placeholder="Digite sua busca. Exemplo: são paulo analista de sistemas" 
+				value="{{ initial_query }}" 
+				class="span6 home-search-text-input" 
+				id="search-term">
+			<button id="btn-search" type="submit" class="btn btn-search home-search-button">
+				<span class="visible-phone">Buscar</span>
+				<span class="hidden-phone">Buscar Vagas</span>
+			</button>
+		</div>
+	</form>
+	
+	<div class="under-search-menu">
+		<a href="{% url 'jobs_create' %}" class="">Publicar uma vaga</a>
 	</div>
 </div>
 {% endblock body %}

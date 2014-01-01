@@ -1,31 +1,31 @@
-{% extends "_base.html" %}
-{% load url from future %}
-{% load chartit %}
-{% block title %}Início{% endblock %}
-{% block body %}
+{% extends "_base-inst.html" %}
+{% block title %}Sobre{% endblock %}
+{% block body-inst %}
+
+<h1>O que é o Colabre?</h1>
+<p>
+	O Colabre é um serviço gratuito e sem burocracia de 
+	<a href="{% url 'jobs_index' %}">busca</a>
+	e <a href="{% url 'jobs_create' %}">publicação</a>
+	de oportunidades de emprego.
+</p>
+
+<h2>Missão</h2>
+<p>
+assss
+</p>
+
+<h2>Visão</h2>
+<p>
+assss
+</p>
+
+<h2>Valores</h2>
+<p>
+assss
+</p>
 
 <div class="row">
-	<div class="span12">
-		<h1>
-			O Colabre é um serviço gratuito e sem burocracia de 
-			<a href="{% url 'jobs_index' %}">busca</a>
-			e <a href="{% url 'jobs_create' %}">publicação</a>
-			de oportunidades de emprego.
-		</h1>
-	</div>
-	
-	<div class="span12" style="padding: 60px 0 40px 0;">
-		<form action="{% url 'jobs_index' %}" method="get">
-			<div class="input-append" style="width: 100% !important;">
-				<input name="q" type="text" placeholder="Digite os termos para a busca, por exemplo: são paulo analista de sistemas" value="{{ initial_query }}" class="span6" id="search-term" style="width: 70% !important;">
-				<button id="btn-search" type="submit" class="btn btn-search">
-					<span class="visible-phone">Buscar</span>
-					<span class="hidden-phone">Buscar Vagas</span>
-				</button>
-			</div>
-		</form>
-	</div>
-
 	<div class="span4 feature">
 		<h3>Sem burocracia</h3>
 		<img src="{{ STATIC_URL }}img/home/easy.png" alt="" />
@@ -83,4 +83,4 @@
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 	</div>
 </div>
-{% endblock body %}
+{% endblock body-inst %}

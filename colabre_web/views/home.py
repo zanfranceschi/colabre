@@ -12,7 +12,7 @@ def get_template_path(template):
 	return 'home/%s' % template
 
 def index(request):
-	return render(request, get_template_path("new-index.html"))
+	return render(request, get_template_path("index.html"))
 	#return HttpResponseRedirect(reverse('colabre_web.views.jobs.index'))
 
 def about(request):

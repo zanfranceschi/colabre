@@ -1,21 +1,22 @@
-{% extends "_base.html" %}
+{% extends "_base-inst.html" %}
 {% block title %}Contato{% endblock %}
-{% block extra_head %}
-{% endblock %}
-{% block body %}
+{% block body-inst %}
+<h1>Fale com a gente!</h1>
 
-<h1>Contato</h1>
+<p style="padding: 20px;">
+	Você pode se conectar conosco via <a href="https://www.facebook.com/colabre.br">Facebook</a>,
+	<a href="http://www.linkedin.com/company/colabre">LinkedIn</a>,
+	<a href="http://twitter.com/colabre">Twitter</a> ou nos mandar um email através do formulário abaixo.
+	Se seu contato precisar de uma resposta, tentaremos retornar o mais rápido possível.
+</p>
 
-<form action="{% url 'open_contact' %}" class="form-horizontal" method="post">
+<h4>Formulário de contato</h4>
+
+<form action="{% url 'open_contact' %}" class="form-horizontal" method="post" style="margin-top: 20px;">
 	{% csrf_token %}
 	{% include '_form.html' %}
 	<div class="form-actions">
 		<input type="submit" class="btn btn-large btn-primary" value="Enviar" />
 	</div>
 </form>
-
-{% endblock %}
-
-{% block footer %}
-{% include "_footer-simple.html" %}
-{% endblock footer %}
+{% endblock body-inst %}
