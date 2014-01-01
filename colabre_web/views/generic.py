@@ -60,14 +60,14 @@ def partial_json_search_job_title(request):
             titles = JobTitle.objects.filter(name__icontains=q)
         
         list = serializers.serialize("json", titles.order_by('name')[:10])
-        return HttpResponse(list, mimetype="application/json")
+        return HttpResponse(list, content_type="application/json")
 
 #@login_required
 def partial_json_search_segment(request):
 	if request.method == 'POST':
 		q = request.POST['q']
 		list = serializers.serialize("json", Segment.objects.filter(name__icontains=q).order_by("name")[:10])
-		return HttpResponse(list, mimetype="application/json")
+		return HttpResponse(list, content_type="application/json")
 
 #@login_required
 def partial_json_search_country(request):
@@ -75,7 +75,7 @@ def partial_json_search_country(request):
         q = request.POST['q']
         filter = Q(name__istartswith=q) | Q(code__istartswith=q)
         list = serializers.serialize("json", Country.objects.filter(filter).order_by("name")[:10], extras=('name',))
-        return HttpResponse(list, mimetype="application/json")
+        return HttpResponse(list, content_type="application/json")
 
 #@login_required
 def partial_json_search_region(request):
@@ -89,7 +89,7 @@ def partial_json_search_region(request):
             filter = filter & Q(Q(country__name=country) | Q(country__code=country))
             
         list = serializers.serialize("json", Region.objects.filter(filter).order_by("name")[:50], extras=('name',))
-        return HttpResponse(list, mimetype="application/json")
+        return HttpResponse(list, content_type="application/json")
 
 #@login_required
 def partial_json_search_city(request):
@@ -107,11 +107,11 @@ def partial_json_search_city(request):
             filter = filter & Q(Q(region__name=region) | Q(region__code=region))
         
         list = serializers.serialize("json", City.objects.filter(filter).order_by("name")[:50], extras=('name',))
-        return HttpResponse(list, mimetype="application/json")
+        return HttpResponse(list, content_type="application/json")
     
 #@login_required
 def partial_json_search_company(request):
 	if request.method == 'POST':
 		q = request.POST['q']
 		list = serializers.serialize("json", Company.objects.filter(name__icontains=q).order_by("name")[:10])
-		return HttpResponse(list, mimetype="application/json")
+		return HttpResponse(list, content_type="application/json")
