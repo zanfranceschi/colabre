@@ -66,7 +66,7 @@ def custom_init(instance):
 					instance.fields[field].widget.attrs['class'] = 'required'
 				
 				if (instance.fields[field].label is not None):
-					instance.fields[field].label += u'*'
+					instance.fields[field].label += '*'
 		except:
 				logger.exception("-- colabre_web/forms.py, custom_init --")
 			
