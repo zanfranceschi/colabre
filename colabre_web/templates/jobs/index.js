@@ -124,7 +124,7 @@ $(function(){
 		};
 		$("#search-loading-img").show();
 		$("#search-search-info").hide();
-		search("/vagas/parcial/buscar/?q=" + q, 'post', data, callback);
+		search("/vagas/parcial/buscar/", 'post', data, callback);
 	};
 
 	$(".filter-control").bind('change select', function() {

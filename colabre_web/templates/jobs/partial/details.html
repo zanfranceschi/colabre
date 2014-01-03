@@ -35,3 +35,9 @@
 {% endif %}
 {% endblock %}
 </div>
+{% if not user.is_superuser %}
+<!-- analytics -->
+<script type="text/javascript">
+	_gaq.push(['_trackPageview', '/vagas/parcial/detalhar/{{ job.id }}/{{ q }}']);
+</script>
+{% endif %}

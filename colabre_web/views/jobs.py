@@ -60,9 +60,9 @@ def partial_details_viewscount(request, id):
 		logger.exception("-- colabre_web/views/jobs.py, partial_details_viewscount --")
 		return HttpResponse('0')
 
-def partial_details(request, id, search_term=None):
+def partial_details(request, id, q=None):
 	job = Job.objects.get(id=id)
-	response = render(request, get_template_path("partial/details.html"), { 'job' : job })
+	response = render(request, get_template_path("partial/details.html"), { 'job' : job, 'q' : q })
 	response['job-id'] = id
 	return response
 
