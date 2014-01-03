@@ -18,9 +18,9 @@
 	{% endif %}
 {% endfor %}
 
-{% if not user.is_superuser %}
-<!-- analytics -->
+{% if jobs and not user.is_superuser %}
+<!-- analytics ajax search -->
 <script type="text/javascript">
-	_gaq.push(['_trackPageview', '/vagas/ajax/?q={{ q }}']);
+	_gaq.push(['_trackPageview', '/vagas/ajax/page{{ page }}/?q={{ q }}']);
 </script>
 {% endif %}
