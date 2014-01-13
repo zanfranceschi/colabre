@@ -652,7 +652,7 @@ Id da mensagem: {8}
 			message,
 			EMAIL_AUTOMATIC,
 			[job.contact_email],
-			[EMAIL_CONTACT],
+			['colabre.br@gmail.com'],
 			headers = { 'Reply-To': self.cleaned_data['from_email'], 'X-Mail-Uuid' : mail_uuid }
 		)
 
