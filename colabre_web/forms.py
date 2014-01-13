@@ -585,8 +585,8 @@ class ApplyForJobForm(BaseForm):
 		max_length=1000,
 		required=True,
 		label=u'Mensagem',
-		widget = forms.Textarea(attrs={'rows' : 10, 'cols' : 70}),
-		help_text = u'Coloque a mensagem que deseja enviar ao contratante (máx. 1000 caracteres).'
+		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
+		help_text = u'Coloque a mensagem que deseja enviar ao contratante (máx. 1000 caracteres). Fique à vontade para alterar a mensagem sugerida.'
 	)
 	
 	attachment = forms.Field(
@@ -596,11 +596,25 @@ class ApplyForJobForm(BaseForm):
 	)
 	
 	def __init__(self, *args, **kwargs):
-		self.attachment_file = kwargs.pop('attachment_file', None)
 		self.job_id = kwargs.pop('job_id', None)
+		self.attachment_file = kwargs.pop('attachment_file', None)
 		self.ip = kwargs.pop('ip', None)
 		super(ApplyForJobForm, self).__init__(*args, **kwargs)
 		self.fields['attachment'].help_text = 'Não obrigatório. Arquivo Pdf, Rtf, Doc, ou Docx de até {0}MB.'.format(self.max_bytes_attachment_size / 1024.00 / 1024.00)
+		
+		if (not self.ip):
+			job = Job.objects.get(pk=self.job_id)
+			initial_message = u"""Prezado(a) {0},
+			
+Gostaria de participar do processo seletivo para {1}, pois possuo as qualificações necessárias para a posição e estou em busca de novas oportunidades.
+
+Meu telefone é <coloque seu telefone para contato aqui> e estou à disposição para contato.
+
+Atenciosamente,
+
+<coloque seu nome aqui>""".format(job.contact_name, job.job_title)
+			self.initial.update({'message' : initial_message})
+		
 		
 	def send(self):
 		from django.core.mail import EmailMessage

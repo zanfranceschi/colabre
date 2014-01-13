@@ -92,7 +92,7 @@ def apply(request, job_id):
 			return render(request, get_template_path("apply.html"), { 'job' : job, 'form' : form })
 	else:
 		job = Job.objects.get(id=job_id)
-		return render(request, get_template_path("apply.html"), { 'job' : job, 'form' : ApplyForJobForm() })
+		return render(request, get_template_path("apply.html"), { 'job' : job, 'form' : ApplyForJobForm(job_id=job_id) })
 
 def partial_html_search(request):
 	if request.method == 'POST':
