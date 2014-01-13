@@ -662,7 +662,7 @@ Id da mensagem: {8}
 		)
 		
 		mail = EmailMessage(
-			"Colabre | Candidatura de Vaga",
+			"Colabre | Candidatura de Vaga: {0}".format(job.job_title),
 			message,
 			EMAIL_AUTOMATIC,
 			[job.contact_email],
