@@ -29,6 +29,7 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^parcial/detalhar/(\d+)/(.*)/$', 'partial_details', name='jobs_partial_details'),
 	url(r'^detalhar/(\d+)/$', 'detail', name='jobs_detail'),
 	
+	url(r'^candidatar/(\d+)/$', 'apply', name='jobs_apply'),
 	
 	url(r'^criar/$', 'create', name='jobs_create'),
 	url(r'^validar-email/(\d+)/(.+)/$', 'validate_email', name='jobs_validate_email'),
@@ -71,6 +72,27 @@ def detail(request, id):
 	job = Job.objects.get(id=id)
 	return render(request, get_template_path("detail.html"), { 'job' : job })
 
+def apply(request, job_id):
+	if request.method == 'POST':
+		
+		attachment = None
+		if (request.FILES):
+			attachment = request.FILES['attachment']
+
+		form = ApplyForJobForm(request.POST, job_id=job_id, attachment_file=attachment, ip=utils.get_client_ip(request))
+		if (form.is_valid()):
+			form.send()
+			messages.success(request, 
+					u'Sua mensagem foi enviada. Desejamos boa sorte a você!')
+			messages.info(request, 
+					u'Feche esta aba ou janela e continue sua busca por outras vagas.')
+			return HttpResponseRedirect(reverse('colabre_web.views.jobs.detail', args=(job_id,)))
+		else:
+			job = Job.objects.get(id=job_id)
+			return render(request, get_template_path("apply.html"), { 'job' : job, 'form' : form })
+	else:
+		job = Job.objects.get(id=job_id)
+		return render(request, get_template_path("apply.html"), { 'job' : job, 'form' : ApplyForJobForm() })
 
 def partial_html_search(request):
 	if request.method == 'POST':
@@ -106,6 +128,10 @@ def create(request):
 				messages.success(request, 
 					u'Sua vaga foi criada e publicada com sucesso.')
 
+			from colabre.settings import EMAIL_AUTOMATIC
+			messages.info(request,
+				u"Certifique-se de que seu serviço de emails não bloqueie emails vindo de '{0}'. Este será o rementente das candidaturas para a vaga.".format(EMAIL_AUTOMATIC))
+			
 			if (profile is not None):
 				return redirect(reverse('colabre_web.views.my_jobs.index'))
 			else:

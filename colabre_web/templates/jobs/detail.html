@@ -3,38 +3,39 @@
 {% block title %}Vaga: {{ job.job_title }}{% endblock %}
 {% block body %}
 <h1>{{ job.job_title.name }}</h1>
-	<dl class="dl-horizontal">
-		<dt>Publicada em</dt>
-		<dd>{{ job.creation_date|date:"d/m/Y" }}</dd>
-		<dt>Local</dt>
-		<dd>{{ job.city.full_name }}</dd>
-		<dt>Segmento</dt>
-		<dd>{{ job.job_title.segment }}</dd>
-		{% if job.company %}
-		<dt>Empresa</dt>
-		<dd>{{ job.company.name }}</dd>
-		{% endif %}
-		<hr />
-		<dt>Descrição</dt>
-		<dd class="description">{{ job.description|removetags:"script link a img input form input select button"|safe }}</dd>
-		<hr />
-		{% if job.address %}
-		<dt>Endereço</dt>
-		<dd>{{ job.address }}</dd>
-		{% endif %}
+<dl class="dl-horizontal">
+	<dt>Publicada em</dt>
+	<dd>{{ job.creation_date|date:"d/m/Y" }}</dd>
+	
+	<dt>Local</dt>
+	<dd>{{ job.city.full_name }}</dd>
+	
+	<dt>Segmento</dt>
+	<dd>{{ job.job_title.segment }}</dd>
+	{% if job.company %}
+	
+	<dt>Empresa</dt>
+	<dd>{{ job.company.name }}</dd>
+	{% endif %}
+	<hr />
+	<dt>Descrição</dt>
+	<dd class="description">{{ job.description|removetags:"script link a img input form input select button"|safe }}</dd>
+	<hr />
+	
+	{% if job.address %}
+	<dt>Endereço</dt>
+	<dd>{{ job.address }}</dd>
+	{% endif %}
 
-		<dt>Contato</dt>
-		<dd>{{ job.contact_name }}</dd>
+	<dt>Contato</dt>
+	<dd>{{ job.contact_name }}</dd>
 
-		<dt>Email</dt>
-		<dd>{{ job.contact_email|urlize }}</dd>
-
-		{% if job.contact_phone %}
-		<dt>Telefone</dt>
-		<dd>{{ job.contact_phone }}</dd>
-		{% endif %}
-	</dl>
+	{% if job.contact_phone and False %}
+	<dt>Telefone</dt>
+	<dd>{{ job.contact_phone }}</dd>
+	{% endif %}
+</dl>
 <div class="form-actions">
-	<a class="" href="{% url 'jobs_index' %}">ir para busca de vagas</a>
+	<a class="btn btn-primary" href="javascript:window.close();"><i class="icon-chevron-left icon-white"></i> fechar esta janela/aba</a>
 </div>
 {% endblock %}

@@ -7,7 +7,7 @@
 <h1>Estatísticas</h1>
 
 <div class="is-padded20">
-	<p><strong><a href="{% url 'my_jobs_edit' job.id %}">{{ job.job_title }} ({{ job.job_title.segment.name }})</a></strong> - {{ job.city.full_name }} - publicada em <strong>{{ job.creation_date }}</strong>.</p>
+	<p><strong><a href="{% url 'admin_jobs_edit' job.id %}">{{ job.job_title }} ({{ job.job_title.segment.name }})</a></strong> - {{ job.city.full_name }} - publicada em <strong>{{ job.creation_date }}</strong>.</p>
 </div>
 
 <div class="row">
