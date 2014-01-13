@@ -5,6 +5,14 @@ from colabre_web.utils import strip_specialchars
 class Statistics(object):
 	is_statistics = True
 
+class JobApplication(models.Model, Statistics):
+	class Meta:
+		app_label = 'colabre_web'
+
+	ip = models.CharField(max_length=15)
+	job_id = job_id = models.IntegerField()
+	mail_uuid = models.CharField(max_length=22)
+
 class JobStatistics(models.Model, Statistics):
 	class Meta:
 		app_label = 'colabre_web'

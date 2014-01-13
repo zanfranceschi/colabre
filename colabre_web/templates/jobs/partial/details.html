@@ -17,16 +17,18 @@
 		<dt>Contato</dt>
 		<dd>{{ job.contact_name }}</dd>
 
-		<dt>Email</dt>
-		<dd>{{ job.contact_email|urlize }}</dd>
-
-		{% if job.contact_phone %}
+		{% if job.contact_phone and False %}
 		<dt>Telefone</dt>
 		<dd>{{ job.contact_phone }}</dd>
 		{% endif %}
 		{% block extra_fields %}{% endblock %}
 	</dl>
-
+	
+	{% block contact_btn %}
+	<a class="goto-contact-form btn-primary btn btn-mini" href="{% url 'jobs_apply' job.id %}" target="_blank" title="Abre uma nova janela/aba">
+		<i class="icon-envelope icon-white"></i>
+	</a>
+	{% endblock %}
 {% block view_count %}
 {% if not job_view_count == 0 and False %}
 <p class="job_view_count job-view-count" job-details-views-id="{{ job.id }}">

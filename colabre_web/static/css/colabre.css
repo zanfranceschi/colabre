@@ -10,7 +10,7 @@
 {
 	h1
 	{
-		font-size: 25px !important;
+		/* font-size: 25px !important; */
 	}
 	.search-title
 	{
@@ -220,6 +220,13 @@ li.search-filter
 	position: absolute;
 	bottom: 5px;
 	left: 5px;
+}
+
+.goto-contact-form
+{
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
 }
 
 img.show-details-loading

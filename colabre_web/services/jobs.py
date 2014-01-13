@@ -7,10 +7,19 @@ from django.core.urlresolvers import reverse
 from colabre.settings import HOST_ROOT_URL, EMAIL_CONTACT
 from colabre_web.services import email
 #from django.db.models.signals import post_save
-from colabre_web.signals import job_form_instance_saved
+from colabre_web.signals import job_form_instance_saved, applyforjob_form_message_sent
 from django.dispatch import receiver
-from colabre_web.forms import JobForm
+from colabre_web.forms import JobForm, ApplyForJobForm
 from django.template.loader import render_to_string
+from colabre_web.statistics.models import JobApplication
+
+@receiver(applyforjob_form_message_sent, sender=ApplyForJobForm)
+def applyforjob_form_message_sent(sender, job_id, ip, mail_uuid, **kwargs):
+	application = JobApplication()
+	application.ip = ip
+	application.job_id = job_id
+	application.mail_uuid = mail_uuid
+	application.save()
 
 @receiver(job_form_instance_saved, sender=JobForm)
 def job_form_instance_saved(sender, job, **kwargs):

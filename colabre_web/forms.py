@@ -375,6 +375,8 @@ class JobForm(BaseForm):
 		label=u'Descrição da Vaga',
 		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
 		help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
+		+ u' Atenção para a qualidade do texto. Textos que não sejam possíveis de entender ou com erros muito comprometedores farão com que a vaga não seja aprovada.'
+		+ u' Não coloque emails ou telefones de contato nesse campo para proteção contra spam e/ou pessoas mal-intencionadas.'
 	)
 	
 	address = forms.CharField(
@@ -422,6 +424,7 @@ class JobForm(BaseForm):
 	contact_email = forms.EmailField(
 		max_length=254,
 		required=True,
+		help_text='Não ficará visível publicamente. Os canditados(as) usarão um formulário para contato.',
 		label='Email para Contato',
 	)
 	
@@ -434,7 +437,7 @@ class JobForm(BaseForm):
 	def admin_save(self):
 		job = self.job or Job()
 		
-		job.created_from_ip = self.ip
+		#job.created_from_ip = self.ip
 		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
@@ -555,6 +558,126 @@ class ValidateJobForm(BaseForm):
 		help_text='Entre com o código informado.', 
 		required=True
 	)
+
+class ApplyForJobForm(BaseForm):
+	
+	max_bytes_attachment_size = 1048576.00 # 1MB
+	
+	accepted_content_types = (
+							'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+							'application/pdf',
+							'application/rtf',
+							'application/msword'
+							)
+	
+	from_name = forms.CharField(
+		max_length=60,
+		label='Seu nome',
+		required=True
+	)
+	
+	from_email = forms.EmailField(
+		label='Seu email',
+		required=True
+	)
+	
+	message = forms.CharField(
+		max_length=1000,
+		required=True,
+		label=u'Mensagem',
+		widget = forms.Textarea(attrs={'rows' : 10, 'cols' : 70}),
+		help_text = u'Coloque a mensagem que deseja enviar ao contratante (máx. 1000 caracteres).'
+	)
+	
+	attachment = forms.Field(
+		label='Currículo',
+		widget=forms.FileInput(),
+		required=False
+	)
+	
+	def __init__(self, *args, **kwargs):
+		self.attachment_file = kwargs.pop('attachment_file', None)
+		self.job_id = kwargs.pop('job_id', None)
+		self.ip = kwargs.pop('ip', None)
+		super(ApplyForJobForm, self).__init__(*args, **kwargs)
+		self.fields['attachment'].help_text = 'Não obrigatório. Arquivo Pdf, Rtf, Doc, ou Docx de até {0}MB.'.format(self.max_bytes_attachment_size / 1024.00 / 1024.00)
+		
+	def send(self):
+		from django.core.mail import EmailMessage
+		from colabre.settings import EMAIL_AUTOMATIC, EMAIL_CONTACT
+		
+		job = Job.objects.get(pk=self.job_id)
+		
+		mail_uuid = shortuuid.uuid()
+		
+		message = u"""Prezado(a) {0},
+		
+Você recebeu uma mensagem para candidatura do Colabre.
+
+Dados da vaga:
+	Criada em {1}
+	Segmento: {2}
+	Cargo: {3}
+--------------------
+Dados do candidato:	
+	Nome: {4}
+	Email: {5}
+	IP: {6}
+	Mensagem:
+---
+{7}
+---
+--------------------
+Se esta mensagem não for uma candidatura ou, de qualquer outra forma, parecer um abuso, mande um email para contato@colabre.org e informe o ocorrido (informe o Id da mensagem colocado no final do texto também).
+
+Por favor, ajude a divulgar o Colabre. Quanto mais pessoas utilizarem este serviço, melhores candidaturas para suas vagas poderemos oferecer.
+
+Obrigado por utilizar o Colabre!
+
+Id da mensagem: {8}
+""".format(
+		job.contact_name,
+		job.creation_date,
+		job.job_title.segment.name,
+		job.job_title.name,
+		self.cleaned_data['from_name'],
+		self.cleaned_data['from_email'],
+		self.ip,
+		self.cleaned_data['message'],
+		mail_uuid
+		)
+		
+		mail = EmailMessage(
+			"Colabre | Candidatura de Vaga",
+			message,
+			EMAIL_AUTOMATIC,
+			[job.contact_email],
+			[EMAIL_CONTACT],
+			headers = { 'Reply-To': self.cleaned_data['from_email'], 'X-Mail-Uuid' : mail_uuid }
+		)
+
+		if (self.attachment_file):
+			mail.attach(self.attachment_file.name, self.attachment_file.read(), self.attachment_file.content_type)
+
+		mail.send(fail_silently=False)
+		signals.applyforjob_form_message_sent.send(
+			sender=ApplyForJobForm, 
+			job_id=job.id, 
+			ip=self.ip,
+			mail_uuid = mail_uuid
+		)
+		
+	def clean(self):
+		super(ApplyForJobForm, self).clean()
+		if self.is_valid():
+			if (self.attachment_file):
+				if (self.attachment_file.size > self.max_bytes_attachment_size):
+					self._errors['attachment'] = 'Arquivo muito grande ({0}MB).'.format(self.attachment_file.size / 1024.00 / 1024.00)
+					
+				if (not self.attachment_file.content_type in (self.accepted_content_types)):
+					self._errors['attachment'] = 'Arquivo inválido ({0}).'.format(self.attachment_file.name) 
+
+			return self.cleaned_data
 
 class ResumeForm(BaseForm):
 
