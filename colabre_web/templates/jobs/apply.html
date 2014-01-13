@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% load bbcode %}
+{% block title %}Candidatar-se à {{ job.job_title }}{% endblock %}
+{% block body %}
+<h1>Candidate-se para {{ job.job_title }}</h1>
+<form action="{% url 'jobs_apply' job.id %}" class="form-horizontal" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% include '_form.html' %}
+	<div class="form-actions">
+		<button type="submit" class="btn btn-large btn-primary">Candidatar-se</button>
+	</div>
+</form>
+<script type="text/javascript">
+	$(function(){
+		$("#id_from_name").focus();
+	});
+</script>
+<div class="form-actions">
+	<a class="" href="{% url 'jobs_index' %}">ir para busca de vagas</a>
+</div>
+{% endblock %}
