@@ -608,11 +608,8 @@ class ApplyForJobForm(BaseForm):
 			
 Gostaria de participar do processo seletivo para {1}, pois possuo as qualificações necessárias para a posição e estou em busca de novas oportunidades.
 
-Meu telefone é <coloque seu telefone para contato aqui> e estou à disposição para contato.
-
 Atenciosamente,
-
-<coloque seu nome aqui>""".format(job.contact_name, job.job_title)
+""".format(job.contact_name, job.job_title)
 			self.initial.update({'message' : initial_message})
 		
 		
