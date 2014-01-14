@@ -572,12 +572,18 @@ class ApplyForJobForm(BaseForm):
 	
 	from_name = forms.CharField(
 		max_length=60,
-		label='Seu nome',
+		label='Seu Nome',
+		required=True
+	)
+	
+	from_phone = forms.CharField(
+		max_length=30,
+		label='Seu Telefone',
 		required=True
 	)
 	
 	from_email = forms.EmailField(
-		label='Seu email',
+		label='Seu Email',
 		required=True
 	)
 	
@@ -632,11 +638,12 @@ Dados da vaga:
 --------------------
 Dados do candidato:	
 	Nome: {4}
-	Email: {5}
-	IP: {6}
+	Telefone: {5}
+	Email: {6}
+	IP: {7}
 	Mensagem:
 ---
-{7}
+{8}
 ---
 --------------------
 Se esta mensagem não for uma candidatura ou, de qualquer outra forma, parecer um abuso, mande um email para contato@colabre.org e informe o ocorrido (informe o Id da mensagem colocado no final do texto também).
@@ -652,6 +659,7 @@ Id da mensagem: {8}
 		job.job_title.segment.name,
 		job.job_title.name,
 		self.cleaned_data['from_name'],
+		self.cleaned_data['from_phone'],
 		self.cleaned_data['from_email'],
 		self.ip,
 		self.cleaned_data['message'],
