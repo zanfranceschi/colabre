@@ -652,7 +652,7 @@ Por favor, ajude a divulgar o Colabre. Quanto mais pessoas utilizarem este servi
 
 Obrigado por utilizar o Colabre!
 
-Id da mensagem: {8}
+Id da mensagem: {9}
 """.format(
 		job.contact_name,
 		job.creation_date,
