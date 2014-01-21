@@ -20,7 +20,9 @@
 		</div>
 
 	</form>
-	<script type="text/javascript">
+{% endblock body %}
+{% block inline_js %}
+<script type="text/javascript">
 		$(function() {
 
 			$("#id_job_title_name").typeahead({
@@ -186,4 +188,4 @@
 			});
 		});
     </script>
-{% endblock %}
+{% endblock inline_js %}

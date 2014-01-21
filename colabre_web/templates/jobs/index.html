@@ -34,13 +34,12 @@
 	</div>
 </div>
 
+{% endblock body %}
+
+{% block inline_js %}
 <script type="text/javascript">
 {% block jscript %}
 {% include "jobs/index.js" %}
 {% endblock %}
 </script>
-{% endblock %}
-
-{% block footer %}
-{% include "_footer.html" %}
-{% endblock footer %}
+{% endblock inline_js %}

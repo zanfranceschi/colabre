@@ -75,10 +75,11 @@
 	{% endif %}
 </div>
 
+
+{% endblock body %}
+
+{% block inline_js %}
+{% if chart_chart %}
 {{ charts|load_charts:"chart,chart_segment,chart_jobtitle" }}
-
-{% endblock %}
-
-{% block footer %}
-{% include "_footer.html" %}
-{% endblock footer %}
+{% endif %}
+{% endblock inline_js %}
