@@ -19,9 +19,10 @@
 		</div>
 
 	</form>
+{% endblock body %}
+{% block inline_js %}
 	<script type="text/javascript">
 		$(function() {
-
 			$("#id_job_title_name").typeahead({
 				minLength: 1,
 				matcher: function(item)
@@ -185,4 +186,4 @@
 			});
 		});
     </script>
-{% endblock %}
+{% endblock inline_js %}

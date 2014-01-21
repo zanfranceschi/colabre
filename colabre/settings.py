@@ -2,6 +2,7 @@ import os
 
 EMAIL_SUPPORT = 'suporte@colabre.org'
 EMAIL_CONTACT = 'contato@colabre.org'
+EMAIL_AUTOMATIC = 'nao-responda@colabre.org'
 
 _PROJECT_DIR = '/home/zanfranceschi/colabre-dev/svn/branches/development/'
 

@@ -25,7 +25,6 @@
 	<meta property="og:url " content="https://www.colabre.org/" />
 	<meta property="og:image" content="https://www.colabre.org/static/img/og-logo-200x200.png" />
 	<meta property="og:locale" content="pt_BR" />
-
 	{% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -73,5 +72,7 @@
 	<!-- /highcharts -->
 	<script type="text/javascript" src="{{ STATIC_URL }}js/colabre.js"></script>
 	<!-- /jscripts -->
+	
+	{% block inline_js %}{% endblock %}
 </body>
 </html>
