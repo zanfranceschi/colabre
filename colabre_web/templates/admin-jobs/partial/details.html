@@ -1,5 +1,9 @@
 ﻿{% extends "jobs/partial/details.html" %}
 {% block extra_fields %}
+	<dt>Email</dt>
+	<dd>{{ job.contact_email }}</dd>
+	<dt>Telefone</dt>
+	<dd>{{ job.contact_phone }}</dd>
 	<dt>IP</dt>
 	<dd>{{ job.created_from_ip }}</dd>
 {% endblock %}

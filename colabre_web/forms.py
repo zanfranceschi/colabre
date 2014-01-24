@@ -447,7 +447,6 @@ class JobForm(BaseForm):
 		job = self.job or Job()
 		
 		#job.created_from_ip = self.ip
-		
 		job.profile = self.profile or job.profile
 		job.address = self.cleaned_data['address']
 		job.description = self.cleaned_data['description']
@@ -462,11 +461,8 @@ class JobForm(BaseForm):
 		job.city_name = self.cleaned_data['city_name']
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
-		
 		# job.admin_approved = True
-		
-		#job.save()
-
+		job.save()
 		return job
 	
 	def save(self):
