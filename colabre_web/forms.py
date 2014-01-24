@@ -11,6 +11,7 @@ from django.forms import ModelForm, extras
 from datetime import datetime
 import logging
 import signals
+from colabre_web.utils import grab_emails
 
 logger = logging.getLogger('app')
 
@@ -353,6 +354,14 @@ class LoginForm(BaseForm):
 
 class JobForm(BaseForm):
 	
+	def clean(self):
+		super(JobForm, self).clean()
+		if self.is_valid():
+			found_emails = grab_emails(self.cleaned_data['description'])
+			if (not not found_emails):
+				self._errors['description'] = u"Parece que este campo contém email ({0}). Não é permitido colocar emails ou telefones na descrição da vaga.".format(" / ".join(found_emails))	
+			return self.cleaned_data
+	
 	job_title_name = forms.CharField(
 		widget=forms.TextInput(attrs={'typeahead' : 'true'}),
 		max_length=50, 
@@ -370,13 +379,13 @@ class JobForm(BaseForm):
 	)
 	
 	description = forms.CharField(
-		max_length=5000, 
+		max_length=50000, 
 		required=True,
 		label=u'Descrição da Vaga',
 		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
 		help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
 		+ u' Atenção para a qualidade do texto. Textos que não sejam possíveis de entender ou com erros muito comprometedores farão com que a vaga não seja aprovada.'
-		+ u' Não coloque emails ou telefones de contato nesse campo para proteção contra spam e/ou pessoas mal-intencionadas.'
+		+ u' Não coloque emails ou telefones de contato aqui. Vagas contendo descrições com emails ou telefones não serão aprovadas ou serão excluídas.'
 	)
 	
 	address = forms.CharField(
@@ -455,7 +464,8 @@ class JobForm(BaseForm):
 		job.set_contact_email_verified()
 		
 		# job.admin_approved = True
-		job.save()
+		
+		#job.save()
 
 		return job
 	

@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import unicodedata
+import re
 
 def strip_specialchars(s):
 	return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore')
@@ -33,3 +34,11 @@ def baseurl(request):
 		scheme = 'http://'
 	
 	return {'BASE_URL' : scheme + request.get_host(),}
+
+def grab_emails(text):
+	
+	regex = re.compile(("([a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`"
+                    "{|}~-]+)*(@|\sat\s)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(\.|"
+                    "\sdot\s))+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)"))
+	
+	return [email[0] for email in re.findall(regex, text.lower()) if not email[0].startswith('//')]
