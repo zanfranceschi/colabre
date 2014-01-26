@@ -359,7 +359,7 @@ class JobForm(BaseForm):
 		if self.is_valid():
 			found_emails = grab_emails(self.cleaned_data['description'])
 			if (not not found_emails):
-				self._errors['description'] = u"Parece que este campo contém email ({0}). Não é permitido colocar emails ou telefones na descrição da vaga.".format(" / ".join(found_emails))	
+				self._errors['description'] = u"Parece que este campo contém email ({0}). Não é permitido colocar emails, telefones ou qualquer outro tipo de contato direto na descrição da vaga.".format(" / ".join(found_emails))	
 			return self.cleaned_data
 	
 	job_title_name = forms.CharField(
@@ -383,9 +383,8 @@ class JobForm(BaseForm):
 		required=True,
 		label=u'Descrição da Vaga',
 		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
-		help_text = u'Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
+		help_text = u'Vagas contendo emails, telefones ou qualquer outro tipo de contato direto na descrição não serão aprovadas ou serão excluídas. Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
 		+ u' Atenção para a qualidade do texto. Textos que não sejam possíveis de entender ou com erros muito comprometedores farão com que a vaga não seja aprovada.'
-		+ u' Não coloque emails ou telefones de contato aqui. Vagas contendo descrições com emails ou telefones não serão aprovadas ou serão excluídas.'
 	)
 	
 	address = forms.CharField(
