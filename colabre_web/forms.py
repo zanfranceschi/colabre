@@ -359,7 +359,13 @@ class JobForm(BaseForm):
 		if self.is_valid():
 			found_emails = grab_emails(self.cleaned_data['description'])
 			if (not not found_emails):
-				self._errors['description'] = u"Parece que este campo contém email ({0}). Não é permitido colocar emails, telefones ou qualquer outro tipo de contato direto na descrição da vaga.".format(" / ".join(found_emails))	
+				self._errors['description'] = u"Parece que este campo contém email ({0}). Não é permitido colocar emails, telefones ou qualquer outro tipo de contato direto na descrição da vaga.".format(" / ".join(found_emails))
+				
+			words = [word for word in self.cleaned_data['description'].split(' ') if len(word) > 2]
+			
+			if (len(words) <= 20):
+				self._errors['description'] = u"A descrição da vaga precisa de um pouco mais de detalhes; está muito curta. Nós pedimos que sua descrição tenha cerca de 20 palavras, excluindo palavras curtas como 'de', 'em', 'na', etc."
+			
 			return self.cleaned_data
 	
 	job_title_name = forms.CharField(
