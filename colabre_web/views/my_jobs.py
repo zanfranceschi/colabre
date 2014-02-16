@@ -474,7 +474,13 @@ def create(request):
 def edit(request, job_id):
 	template = None
 	profile=request.user.get_profile()
-	job = Job.objects.get(id=job_id, profile=profile)
+	job = None
+	try:
+		job = Job.objects.get(id=job_id, active=True, profile=profile)
+	except Job.DoesNotExist:
+		messages.error(request, 'Esta vaga não existe mais.')
+		return redirect(reverse('colabre_web.views.my_jobs.index'))
+
 	context = {}
 	if job.is_editable:
 		if request.method == 'POST':
