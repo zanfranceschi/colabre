@@ -32,7 +32,6 @@ urlpatterns = patterns('colabre_web.views.jobs',
 	url(r'^candidatar/(\d+)/$', 'apply', name='jobs_apply'),
 	
 	url(r'^criar/$', 'create', name='jobs_create'),
-	url(r'^validar-email/(\d+)/(.+)/$', 'validate_email', name='jobs_validate_email'),
     url(r'^excluir/(\d+)/(.+)/$', 'delete', name='jobs_delete'),
 )
 
@@ -145,30 +144,6 @@ def create(request):
 	context.update({'form' : form, 'action' : reverse('colabre_web.views.jobs.create')})
 	return render(request, template, context)
 
-
-def validate_email(request, id, email):
-	if (request.method != 'POST'):
-		try:
-			job = Job.objects.get(id=id, contact_email=email, contact_email_verified=False)
-			form = ValidateJobForm()
-			return render(request, get_template_path('validate-email.html'), { 'form' : form, 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })
-		except Job.DoesNotExist:
-			return HttpResponseRedirect(reverse('colabre_web.views.home.index'))
-	elif (request.method == 'POST'):
-		form = ValidateJobForm(request.POST)
-		if (form.is_valid()):
-			uuid = request.POST['uuid']
-			try:
-				services.jobs.validate_email(id, email, uuid)
-				messages.success(request, u"Email validado! Sua vaga está publicada agora.")
-				job = Job.objects.get(pk=id)
-				return render(request, get_template_path('detail.html'), { 'job' : job })
-			except Job.DoesNotExist:
-				messages.error(request, u"Não encontramos uma vaga com o código informado. Tente novamente, por favor.")
-				return render(request, get_template_path('validate-email.html'), { 'form' : ValidateJobForm(), 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })
-		else:
-			return render(request, get_template_path('validate-email.html'), { 'form' : form, 'action' : reverse('colabre_web.views.jobs.validate_email', args=(id, email)) })			
-		
 
 def delete(request, id, email):
 	if (request.method != 'POST'):

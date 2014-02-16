@@ -2,6 +2,11 @@ from datetime import date, timedelta
 import unicodedata
 import re
 
+"""
+NON FUNCTIONAL METHODS ONLY HERE PLEASE!
+"""
+
+
 def strip_specialchars(s):
 	return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore')
 	#return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')

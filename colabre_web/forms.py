@@ -12,6 +12,7 @@ from datetime import datetime
 import logging
 import signals
 from colabre_web.utils import grab_emails
+from colabre_web import services
 
 logger = logging.getLogger('app')
 
@@ -490,16 +491,9 @@ class JobForm(BaseForm):
 		job.company_name = self.cleaned_data['company_name']
 		job.set_contact_email_verified()
 		
-		# if there is an approved job with such contact email
-		# approved it automatically
-		validated_email = Job.objects.filter(admin_approved=True, contact_email=job.contact_email).exists() 
-		if(validated_email):
-			job.admin_approved = True
-
-		if (job.id is not None and not job.admin_approved):
-			original = Job.objects.get(id=job.id)
-			if (original.description != job.description):
-				job.admin_approved = False
+		
+		#delegate job approval to services.jobs
+		services.jobs.try_approve_automatically(job)
 		
 		signals.job_form_before_instance_saved.send(sender=JobForm, job=job)
 		job.save()

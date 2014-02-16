@@ -6,11 +6,9 @@ from urlparse import urljoin
 from django.core.urlresolvers import reverse
 from colabre.settings import HOST_ROOT_URL, EMAIL_CONTACT
 from colabre_web.services import email
-#from django.db.models.signals import post_save
 from colabre_web.signals import job_form_instance_saved, applyforjob_form_message_sent
 from django.dispatch import receiver
 from colabre_web.forms import JobForm, ApplyForJobForm
-from django.template.loader import render_to_string
 from colabre_web.statistics.models import JobApplication
 
 @receiver(applyforjob_form_message_sent, sender=ApplyForJobForm)
@@ -83,41 +81,6 @@ ver: {12}
 	)
 		email.send(u"Aprovação de Nova Vaga", message, [EMAIL_CONTACT])
 
-def send_mail_to_verify_email(job):
-	if (job.contact_email_verified or not job.admin_approved): 
-		"Never send an email validation request for a non admin approved job"
-		return
-
-	how_to_exclude_instructions = None
-
-	if (job.profile is None):
-		how_to_exclude_instructions = u"""
-
-Se desejar excluir a vaga, informe o código {0} no formulário do endereço {1}.
-""".format(job.uuid, urljoin(
-				HOST_ROOT_URL, 
-				reverse('colabre_web.views.jobs.delete', args=(job.id,job.contact_email,))
-			))
-	
-	message = u"""{0},
-	
-O email da vaga {1} precisa ser verificado.
-Acesse {2} e informe o código {3} para validá-lo. {4}
-
-{5}""".format(
-			job.contact_name,
-			job.job_title,
-			urljoin(
-				HOST_ROOT_URL, 
-				reverse('colabre_web.views.jobs.validate_email', args=(job.id,job.contact_email,))
-			),
-			job.uuid,
-			how_to_exclude_instructions or '',
-			render_to_string("email-footer.txt")
-		)
-
-	email.send(u"Validação de Email", message, [job.contact_email])
-
 def admin_approve(id, uuid):
 	approved_job = Job.objects.get(id=id, uuid=uuid, admin_approved=False)
 	approved_job.admin_approved = True
@@ -143,13 +106,14 @@ def unmark_spam(jobId):
 	job.unmark_spam()
 	return job
 
-def validate_email(job_id, email, uuid):
-	job = Job.objects.get(id=job_id, contact_email=email, uuid=uuid, contact_email_verified=False)
-	job.contact_email_verified = True
-	job.save()
-	if (job.profile is not None):
-		"""
-			Validate other emails from the same profile...
-		"""
-		Job.objects.filter(contact_email=email, profile=job.profile, contact_email_verified=False).update(contact_email_verified=True)
-	
+def try_approve_automatically(job):
+	validated_email = Job.objects.filter(admin_approved=True, contact_email=job.contact_email).exists() 
+	if(validated_email):
+		job.admin_approved = True
+
+	if (job.id is not None and not job.admin_approved):
+		original = Job.objects.get(id=job.id)
+		if (original.description != job.description):
+			job.admin_approved = False
+			
+	return job.admin_approved
