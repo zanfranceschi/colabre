@@ -13,6 +13,7 @@ import logging
 import signals
 from colabre_web.utils import grab_emails
 from colabre_web import services
+from django.utils.safestring import mark_safe
 
 logger = logging.getLogger('app')
 
@@ -364,8 +365,10 @@ class JobForm(BaseForm):
 				
 			words = [word for word in self.cleaned_data['description'].split(' ') if len(word) > 2]
 			
-			if (len(words) <= 20):
-				self._errors['description'] = u"A descrição da vaga precisa de um pouco mais de detalhes; está muito curta. Nós pedimos que sua descrição tenha cerca de 20 palavras, excluindo palavras curtas como 'de', 'em', 'na', etc."
+			min_words_count = 10
+			
+			if (len(words) <= min_words_count):
+				self._errors['description'] = u"A descrição da vaga precisa de um pouco mais de detalhes; está muito curta. Nós pedimos que sua descrição tenha cerca de {0} palavras, excluindo palavras curtas como 'de', 'em', 'na', etc.".format(min_words_count)
 			
 			return self.cleaned_data
 	
@@ -390,8 +393,8 @@ class JobForm(BaseForm):
 		required=True,
 		label=u'Descrição da Vaga',
 		widget = forms.Textarea(attrs={'rows' : 15, 'cols' : 70}),
-		help_text = u'Vagas contendo emails, telefones ou qualquer outro tipo de contato direto na descrição não serão aprovadas ou serão excluídas. Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
-		+ u' Atenção para a qualidade do texto. Textos que não sejam possíveis de entender ou com erros muito comprometedores farão com que a vaga não seja aprovada.'
+		help_text = mark_safe(u'<b>IMPORTANTE: Vagas contendo emails, telefones, endereços, websites ou qualquer outro tipo de contato direto na descrição não serão aprovadas ou serão excluídas.</b> Coloque as principais atividades que serão ser exercidas, benefícios, requisitos para os candidatos, etc.'
+		+ u' Atenção para a qualidade do texto. Textos que não sejam possíveis de entender ou com erros muito comprometedores farão com que a vaga não seja aprovada.')
 	)
 	
 	address = forms.CharField(
