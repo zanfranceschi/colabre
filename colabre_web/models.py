@@ -194,8 +194,8 @@ class UserProfile(models.Model):
 	is_from_oauth = models.BooleanField(default=False)
 	profile_type = models.CharField(max_length=2, choices=(('JS', 'Buscar Vagas'), ('JP', 'Publicar Vagas')))
 	gender = models.CharField(default='U', max_length=1, choices=(('U', 'Indefinido'), ('F', 'Feminino'), ('M', 'Masculino')))
-	birthday = models.DateField(null=True)
-	city = models.ForeignKey(City, null=True)
+	birthday = models.DateField(null=True, blank=True)
+	city = models.ForeignKey(City, null=True, blank=True)
 	excluded = models.BooleanField(default=False)
 	active = models.BooleanField(default=True)
 	
@@ -617,19 +617,19 @@ class Job(models.Model):
 		
 	is_editable = property(get_is_editable)
 
-	profile = models.ForeignKey(UserProfile, null=True)
+	profile = models.ForeignKey(UserProfile, null=True, blank=True)
 	job_title = models.ForeignKey(JobTitle)
-	address = models.CharField(max_length=120, null=True)
+	address = models.CharField(max_length=120, null=True, blank=True)
 	city = models.ForeignKey(City, null=True)
 	description = models.TextField(max_length=5000)
-	company = models.ForeignKey(Company, null=True)
+	company = models.ForeignKey(Company, null=True, blank=True)
 	contact_name = models.CharField(max_length=60)
 	contact_email = models.EmailField(max_length=254)
-	contact_phone = models.CharField(max_length=25, null=True)
+	contact_phone = models.CharField(max_length=25, null=True, blank=True)
 	creation_date = models.DateTimeField(auto_now_add=True)
 	
 	admin_approved = models.BooleanField(default=False)
-	admin_approval_date = models.DateTimeField(null=True)
+	admin_approval_date = models.DateTimeField(null=True, blank=True)
 	
 	contact_email_verified = models.BooleanField(default=False)
 	uuid = models.CharField(max_length=22, default=lambda: shortuuid.uuid())
@@ -638,7 +638,7 @@ class Job(models.Model):
 	
 	spam = models.BooleanField(default=False)
 	
-	created_from_ip = models.CharField(max_length=15, null=True)
+	created_from_ip = models.CharField(max_length=15, null=True, blank=True)
 	
 	def mark_spam(self, *args, **kwargs):
 		self.spam = True
